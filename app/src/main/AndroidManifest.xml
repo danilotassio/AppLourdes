@@ -1,21 +1,26 @@
-name: Build APK
-on: [push, workflow_dispatch]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: 17 }
-      - uses: gradle/actions/setup-gradle@v3
-        with: { gradle-version: 8.7 }
-      - run: gradle assembleDebug
-      - name: Diagnostico
-        run: |
-          APK=app/build/outputs/apk/debug/app-debug.apk
-          BT=$ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | tail -1)
-          ls -l $APK
-          $BT/apksigner verify --verbose $APK || true
-          $BT/aapt2 dump badging $APK | head -40 || true
-      - uses: actions/upload-artifact@v4
-        with: { name: Lourdinha-apk, path: app/build/outputs/apk/debug/app-debug.apk }
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <application
+        android:label="@string/app_name"
+        android:icon="@android:drawable/sym_def_app_icon"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar"
+        android:allowBackup="true">
+        <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <receiver android:name=".AlarmReceiver" android:exported="false"/>
+        <receiver android:name=".BootReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

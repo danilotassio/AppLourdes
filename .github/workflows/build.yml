@@ -10,5 +10,12 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3
         with: { gradle-version: 8.7 }
       - run: gradle assembleDebug
+      - name: Diagnostico
+        run: |
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          BT=$ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | tail -1)
+          ls -l $APK
+          $BT/apksigner verify --verbose $APK || true
+          $BT/aapt2 dump badging $APK | head -40 || true
       - uses: actions/upload-artifact@v4
         with: { name: Lourdinha-apk, path: app/build/outputs/apk/debug/app-debug.apk }

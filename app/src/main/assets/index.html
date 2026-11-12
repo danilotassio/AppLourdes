@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Remédios da Lourdinha</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f4f4;color:#111;min-height:100vh}
+#top{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;background:#1F3864;color:#fff;font-size:18px}
+#clock{font-size:26px;font-weight:bold}
+#main{padding:12px}
+.card{border-radius:18px;padding:18px;margin-bottom:12px;border:4px solid rgba(0,0,0,.25)}
+.big{font-size:44px;font-weight:bold;text-align:center;margin:4px 0}
+.sub{font-size:22px;text-align:center;margin-bottom:8px}
+.med{font-size:30px;margin:10px 0;line-height:1.15}
+.btns{display:flex;gap:10px;margin-top:14px}
+button{border:0;border-radius:16px;font-size:30px;font-weight:bold;padding:22px 8px;flex:1;color:#fff}
+#ok{background:#1e8e3e}#no{background:#c5221f}
+.small{font-size:18px;padding:12px;background:#ddd;color:#111;border-radius:12px;font-weight:normal}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+label{font-size:20px;display:flex;align-items:center;gap:10px}
+input[type=checkbox]{width:28px;height:28px}
+table{width:100%;border-collapse:collapse;font-size:18px;background:#fff}
+td,th{border:1px solid #999;padding:6px;text-align:center}
+.pill{display:inline-block;padding:2px 10px;border-radius:10px;font-weight:bold}
+#alarmbar{display:none}
+</style>
+</head>
+<body>
+<div id="top"><div>Remédios da Lourdinha</div><div id="clock">--:--</div></div>
+<div id="main">
+  <div id="sound" class="card" style="background:#fff3cd"><div class="sub"><b>1) Toque aqui para ligar o som</b></div><button id="enable" style="background:#1F3864;width:100%">🔔 Ligar alarme</button><div style="font-size:16px;margin-top:8px">Deixe esta tela aberta e o volume alto. O alarme toca nos horários dos remédios.</div></div>
+  <div id="now"></div>
+  <div class="card" style="background:#fff">
+    <label><input type="checkbox" id="qt"> Dias pós-quimio (incluir remédios de enjoo)</label>
+    <div class="row"><button class="small" id="test">Testar alarme</button><button class="small" id="stop">Parar música</button></div>
+  </div>
+  <div class="card" style="background:#fff"><b style="font-size:22px">Próximos horários</b><div id="next" style="font-size:20px;margin-top:6px"></div></div>
+  <div class="card" style="background:#fff"><b style="font-size:22px">Registro da semana</b>
+    <div id="log" style="margin-top:8px"></div>
+    <div class="row"><button class="small" id="copy">Copiar resumo (WhatsApp)</button><button class="small" id="clear">Limpar registro</button></div>
+    <pre id="sum" style="white-space:pre-wrap;font-size:16px"></pre>
+  </div>
+</div>
+<script>
+var POTS=[
+ {t:"06:00",n:"AMARELO",c:"#FFF2A8",m:["Omeprazol 20 mg — 2 comprimidos (em jejum)","Morfina 10 mg — 1 comprimido","Lactulona — 15 ml","Dipirona 500 mg — 2 comprimidos","Simeticona — 40 gotas","Dexametasona 4 mg — 1 comprimido (com o café)"],q:1},
+ {t:"10:00",n:"VERDE",c:"#BFE3BF",m:["Morfina 10 mg — 1 comprimido"]},
+ {t:"12:00",n:"LARANJA",c:"#FFD3A1",m:["Dipirona 500 mg — 2 comprimidos","Simeticona — 40 gotas"]},
+ {t:"14:00",n:"AZUL",c:"#B7D3F5",m:["Morfina 10 mg — 1 comprimido","Lactulona — 15 ml"],q:1},
+ {t:"18:00",n:"ROSA",c:"#F9C6E0",m:["Morfina 10 mg — 1 comprimido","Dipirona 500 mg — 2 comprimidos","Simeticona — 40 gotas"]},
+ {t:"22:00",n:"ROXO",c:"#D8C4EE",m:["Morfina 10 mg — 1 comprimido","Lactulona — 15 ml","Bisacodil 5 mg — 1 comprimido"],q:1},
+ {t:"00:00",n:"CINZA",c:"#D0D0D0",m:["Dipirona 500 mg — 2 comprimidos","Simeticona — 40 gotas"]},
+ {t:"02:00",n:"VERMELHO",c:"#F8B4B4",m:["Morfina 10 mg — 1 comprimido"]}
+];
+var QT=["Ondansetrona 8 mg — 1 comprimido","Metoclopramida — 40 gotas"];
+function $(i){return document.getElementById(i)}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+var mem={log:[],qt:false};
+try{mem.log=JSON.parse(ls("log")||"[]");mem.qt=ls("qt")==="1"}catch(e){}
+$("qt").checked=mem.qt;
+$("qt").onchange=function(){mem.qt=this.checked;ls("qt",this.checked?"1":"0");render()};
+var spk=null;
+function falar(p){
+  try{
+    var u=new SpeechSynthesisUtterance("Bora, Lourdinha! Tomar o remédio da bolsa "+p.n.toLowerCase()+"!");
+    u.lang="pt-BR";u.volume=1;u.rate=.9;
+    speechSynthesis.cancel();speechSynthesis.speak(u);
+  }catch(e){}
+}
+var ac=null,playing=null,pending=null,fired={};
+function pad(n){return (n<10?"0":"")+n}
+function hhmm(d){return pad(d.getHours())+":"+pad(d.getMinutes())}
+function dstr(d){return pad(d.getDate())+"/"+pad(d.getMonth()+1)}
+// melodia suave original (loop)
+var NOTES=[523,659,784,659,587,698,880,698,523,659,784,1047,784,659,587,523];
+function startMusic(){
+  stopMusic();
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){return}
+  var i=0;
+  function tick(){
+    try{
+      var o=ac.createOscillator(),g=ac.createGain();
+      o.type="square";o.frequency.value=NOTES[i%NOTES.length];
+      g.gain.setValueAtTime(0,ac.currentTime);
+      g.gain.linearRampToValueAtTime(.9,ac.currentTime+.05);
+      g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.7);
+      o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.75);
+    }catch(e){}
+    i++;
+    try{if(navigator.vibrate&&i%4==0)navigator.vibrate([300,150,300])}catch(e){}
+  }
+  tick();playing=setInterval(tick,600);
+}
+function stopMusic(){if(playing){clearInterval(playing);playing=null}}
+$("stop").onclick=function(){stopMusic();clearInterval(spk);try{speechSynthesis.cancel()}catch(e){}};
+$("enable").onclick=function(){
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}
+  try{if(navigator.wakeLock)navigator.wakeLock.request("screen").catch(function(){})}catch(e){}
+  $("sound").style.display="none";startMusic();setTimeout(stopMusic,1200);
+};
+$("test").onclick=function(){fire(POTS[0],true)};
+function medsOf(p){var a=p.m.slice();if(mem.qt&&p.q)a=a.concat(QT);return a}
+function fire(p,test){
+  pending={p:p,test:!!test,day:dstr(new Date()),time:p.t};
+  startMusic();falar(p);
+  clearInterval(spk);spk=setInterval(function(){if(pending)falar(pending.p)},9000);
+  render();
+}
+function answer(ok){
+  stopMusic();clearInterval(spk);try{speechSynthesis.cancel()}catch(e){}
+  if(!pending)return;
+  if(!pending.test){mem.log.push({d:pending.day,t:pending.time,ok:ok,n:pending.p.n});ls("log",JSON.stringify(mem.log))}
+  pending=null;render();renderLog();
+}
+function render(){
+  var h="";
+  if(pending){
+    var p=pending.p;
+    h+='<div class="card" style="background:'+p.c+'"><div class="big">BOLSA '+p.n+'</div><div class="sub">'+p.t+(pending.test?" (teste)":"")+'</div>';
+    medsOf(p).forEach(function(m){h+='<div class="med">• '+m+'</div>'});
+    h+='<div class="btns"><button id="ok">✅ Tomei tudo</button><button id="no">❌ Não consegui</button></div></div>';
+  }else{
+    h+='<div class="card" style="background:#fff"><div class="sub">Nenhum remédio agora. Quando chegar a hora, a música toca e mostra a cor da bolsa.</div></div>';
+  }
+  $("now").innerHTML=h;
+  if($("ok")){$("ok").onclick=function(){answer(true)};$("no").onclick=function(){answer(false)}}
+}
+function renderNext(){
+  var now=new Date(),cur=now.getHours()*60+now.getMinutes(),arr=POTS.map(function(p){var s=p.t.split(":");var m=+s[0]*60+ +s[1];return {p:p,d:(m-cur+1440)%1440}}).sort(function(a,b){return a.d-b.d}).slice(0,3);
+  $("next").innerHTML=arr.map(function(x){return '<div style="margin:4px 0"><span class="pill" style="background:'+x.p.c+'">'+x.p.t+' — '+x.p.n+'</span></div>'}).join("");
+}
+function renderLog(){
+  var rows=mem.log.slice(-40).reverse().map(function(l){return "<tr><td>"+l.d+"</td><td>"+l.t+" "+l.n+"</td><td>"+(l.ok?"✅ tomou tudo":"❌ não conseguiu")+"</td></tr>"}).join("");
+  $("log").innerHTML=rows?"<table><tr><th>Dia</th><th>Bolsa</th><th>Resultado</th></tr>"+rows+"</table>":"Sem registros ainda.";
+  var by={};mem.log.forEach(function(l){by[l.d]=by[l.d]||{ok:0,no:0,fails:[]};if(l.ok)by[l.d].ok++;else{by[l.d].no++;by[l.d].fails.push(l.t)}});
+  var s="Resumo remédios da Lourdinha:\n";Object.keys(by).forEach(function(d){s+=d+": "+by[d].ok+" ok, "+by[d].no+" não"+(by[d].no?" ("+by[d].fails.join(", ")+")":"")+"\n"});
+  $("sum").textContent=mem.log.length?s:"";
+}
+$("copy").onclick=function(){try{navigator.clipboard.writeText($("sum").textContent)}catch(e){}};
+$("clear").onclick=function(){if(this.dataset.s==="1"){mem.log=[];ls("log","[]");renderLog();this.textContent="Limpar registro";this.dataset.s=""}else{this.dataset.s="1";this.textContent="Toque de novo para confirmar"}};
+setInterval(function(){
+  var d=new Date();$("clock").textContent=hhmm(d);renderNext();
+  var k=dstr(d)+hhmm(d);
+  POTS.forEach(function(p){if(p.t===hhmm(d)&&!fired[k+p.t]){fired[k+p.t]=1;fire(p)}});
+},1000);
+render();renderLog();renderNext();
+(function(){var m=/[?&]p=([0-9:]+)/.exec(location.search);if(m){$("sound").style.display="none";POTS.forEach(function(p){if(p.t===m[1]){fired[dstr(new Date())+hhmm(new Date())+p.t]=1;setTimeout(function(){fire(p)},500)}})}else if(window.AndroidApp!==undefined||/wv/.test(navigator.userAgent)){}})();
+</script>
+</body>
+</html>

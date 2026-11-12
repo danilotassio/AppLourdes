@@ -1,0 +1,7 @@
+COMO GERAR O APK (sem instalar nada no computador)
+1. Crie uma conta/entre em github.com e crie um repositório novo (privado).
+2. Envie todo o conteúdo desta pasta para o repositório (botão "Add file > Upload files", arrastando as pastas; inclua a pasta .github).
+3. Aba "Actions" > "Build APK" > aguarde ~3 min.
+4. Abra a execução concluída > "Artifacts" > baixe "Lourdinha-apk" (zip com app-debug.apk).
+5. Passe o app-debug.apk para o celular e instale (permitir "fontes desconhecidas").
+6. Ao abrir o app: permitir notificações e "alarmes e lembretes". Desligar economia de bateria para o app.

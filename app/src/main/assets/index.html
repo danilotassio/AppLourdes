@@ -25,7 +25,8 @@ table{width:100%;border-collapse:collapse;font-size:18px;background:#fff}
 td,th{border:1px solid #999;padding:6px;text-align:center}
 .pill{display:inline-block;padding:2px 10px;border-radius:10px;font-weight:bold}
 #alarmbar{display:none}
-#callbtn{background:#1e8e3e;width:100%}
+#callbtn{background:#1e8e3e;color:#fff;width:100%;display:flex;align-items:center;justify-content:center;gap:12px;font-size:30px;font-weight:bold;padding:18px 8px;border-radius:16px;text-align:center}
+#callbtn .spk{margin:0;flex:none}
 #confirm,#warn{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;align-items:center;justify-content:center;padding:20px}
 #confirm .box,#warn .box{background:#fff;border-radius:20px;padding:24px;width:100%;text-align:center}
 #confirm .q,#warn .q{font-size:34px;font-weight:bold;margin-bottom:6px}
@@ -45,8 +46,11 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
 .dg h4{margin:0 0 6px;font-size:16px;text-align:center;color:#1F3864}
 .ni{display:flex;align-items:center;justify-content:space-between;margin:5px 0;font-size:16px}
 .ni.past{opacity:.6}
-.ni{flex-wrap:wrap;gap:4px}
-.ni .spk{font-size:20px;padding:4px 10px;margin:0}
+.ni{flex-wrap:nowrap;gap:4px}
+.ni .pill{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;padding:2px 6px}
+.ni input{flex:none}
+.dg{padding:6px}
+.ni .spk{font-size:18px;padding:3px 8px;margin:0;flex:none}
 .ni input{width:24px;height:24px;flex:none;margin-left:6px}
 #pw{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:none;z-index:99;align-items:center;justify-content:center}
 #pw div.b{background:#fff;border-radius:18px;padding:20px;width:85%}
@@ -57,8 +61,8 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
 <div id="top"><div>Remédios da Lourdinha</div><div style="display:flex;align-items:center"><button id="gear">⚙</button><div id="clock">--:--</div></div></div>
 <div id="pw"><div class="b"><div class="sub" id="pwt">Senha</div><input id="pwi" type="password" inputmode="numeric"><div class="btns"><button class="small" id="pwc" style="flex:1">Cancelar</button><button id="pwo" style="background:#1F3864;flex:1;font-size:24px">OK</button></div></div></div>
 <div id="main">
-  <div class="card" style="background:#e8f5e9"><button id="callbtn">📞 Ligar para Anne Filha!</button></div>
-  <div id="confirm"><div class="box"><div class="medrow" style="justify-content:center"><button class="spk" id="spkq">🔊</button><div class="q" style="margin:0">Ligar para Anne Filha?</div></div><div class="btns"><button class="spk" id="spky">🔊</button><button id="callyes" style="background:#1e8e3e">✅ Sim</button><button class="spk" id="spkn">🔊</button><button id="callno" style="background:#c5221f">❌ Não</button></div></div></div>
+  <div class="card" style="background:#e8f5e9"><div id="callbtn" role="button"><span>📞 Ligar para Anne Filha!</span><span class="spk" id="spkcall">🔊</span></div></div>
+  <div id="confirm"><div class="box"><div class="medrow" style="justify-content:center"><div class="q" style="margin:0">Ligar para Anne Filha?</div><button class="spk" id="spkc" style="margin:0 0 0 10px">🔊</button></div><div class="btns"><button id="callyes" style="background:#1e8e3e">✅ Sim</button><button id="callno" style="background:#c5221f">❌ Não</button></div></div></div>
   <div id="warn"><div class="box"><div class="q" id="warnt">Faltam remédios!</div><div id="warnl" style="font-size:26px;margin:10px 0"></div><button id="warnok" style="background:#1F3864;width:100%">OK</button></div></div>
   <div id="outcard" class="card" style="display:none;background:#ffe5e5;border-color:#c5221f"><b style="color:#c5221f;font-size:22px">⚠ Remédios que acabaram</b><div id="outl"></div></div>
   <div id="sound" style="display:none"></div>
@@ -90,8 +94,9 @@ var QT=["Ondansetrona 8 mg — 1 comprimido — enjoo","Metoclopramida — 40 go
 function $(i){return document.getElementById(i)}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
 var passCb=null,passWant="";
-function askPass(want,title,cb){passWant=want;passCb=cb;$("pwt").textContent=title;$("pwi").value="";$("pw").style.display="flex";setTimeout(function(){$("pwi").focus()},100)}
-function passDone(){var v=$("pwi").value;$("pw").style.display="none";if(v===passWant){passCb&&passCb()}else{alert("Senha incorreta")}}
+function askPass(want,title,cb){passWant=want;passCb=cb;$("pwt").textContent=title;$("pwt").style.color="";$("pwi").value="";$("pw").style.display="flex";setTimeout(function(){$("pwi").focus()},100)}
+function passDone(){var v=$("pwi").value;if(v===passWant){$("pw").style.display="none";passCb&&passCb()}else{$("pwt").textContent="Senha incorreta";$("pwt").style.color="#c5221f";$("pwi").value="";$("pwi").focus()}}
+function aviso(t){$("warnt").textContent=t;$("warnl").innerHTML="";$("warn").style.display="flex"}
 var mem={log:[],qt:false};
 try{mem.log=JSON.parse(ls("log")||"[]");mem.qt=ls("qt")==="1"}catch(e){}
 $("qt").checked=mem.qt;
@@ -242,7 +247,7 @@ function render(){
     h+='<div class="card" style="background:#fff"><div class="medrow" style="margin:0"><button class="spk" id="spkidle">🔊</button><div class="sub" id="idletxt" style="flex:1;margin:0;font-weight:bold">'+IDLE+'</div></div></div>';
   }
   $("now").innerHTML=h;
-  if($("spkidle"))$("spkidle").onclick=function(){dizer(IDLE)};
+  if($("spkidle"))$("spkidle").onclick=function(){dizer(IDLE+" Beleza, Lourdinha!")};
   if(pending){var ms=medsOf(pending.p);Array.prototype.forEach.call(document.querySelectorAll("#now .spk[data-k]"),function(b){b.onclick=function(){dizer(medSay(ms[+b.dataset.k]))}})}
   if(pending){
     Array.prototype.forEach.call(document.querySelectorAll(".tk,.ac"),function(b){b.onclick=function(){
@@ -287,6 +292,17 @@ function resTxt(l){
   var yes=nm(l.m,function(m){return m.ok}),ac=nm(l.m,function(m){return m.a}),no=nm(l.m,function(m){return !m.ok&&!m.a});
   return (no?"⚠ parcial":"✅ tomou tudo")+'<div style="font-size:14px;text-align:left">'+(yes?"✅ "+yes:"")+(ac?"<br>🟥 Acabou: "+ac:"")+(no?"<br>❌ "+no:"")+"</div>";
 }
+function plainRes(l){
+  if(l.ok===false)return "❌ não conseguiu";
+  if(l.ok!==true)return "⏰ sem resposta";
+  if(!l.m)return "✅ tomou tudo";
+  var yes=nm(l.m,function(m){return m.ok}),ac=nm(l.m,function(m){return m.a}),no=nm(l.m,function(m){return !m.ok&&!m.a});
+  return (no?"⚠ parcial":"✅ tomou tudo")+(yes?"\n✅ "+yes:"")+(ac?"\n🟥 Acabou: "+ac:"")+(no?"\n❌ "+no:"");
+}
+function logText(data){
+  var rows=data.slice(-40).reverse();if(!rows.length)return "";
+  return "*Registro da semana — Remédios da Lourdinha*\n\n"+rows.map(function(l){return "*"+l.d+" · "+l.t+" "+l.n+"*\n"+plainRes(l)}).join("\n\n");
+}
 function renderLog(){
   var data=getLogData();var rows=data.slice(-40).reverse().map(function(l){return "<tr><td>"+l.d+"</td><td>"+l.t+" "+l.n+"</td><td>"+resTxt(l)+"</td></tr>"}).join("");
   $("log").innerHTML=rows?"<table><tr><th>Dia</th><th>Bolsa</th><th>Resultado</th></tr>"+rows+"</table>":"Sem registros ainda.";
@@ -294,15 +310,16 @@ function renderLog(){
   var s="Resumo remédios da Lourdinha:\n";Object.keys(by).forEach(function(d){s+=d+": "+by[d].ok+" ok, "+by[d].no+" não"+(by[d].no?" ("+by[d].fails.join(", ")+")":"")+(by[d].miss.length?" | não tomou: "+by[d].miss.join(", "):"")+(by[d].ac.length?" | acabou: "+by[d].ac.join(", "):"")+"\n"});
   $("sum").textContent=data.length?s:"";
 }
-var ANNE_TEL="81999999999"; // TODO: trocar pelo número real da Anne (DDD + número)
+var ANNE_TEL="81996739556";
 $("callbtn").onclick=function(){$("confirm").style.display="flex"};
+$("spkcall").onclick=function(e){e.stopPropagation();dizer("Ligar para Anne Filha")};
 $("nextbtn").onclick=showNext;
 $("warnok").onclick=function(){$("warn").style.display="none";silenciar()};
-$("spkq").onclick=function(){dizer("Ligar para Anne Filha?")};$("spky").onclick=function(){dizer("Sim")};$("spkn").onclick=function(){dizer("Não")};
+$("spkc").onclick=function(){dizer("Ligar para Anne Filha. Sim, toque no botão verde. Não, toque no botão vermelho.")};
 $("callno").onclick=function(){$("confirm").style.display="none"};
 $("callyes").onclick=function(){$("confirm").style.display="none";if(window.Android&&Android.ligar){Android.ligar(ANNE_TEL)}else{alert("Protótipo: ligaria para "+ANNE_TEL)}};
 $("copy").onclick=function(){
-  var t=$("sum").textContent;if(!t){alert("Sem registros para enviar.");return}
+  var t=logText(getLogData());if(!t){aviso("Sem registros para enviar.");return}
   if(NATIVE){Android.share(t);return}
   try{navigator.clipboard.writeText(t)}catch(e){}
   try{window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}catch(e){}
@@ -317,9 +334,9 @@ render();renderLog();renderNext();renderOut();
 (function(){
   if(NATIVE){
     $("sound").style.display="none";
-    var pc=document.createElement("div");pc.className="card";pc.style.background="#fff";
+    var pc=document.createElement("div");pc.style.cssText="margin-top:10px;padding-top:10px;border-top:2px solid #ccc";
     pc.innerHTML='<b style="font-size:22px">Permissões (fazer uma vez)</b><div style="font-size:17px;margin:6px 0">Toque em cada botão e permita:</div><div class="row"><button class="small" id="pn">1) Notificações</button><button class="small" id="pt">2) Tela cheia</button><button class="small" id="pb">3) Bateria sem restrição</button></div>';
-    $("main").insertBefore(pc,$("now"));
+    $("adm").appendChild(pc);
     $("pn").onclick=function(){Android.openSetting("notif")};
     $("pt").onclick=function(){Android.openSetting("tela")};
     $("pb").onclick=function(){Android.openSetting("bateria")};

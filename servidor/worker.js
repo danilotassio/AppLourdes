@@ -38,7 +38,7 @@ async function fanout(env, k, list, except, data, only) {
 
 export default {
   async fetch(req, env) {
-    if (req.method !== "POST") return J({ ok: true });
+    if (req.method !== "POST") return J({ ok: true, versao: "2026-11-13", rotas: ["reg","unreg","send","state","get","cfgset","cfgget","care","prof","profs","locreq"] });
     const url = new URL(req.url);
     let b; try { b = await req.json(); } catch (e) { return J({ erro: "json" }, 400); }
     if (!okCode(b.c)) return J({ erro: "codigo" }, 400);

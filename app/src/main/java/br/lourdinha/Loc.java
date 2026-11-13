@@ -13,10 +13,11 @@ public class Loc {
     public static boolean on(Context c){
         try { return new JSONObject(LogStore.sp(c).getString("cfg", "{}")).optBoolean("loc", false); } catch (Throwable e) { return false; }
     }
-    public static boolean allowed(Context c){ return c.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED; }
+    public static boolean allowed(Context c){ return c.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || c.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED; }
     /** Devolve " Local: https://maps.google.com/?q=lat,lon" ou "" se desligado/indisponivel. */
     public static String link(Context c){
         try {
+            if (!LogStore.sp(c).contains("cfg")) Push.cfgFetchNow(c);
             if (!on(c) || !allowed(c)) return "";
             LocationManager lm = (LocationManager) c.getSystemService(Context.LOCATION_SERVICE);
             Location best = null;

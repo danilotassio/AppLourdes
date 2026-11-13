@@ -535,7 +535,7 @@ function answer(ok){
   pending=null;render();renderLog();if(ok&&pp)showCongrats(pp);
 }
 var MEALS=[
- {n:"CAFÉ DA MANHÃ",t:"06:15",ic:"☀️",e:"🍞🧀🍌🍎🍊🥣🥛",x:"Pão, frutas, iogurte e café com leite",img:"cafe.jpg",wake:"Bom dia, Lourdinha! Hora do café da manhã!",q:"Lourdinha, você tomou o café da manhã mesmo?",qs:"Tomou o café da manhã mesmo?",no:"Mas Lourdinha, não tomou café ainda. Força Lourdinha, bora tomar um café.",fim:"Registrado: não tomou o café da manhã."},
+ {n:"CAFÉ DA MANHÃ",t:"06:15",ic:"☀️",e:"🍞🧀🍌🍎🍊🥣🥛",x:"Pão, frutas, iogurte e café com leite",img:"cafe.jpg",wake:"Bom dia, Lourdinha! Hora do café da manhã!",q:"Lourdinha, você tomou o café da manhã mesmo?",qs:"Tomou o café da manhã mesmo?",no:"Mas Lourdinha, ainda não comeu? Vamos lá fazer um rango, você é forte.",fim:"Registrado: não tomou o café da manhã."},
  {n:"ALMOÇO",t:"13:00",ic:"🍽️",e:"🍚🍛🍗🥗🥦🍊",x:"Arroz, feijão, carne ou frango, salada e legumes",img:"almoco.jpg",wake:"Boa tarde, Lourdinha! Hora do almoço!",q:"Lourdinha, você almoçou mesmo?",qs:"Almoçou mesmo?",no:"Mas Lourdinha, não almoçou ainda. Força Lourdinha, bora almoçar.",fim:"Registrado: não almoçou."},
  {n:"JANTA",t:"19:00",ic:"🌙",e:"🍲🥗🍞🍎🥛",x:"Sopa, pão, frutas e iogurte",img:"janta.jpg",wake:"Boa noite, Lourdinha! Hora da janta!",q:"Lourdinha, você jantou mesmo?",qs:"Jantou mesmo?",no:"Mas Lourdinha, não jantou ainda. Força Lourdinha, bora jantar.",fim:"Registrado: não jantou."}
 ];
@@ -1164,12 +1164,21 @@ function tabAv(){
   var a=[];try{a=JSON.parse(NATIVE&&Android.getAlerts?Android.getAlerts():"[]")}catch(e){}
   if(!a.length)return empty("🌿 Nenhum aviso por enquanto");
   var h="",last="";a.forEach(function(x){var d=new Date(x.ts),ds=dstr(d);if(ds!==last){h+='<div class="dh">'+dlabel(d)+'</div>';last=ds}var k=kindOf(x.body);h+=card(KIC[k],cMsg(x.body)+(k==="sintoma"?'<br><button class="callnow" onclick="cuidCall('+x.ts+',\''+callTxt(x.body)+'\')">📞 Ligar agora para a Lourdinha</button>':""),"k-"+k+(k==="sintoma"||k==="remedio"?" bad":""),hhmm(d))});return h}
+function alertsList(){var a=[];try{a=JSON.parse(NATIVE&&Android.getAlerts?Android.getAlerts():"[]")}catch(e){}return a}
 function tabAl(){
-  var st=remState(),h="",out=st.out||[],low=st.low||[],sint=(st.sint||[]).slice(-1)[0];
-  h+=card(out.length?"⚠️":"✅",'<b>'+(out.length?"Remédios que acabaram":"Nenhum remédio acabou")+'</b>'+(out.length?out.map(cEsc).join(", "):""),out.length?"bad":"good");
-  h+=card(low.length?"📉":"✅",'<b>'+(low.length?"Estoque baixo (menos de 10 doses)":"Estoque em dia")+'</b>'+low.map(function(x){return cEsc(x.k)+': '+x.v+(x.v===1?" dose":" doses")+' · cerca de '+x.d+(x.d===1?" dia":" dias")}).join("<br>"),low.length?"bad":"good");
+  var st=remState(),h="",hasSt=!!st.ts||!!(st.out||st.low||st.sint),al=alertsList(),out=st.out||[],low=st.low||[],sint=(st.sint||[]).slice(-1)[0];
   var nm={bem:"😊 Bem",enjoo:"🤢 Enjoo",dor:"🤕 Dor",tontura:"😵 Tontura"};
+  // último estado informado também pelos avisos recebidos (não depende da sincronização)
+  var fa=null;al.forEach(function(x){var t=String(x.body).toLowerCase(),m=t.match(/registrou (dor|enjoo|tontura) agora/),k=m?m[1]:(/esta bem/.test(t)?"bem":null);if(k&&(!fa||x.ts>fa.ts))fa={k:k,ts:x.ts}});
+  if(fa&&(!sint||fa.ts>sint.ts))sint=fa;
+  var buy=null;al.forEach(function(x){var m=String(x.body).match(/para comprar:\s*(.*?)\.?\s*$/i);if(m&&(!buy||x.ts>buy.ts))buy={t:m[1],ts:x.ts}});
+  if(!hasSt&&buy){h+=card("⚠️",'<b>Remédios para comprar</b>'+cEsc(buy.t)+'<br><span style="opacity:.7">aviso de '+dstr(new Date(buy.ts))+' '+hhmm(new Date(buy.ts))+'</span>',"bad")}
+  else{
+    h+=card(out.length?"⚠️":"✅",'<b>'+(out.length?"Remédios que acabaram":"Nenhum remédio acabou")+'</b>'+(out.length?out.map(cEsc).join(", "):""),out.length?"bad":"good");
+    h+=card(low.length?"📉":"✅",'<b>'+(low.length?"Estoque baixo (menos de 10 doses)":"Estoque em dia")+'</b>'+low.map(function(x){return cEsc(x.k)+': '+x.v+(x.v===1?" dose":" doses")+' · cerca de '+x.d+(x.d===1?" dia":" dias")}).join("<br>"),low.length?"bad":"good");
+  }
   h+=card("💬",'<b>Como a Lourdinha está</b>'+(sint?(nm[sint.k]||sint.k)+' · '+dstr(new Date(sint.ts))+' '+hhmm(new Date(sint.ts)):"Sem resposta ainda."),sint&&sint.k!=="bem"?"warn":"good");
+  if(!hasSt)h+='<div class="empty" style="padding:10px 6px">⏳ Ainda sem a sincronização completa da Lourdinha. Toque em 🔄. Se continuar assim, o servidor (Cloudflare) precisa ser atualizado.</div>';
   return h}
 function tabHr(){
   var st=remState(),log=st.week||[],now=nowD(),occ=[];
@@ -1232,7 +1241,7 @@ $("csync").onclick=function(){
   var b=$("csync");if(b.classList.contains("spin"))return;b.classList.add("spin");
   var antes=(remState().ts)||0;
   if(NATIVE){try{Android.refreshState&&Android.refreshState();Android.fetchProfs&&Android.fetchProfs();Android.sendProfile&&Android.sendProfile()}catch(e){}}
-  syncProgress(function(){b.classList.remove("spin");paintCuid();var t=(remState().ts)||0;cToast(!t?"Ainda sem dados da Lourdinha":t>antes?"✔ Sincronizado":"✔ Já estava atualizado ("+hhmm(new Date(t))+")")});
+  syncProgress(function(){b.classList.remove("spin");paintCuid();var t=(remState().ts)||0;cToast(!t?"Sem dados da Lourdinha. Confira o servidor Cloudflare":t>antes?"✔ Sincronizado":"✔ Já estava atualizado ("+hhmm(new Date(t))+")")});
 };
 $("ccall").onclick=function(){if(precisaNome())return;dial()};
 window.cuidCall=function(ts,txt){if(precisaNome())return;if(NATIVE&&Android.careCall)Android.careCall(cNome(),"a"+ts,txt);dial()};
@@ -1252,7 +1261,9 @@ function gMove(x,y){if(!cur)return;var q=cur[cur.length-1];cur.push([x,y]);if(cx
 function gEnd(){if(!cur)return;var sh=shapeOf(cur);cur=null;setTimeout(function(){if(cx)cx.clearRect(0,0,cv.width,cv.height)},250);
   var n=Date.now();if(sh==="L"){seqL=n}else if(sh==="U"&&n-seqL<4000){seqL=0;openSecGate()}}
 function openSecGate(){askPass("1989","Senha das definições secretas",openSec)}
-function openSec(){secTab("loc");$("slocal").checked=(function(){try{return !!JSON.parse(NATIVE&&Android.getCfg?Android.getCfg():ls("cfg")||"{}").loc}catch(e){return false}})();$("csec").style.display="flex"}
+function normNome(t){return String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s+/g," ").trim()}
+function ehDanilo(){return normNome(cNome())==="danilo tassio"}
+function openSec(){$("st_cui").style.display=ehDanilo()?"":"none";secTab("loc");$("slocal").checked=(function(){try{return !!JSON.parse(NATIVE&&Android.getCfg?Android.getCfg():ls("cfg")||"{}").loc}catch(e){return false}})();$("csec").style.display="flex"}
 document.addEventListener("touchstart",function(e){var t=e.touches[0];gStart(t.clientX,t.clientY)},{passive:true});
 document.addEventListener("touchmove",function(e){var t=e.touches[0];gMove(t.clientX,t.clientY)},{passive:true});
 document.addEventListener("touchend",gEnd,{passive:true});document.addEventListener("touchcancel",gEnd,{passive:true});

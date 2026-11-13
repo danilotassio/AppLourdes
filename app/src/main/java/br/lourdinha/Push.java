@@ -83,26 +83,29 @@ public class Push {
     public static void cfgSet(Context c, String json){
         try { String code = code(c); if (!valid(code) || json == null || json.length() > 2000) return; post("/cfgset", new JSONObject().put("c", code).put("d", json)); } catch (Throwable e) {}
     }
-    /** Lourdinha: busca as definicoes secretas e guarda em "cfg". */
-    public static void cfgFetch(Context c, Runnable done){
+    /** Lourdinha: busca as definicoes secretas e guarda em "cfg" (bloqueia; usar fora da thread principal). */
+    public static boolean cfgFetchNow(Context c){
         final String code = code(c);
-        if (!valid(code) || !"lourdinha".equals(mode(c))) return;
-        new Thread(() -> {
-            try {
-                HttpURLConnection h = (HttpURLConnection) new URL(BASE + "/cfgget").openConnection();
-                h.setRequestMethod("POST"); h.setConnectTimeout(8000); h.setReadTimeout(8000); h.setDoOutput(true);
-                h.setRequestProperty("content-type", "application/json");
-                try (OutputStream os = h.getOutputStream()) { os.write(new JSONObject().put("c", code).toString().getBytes("UTF-8")); }
-                if (h.getResponseCode() < 400) {
-                    java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream(); byte[] b = new byte[2048]; int n;
-                    java.io.InputStream in = h.getInputStream();
-                    while ((n = in.read(b)) > 0) bo.write(b, 0, n);
-                    String d = new JSONObject(bo.toString("UTF-8")).optString("d", "");
-                    if (!d.isEmpty()) { new JSONObject(d); LogStore.sp(c).edit().putString("cfg", d).apply(); if (done != null) done.run(); }
-                }
-                h.disconnect();
-            } catch (Throwable e) {}
-        }).start();
+        if (!valid(code) || !"lourdinha".equals(mode(c))) return false;
+        try {
+            HttpURLConnection h = (HttpURLConnection) new URL(BASE + "/cfgget").openConnection();
+            h.setRequestMethod("POST"); h.setConnectTimeout(8000); h.setReadTimeout(8000); h.setDoOutput(true);
+            h.setRequestProperty("content-type", "application/json");
+            try (OutputStream os = h.getOutputStream()) { os.write(new JSONObject().put("c", code).toString().getBytes("UTF-8")); }
+            boolean ok = false;
+            if (h.getResponseCode() < 400) {
+                java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream(); byte[] b = new byte[2048]; int n;
+                java.io.InputStream in = h.getInputStream();
+                while ((n = in.read(b)) > 0) bo.write(b, 0, n);
+                String d = new JSONObject(bo.toString("UTF-8")).optString("d", "");
+                if (!d.isEmpty()) { new JSONObject(d); LogStore.sp(c).edit().putString("cfg", d).apply(); ok = true; }
+            }
+            h.disconnect();
+            return ok;
+        } catch (Throwable e) { return false; }
+    }
+    public static void cfgFetch(Context c, Runnable done){
+        new Thread(() -> { if (cfgFetchNow(c) && done != null) done.run(); }).start();
     }
     /** Cuidador: avisa os demais cuidadores que ele esta ligando (so o primeiro dispara no servidor). */
     public static void care(Context c, String nome, String ref, String txt){

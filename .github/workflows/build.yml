@@ -26,5 +26,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp app/build/outputs/apk/debug/app-debug.apk Lourdinha.apk
-          gh release delete apk-layout --cleanup-tag --yes || true
-          gh release create apk-layout Lourdinha.apk --title "Lourdinha - APK layout moderno" --notes "Build de ${{ github.sha }}" --target ${{ github.sha }}
+          gh release delete apk-latest --cleanup-tag --yes || true
+          gh release create apk-latest Lourdinha.apk --title "Lourdinha - APK mais recente" --notes "Build de ${{ github.sha }}" --target ${{ github.sha }}

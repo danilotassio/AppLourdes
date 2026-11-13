@@ -146,6 +146,36 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void notifySms(String msg){
             try { if (msg != null && msg.length() > 0 && Sms.on(MainActivity.this)) Sms.send(MainActivity.this, msg); } catch (Throwable e) {}
         }
+        @JavascriptInterface public String getMode(){ return Push.mode(MainActivity.this); }
+        @JavascriptInterface public void setMode(String m){
+            if (!"lourdinha".equals(m) && !"cuidador".equals(m)) return;
+            android.content.SharedPreferences.Editor e = LogStore.sp(MainActivity.this).edit().putString("mode", m);
+            if ("lourdinha".equals(m) && !Push.valid(Push.code(MainActivity.this))) e.putString("pair", Push.newCode());
+            e.apply();
+            if ("cuidador".equals(m)) runOnUiThread(() -> { if (Build.VERSION.SDK_INT >= 33) requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1); });
+            else Scheduler.scheduleAll(MainActivity.this);
+        }
+        @JavascriptInterface public String getPairCode(){ return Push.code(MainActivity.this); }
+        @JavascriptInterface public String setPairCode(String c){
+            c = c == null ? "" : c.trim();
+            if (!Push.valid(c)) return "erro";
+            LogStore.sp(MainActivity.this).edit().putString("pair", c).apply();
+            Push.register(MainActivity.this);
+            return "ok";
+        }
+        @JavascriptInterface public String getAlerts(){ return LogStore.sp(MainActivity.this).getString("alerts", "[]"); }
+        @JavascriptInterface public String takeNew(){
+            String n = LogStore.sp(MainActivity.this).getString("alertNew", "");
+            if (!n.isEmpty()) LogStore.sp(MainActivity.this).edit().remove("alertNew").apply();
+            return n;
+        }
+        @JavascriptInterface public void clearAlerts(){ LogStore.sp(MainActivity.this).edit().remove("alerts").remove("alertNew").apply(); }
+        @JavascriptInterface public void notifyFixed(String msg){
+            try { if (msg != null && msg.length() > 0) Sms.sendFixed(MainActivity.this, msg); } catch (Throwable e) {}
+        }
+        @JavascriptInterface public void setBuy(String txt){
+            try { LogStore.sp(MainActivity.this).edit().putString("buy", txt == null ? "" : txt).apply(); } catch (Throwable e) {}
+        }
         @JavascriptInterface public void symptom(String k){
             try {
                 if (k == null || !k.matches("[a-z]{2,10}")) return;
@@ -154,6 +184,7 @@ public class MainActivity extends Activity {
                 org.json.JSONArray b = new org.json.JSONArray();
                 for (int i = Math.max(0, a.length() - 500); i < a.length(); i++) b.put(a.get(i));
                 LogStore.sp(MainActivity.this).edit().putString("sintn", b.toString()).apply();
+                if (k.equals("bem") && Sms.on(MainActivity.this)) Sms.send(MainActivity.this, "AppLourdinha: a Lourdinha registrou que esta BEM agora (" + new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(new java.util.Date()) + ").");
                 String nome = k.equals("enjoo") ? "ENJOO" : k.equals("dor") ? "DOR" : k.equals("tontura") ? "TONTURA" : "";
                 if (!nome.isEmpty() && Sms.on(MainActivity.this)) Sms.send(MainActivity.this, "AppLourdinha: a Lourdinha registrou " + nome + " agora (" + new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(new java.util.Date()) + "). Por favor, entre em contato.");
             } catch (Throwable e) {}

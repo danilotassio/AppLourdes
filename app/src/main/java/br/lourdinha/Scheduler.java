@@ -90,7 +90,7 @@ public class Scheduler {
         PendingIntent spi = PendingIntent.getActivity(c, 200 + i, new Intent(c, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         try { ((AlarmManager) c.getSystemService(Context.ALARM_SERVICE)).setAlarmClock(new AlarmManager.AlarmClockInfo(System.currentTimeMillis() + delay, spi), pi); } catch (Throwable e) {}
     }
-    public static void scheduleAll(Context c){ try { Watch.schedule(c); } catch (Throwable e) {} scheduleReminders(c); if (mealsOn(c)) { for (int m = 0; m < MEAL_TIME.length; m++) { try { scheduleMeal(c, m); } catch (Throwable e) {} } } else cancelMeals(c); for (int i = 0; i < TIMES.length; i++) { try { schedule(c, i); } catch (Throwable e) {} } }
+    public static void scheduleAll(Context c){ if ("cuidador".equals(LogStore.sp(c).getString("mode", ""))) return; try { Watch.schedule(c); } catch (Throwable e) {} scheduleReminders(c); if (mealsOn(c)) { for (int m = 0; m < MEAL_TIME.length; m++) { try { scheduleMeal(c, m); } catch (Throwable e) {} } } else cancelMeals(c); for (int i = 0; i < TIMES.length; i++) { try { schedule(c, i); } catch (Throwable e) {} } }
     public static void schedule(Context c, int i){
         String[] p = TIMES[i].split(":");
         Calendar cal = Calendar.getInstance();

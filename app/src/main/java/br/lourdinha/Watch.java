@@ -44,6 +44,12 @@ public class Watch {
                     if (sent(c, "AppLourdinha: sem sinal de vida. O celular da Lourdinha nao e usado nem respondido ha " + horas + " horas. Por favor, verifique.")) sp.edit().putLong("lifeSent", now).apply();
                 }
             } catch (Throwable e) {}
+            // 2b) remedios para comprar: lembrete por SMS a cada 2 horas enquanto houver pendencia
+            try {
+                String buy = sp.getString("buy", "");
+                if (buy.isEmpty()) sp.edit().putLong("buySent", 0).apply();
+                else if (now - sp.getLong("buySent", 0) >= 2L * 3600000L - 60000L && sent(c, "AppLourdinha: remedios para comprar: " + buy + ".")) sp.edit().putLong("buySent", now).apply();
+            } catch (Throwable e) {}
             Calendar cal = Calendar.getInstance();
             SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             // 3) lembrete de consulta e exames (2 dias antes)

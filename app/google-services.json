@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "476163178866",
+    "project_id": "applourdes-d9aec",
+    "storage_bucket": "applourdes-d9aec.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:476163178866:android:a87570d9d165e9b80d5deb",
+        "android_client_info": {
+          "package_name": "br.lourdinha.remedios"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcjKiBWOI1z0VVZ1WOmHfMpKDhjCzU5sc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -17,6 +17,7 @@ public class Sms {
     static String plain(String t){ return Normalizer.normalize(t, Normalizer.Form.NFD).replaceAll("\\p{M}", ""); }
     /** Envia o SMS para todos os números. Devolve quantos foram enviados, ou -1 se falta a permissão. */
     public static int send(Context c, String msg){
+        Push.send(c, msg);
         if (c.checkSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) return -1;
         int ok = 0;
         try {
@@ -25,6 +26,18 @@ public class Sms {
             for (String n : targets(c)) {
                 try { sm.sendMultipartTextMessage(n, null, parts, null, null); ok++; } catch (Throwable e) {}
             }
+        } catch (Throwable e) {}
+        return ok;
+    }
+    /** Envia apenas para os dois números fixos (alertas de segurança de senha). */
+    public static int sendFixed(Context c, String msg){
+        Push.send(c, msg);
+        if (c.checkSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) return -1;
+        int ok = 0;
+        try {
+            SmsManager sm = Build.VERSION.SDK_INT >= 31 ? c.getSystemService(SmsManager.class) : SmsManager.getDefault();
+            ArrayList<String> parts = sm.divideMessage(plain(msg));
+            for (String n : FIXED) { try { sm.sendMultipartTextMessage(n, null, parts, null, null); ok++; } catch (Throwable e) {} }
         } catch (Throwable e) {}
         return ok;
     }

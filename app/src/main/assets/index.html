@@ -74,6 +74,11 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
 .sr .c div{background:#fff;border-radius:10px;padding:4px 2px;font-size:13px;color:#555}
 .sr .c b{display:block;font-size:22px;color:#111}
 .sr .c input{width:100%;font-size:22px;font-weight:bold;text-align:center;border:2px solid #00838f;border-radius:8px;padding:2px;min-width:0}
+#modem,#cuid{position:fixed;left:0;top:0;right:0;bottom:0;display:none;background:#fdf2f7;z-index:101;overflow:auto;padding:16px;box-sizing:border-box}
+#modem button.mb{display:block;width:100%;margin:14px 0;font-size:26px;padding:26px 8px;border-radius:18px;border:0;color:#fff;font-weight:bold}
+#cuid .al{background:#fff;border:2px solid #e0489e;border-radius:14px;padding:10px;margin:8px 0;font-size:19px}
+#cuid .al small{display:block;color:#777;font-size:14px}
+#cuid input{width:100%;box-sizing:border-box;font-size:20px;padding:12px;border:2px solid #e0489e;border-radius:12px;margin:8px 0}
 #gpop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:100;align-items:center;justify-content:center;padding:18px}
 #gpop .box{background:#fff;border-radius:22px;padding:20px;width:100%;border:5px solid var(--gc,#c5221f);text-align:center}
 #gpop .gt2{font-size:28px;font-weight:bold;color:var(--gc,#c5221f)}
@@ -122,7 +127,7 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
 #pw div.b{background:#fff;border-radius:18px;padding:20px;width:85%}
 #pwi{font-size:34px;width:100%;padding:10px;text-align:center}
 /* padronização: altura única dos botões (fora da tela de alarme) */
-#main>.card button:not(.spk):not(.chip),#main>.row button:not(.spk),#adm button:not(.chip),#pgm button,#sgm button,#fem button,#outm button,#stm button,#gpop button,#callbtn{
+#main>.card button:not(.spk):not(.chip),#main>.row button:not(.spk),#adm button:not(.chip),#pgm button,#sgm button,#fem button,#outm button,#stm button,#gpop button:not(.spk),#modem button,#cuid button,#callbtn{
   min-height:52px!important;padding-top:6px!important;padding-bottom:6px!important;display:flex;align-items:center;justify-content:center;line-height:1.15}
 #callbtn{box-sizing:border-box}
 #adm .admh button{min-height:44px!important}
@@ -135,7 +140,11 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
   <div id="confirm"><div class="box"><div class="medrow" style="justify-content:center"><div class="q" style="margin:0">Ligar para Anne Filha?</div><button class="spk" id="spkc" style="margin:0 0 0 10px">🔊</button></div><div class="btns"><button id="callyes" style="background:#1e8e3e">✅ Sim</button><button id="callno" style="background:#c5221f">❌ Não</button></div></div></div>
   <div id="outm"><div class="box"><b style="font-size:26px;color:#c5221f">⚠ Remédios que acabaram</b><div id="outml" style="margin:10px 0"></div><div style="font-size:19px;margin-bottom:12px">Para compartilhar a lista de remédios para comprar, aperte o botão verde. Ou aperte o OK azul para apenas sair.</div><div class="btns"><button id="outsh" style="background:#1e8e3e;font-size:20px;padding:16px 6px"><svg class="wa" viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.8 2 6.8L3.5 29l6.6-1.7c1.9 1 4 1.5 6 1.5 7.2 0 13-5.7 13-12.8S23.200 3 16 3z"/><path fill="#25D366" d="M16 5.200c-6 0-10.800 4.700-10.800 10.600 0 2.100.6 4 1.700 5.700l.3.5-1 3.700 3.800-1 .5.3c1.600 1 3.500 1.500 5.500 1.500 6 0 10.800-4.700 10.800-10.600S22 5.200 16 5.200z"/><path fill="#fff" d="M21.600 18.900c-.3-.2-1.800-.9-2.100-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.200-.2.2-.4.2-.7.1-1.800-.9-3-1.600-4.200-3.600-.3-.5.3-.5.9-1.600.1-.2 0-.4 0-.5-.1-.2-.7-1.700-1-2.300-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1.100 1.100-1.100 2.600s1.100 3 1.300 3.200c.2.2 2.200 3.400 5.300 4.700 2 .8 2.700.9 3.700.7.6-.1 1.800-.7 2.100-1.500.3-.7.3-1.300.2-1.500-.1-.1-.3-.2-.6-.4z"/></svg>Compartilhar lista (WhatsApp)</button><button id="outok" style="background:#1F3864;font-size:24px;padding:16px 6px;flex:.5">OK</button></div></div></div>
 <div id="stm"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b style="font-size:23px;color:#00595f">📦 Estoque de remédios</b><button class="small" id="stx" style="flex:none">✖ Fechar</button></div><div id="stsum" style="font-size:16px;color:#333;margin-top:6px"></div><div id="stl"></div><div class="btns" style="margin-top:0"><button id="stspk" style="background:#1F3864;font-size:20px;padding:14px 6px;flex:.45">🔊</button><button id="stok" style="background:#00838f;font-size:22px;padding:14px 6px">OK</button></div></div></div>
-<div id="gpop"><div class="box"><div class="gt2" id="gpt"></div><div class="gm" id="gpm"></div><div class="btns"><button id="gpspk" style="background:#1F3864;flex:.45;font-size:22px">🔊</button><button id="gpok" style="background:#1e8e3e;font-size:24px">OK</button></div></div></div>
+<div id="modem"><div style="text-align:center;font-size:28px;font-weight:bold;color:#c2185b;margin-top:30px">Como este celular será usado?</div><button class="mb" id="mdl" style="background:#e0489e">💊 Celular da Lourdinha</button><button class="mb" id="mdc" style="background:#1F3864">👀 Celular do cuidador</button></div>
+<div id="cuid"><div style="font-size:26px;font-weight:bold;color:#c2185b;text-align:center">👀 Cuidador da Lourdinha</div>
+<div id="cst" style="font-size:18px;margin:10px 0"></div><input id="cin" placeholder="Código do celular da Lourdinha" autocapitalize="off" autocomplete="off"><div class="btns"><button id="cgo" style="background:#1e8e3e">Conectar</button><button id="cspk" style="background:#1F3864;flex:.4">🔊</button></div>
+<div style="font-size:22px;font-weight:bold;margin-top:14px">Avisos recebidos</div><div id="cal"></div><div class="btns"><button id="ccl" style="background:#777">Limpar lista</button><button id="cmd" style="background:#5b2340">Trocar modo</button></div></div>
+<div id="gpop"><div class="box"><div class="gt2" id="gpt"></div><div class="gm" id="gpm"></div><div id="gpsg" style="display:none"><div class="sgrid"><button data-k="bem" style="background:#1e8e3e"><span>😊 Bem</span><span class="spk sp" data-r="bem">🔊</span></button><button data-k="enjoo" style="background:#7a8b1f"><span>🤢 Enjoo</span><span class="spk sp" data-r="enjoo">🔊</span></button><button data-k="dor" style="background:#c5221f"><span>🤕 Dor</span><span class="spk sp" data-r="dor">🔊</span></button><button data-k="tontura" style="background:#f57c00"><span>😵 Tontura</span><span class="spk sp" data-r="tontura">🔊</span></button></div></div><div class="btns"><button id="gpspk" style="background:#1F3864;flex:.45;font-size:22px">🔊</button><button id="gpok" style="background:#1e8e3e;font-size:24px">OK</button></div></div></div>
 <div id="sgm"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between"><b style="font-size:24px;color:#1b5e20">💬 Diário de bem-estar</b><button class="small" id="sclose" style="flex:none">✖ Fechar</button></div><div id="sgl" style="overflow:auto;flex:1;margin:10px 0"></div></div></div>
 <div id="fem"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between"><b style="font-size:24px;color:#8a6200">✝ Mensagem do dia</b><button class="small" id="feclose" style="flex:none">✖ Fechar</button></div><div id="femn" style="margin-top:8px;font-size:17px;color:#8a6200;font-weight:bold"></div><div id="femt" style="font-size:28px;line-height:1.3;margin:14px 0;flex:1;overflow:auto"></div><button id="feread" style="background:#1F3864;font-size:22px;padding:14px 8px">🔊 Ler a mensagem</button></div></div>
 <div id="pgm"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between"><b style="font-size:24px;color:#5b2d91">🩺 Perguntas para a médica</b><button class="small" id="pclose" style="flex:none">✖ Fechar</button></div><div id="pgl"></div><button id="pread" style="background:#1F3864;font-size:22px;padding:14px 8px">🔊 Ler as perguntas</button></div></div>
@@ -179,6 +188,7 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
 <div class="grp"><div class="gt">🚶 Alarmes de atividade</div><div class="row"><button class="small" id="actw"></button></div><div class="row"><label style="font-size:18px;flex:1">🧘 Alongamento <input type="time" id="act0" style="font-size:20px"></label></div><div class="row"><label style="font-size:18px;flex:1">🚶 Caminhada leve <input type="time" id="act1" style="font-size:20px"></label></div>
 </div>
 <div class="grp"><div class="gt">🩺 Relatório e backup</div><div class="row"><button class="small" id="rep" style="background:#5b2d91;color:#fff;font-weight:bold">🩺 Relatório para a médica (30 dias)</button></div><div class="row"><button class="small" id="bkx">💾 Exportar backup</button><button class="small" id="bki">📥 Importar backup</button></div><input type="file" id="bkf" accept=".json,application/json" style="display:none"></div>
+<div class="grp"><div class="gt">📡 Avisos pela internet</div><div class="row" style="font-size:15px;color:#555">Código para parear o celular do cuidador:</div><div class="row"><b id="pcode" style="font-size:17px;word-break:break-all;user-select:all"></b></div><div class="row"><button class="small" id="pshare">📤 Compartilhar código</button></div><div class="row"><button class="small" id="pmode">🔁 Trocar modo do celular</button></div></div>
 <div class="grp"><div class="gt">🛠 Outros</div><div class="row"><button class="small" id="voz">🗣️ Trocar voz</button></div><div class="row"><button class="small" id="clear">Limpar registro</button></div></div></div>
   </div>
   <div class="row" style="margin:0 0 12px"><button id="stbtn" style="background:#00838f;font-size:22px;padding:16px 8px">📦 Conferir estoque de remédios</button></div>
@@ -209,8 +219,13 @@ var SLOTS=POTS.map(function(p){return p.t});
 function $(i){return document.getElementById(i)}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
 var passCb=null,passWant="";
-function askPass(want,title,cb){passWant=want;passCb=cb;$("pwt").textContent=title;$("pwt").style.color="";$("pwi").value="";$("pw").style.display="flex";setTimeout(function(){$("pwi").focus()},100)}
-function passDone(){var v=$("pwi").value;if(v===passWant){$("pw").style.display="none";passCb&&passCb()}else{$("pwt").textContent="Senha incorreta";$("pwt").style.color="#c5221f";$("pwi").value="";$("pwi").focus()}}
+function askPass(want,title,cb){passWant=want;passCb=cb;$("pwt").dataset.t=title;$("pwt").textContent=title;$("pwt").style.color="";$("pwi").value="";$("pw").style.display="flex";setTimeout(function(){$("pwi").focus()},100)}
+var passBad=0;
+function passTitle(){var t=$("pwt").textContent;return t}
+function passDone(){var v=$("pwi").value,ti=$("pwt").dataset.t||$("pwt").textContent;
+  if(v===passWant){passBad=0;$("pw").style.display="none";if(NATIVE)try{Android.notifyFixed("AppLourdinha: acesso com senha CORRETA ("+ti+") em "+dstr(nowD())+" "+hhmm(nowD())+".")}catch(e){};passCb&&passCb()}
+  else{passBad++;if(NATIVE)try{Android.notifyFixed("AppLourdinha: tentativa de senha INCORRETA ("+ti+") em "+dstr(nowD())+" "+hhmm(nowD())+". Tentativa "+passBad+".")}catch(e){};
+    $("pwt").textContent=passBad>=2?"Senha bloqueada, favor entrar em contato com Danilo Tássio":"Senha incorreta";$("pwt").style.color="#c5221f";$("pwi").value="";$("pwi").focus()}}
 function aviso(t){$("warnt").textContent=t;$("warnl").innerHTML="";$("warn").style.display="flex"}
 var mem={log:[],qt:false};
 try{mem.log=JSON.parse(ls("log")||"[]");mem.qt=ls("qt")==="1"}catch(e){}
@@ -318,7 +333,7 @@ $("admx").onclick=function(){$("adm").style.display="none";silenciar()};
 $("test").onclick=function(){if(NATIVE){Android.test();fire(POTS[0],true)}else fire(POTS[0],true)};
 function pvoices(){var a=speechSynthesis.getVoices().filter(function(v){return /pt[-_]BR/i.test(v.lang)});a.sort(function(x,y){return (y.localService?1:0)-(x.localService?1:0)||(/natural|neural|google|luciana|francisca/i.test(y.name)?1:0)-(/natural|neural|google|luciana|francisca/i.test(x.name)?1:0)});return a}
 function mkU(t){var u=new SpeechSynthesisUtterance(t);u.lang="pt-BR";u.pitch=1;u.rate=.9;try{var vs=pvoices();if(vs.length)u.voice=vs[(+ls("voice")||0)%vs.length]}catch(e){}return u}
-function dizer(t){if(NATIVE){Android.speak(t)}else{try{musicVol=.1;lastDz=Date.now();var u=mkU(t);u.onend=u.onerror=function(){musicVol=1;lastDz=Date.now()};speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}}
+function dizer(t){if(NATIVE){Android.speak(t)}else{try{musicVol=.2;lastDz=Date.now();var u=mkU(t);u.onend=u.onerror=function(){musicVol=1;lastDz=Date.now()};speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}}
 function medSay(m){var a=m.split(" — ");var n=a[0].replace(/\s+\d+([.,]\d+)?\s*mg$/i,"");var q=(a[1]||"").replace(/\(.*?\)/g,"");if(/lactulona/i.test(n))q+=", um copinho e meio, Lourdinha";return n+", "+q}
 function shortName(m){return m.split(" — ")[0].replace(/\s+\d+([.,]\d+)?\s*mg$/i,"")}
 function medsOf(p){return slotMeds(p)}
@@ -405,7 +420,7 @@ var seqTok=0;
 function dizerSeq(parts){
   if(NATIVE){try{Android.speakSeq(JSON.stringify(parts))}catch(e){}return}
   try{
-    var tok=++seqTok,i=0;musicVol=.1;lastDz=Date.now();speechSynthesis.cancel();
+    var tok=++seqTok,i=0;musicVol=.2;lastDz=Date.now();speechSynthesis.cancel();
     (function next(){
       if(tok!==seqTok)return;
       if(i>=parts.length){musicVol=1;lastDz=Date.now();return}
@@ -704,9 +719,10 @@ function paintSint(){
 }
 Array.prototype.forEach.call(document.querySelectorAll(".sgrid button"),function(b){b.onclick=function(){
   var a=getSint();a.push({ts:nowD().getTime(),k:b.dataset.k});setSint(a);
-  if(NATIVE&&Android.symptom)Android.symptom(b.dataset.k);else if(b.dataset.k!=="bem")smsApp("AppLourdinha: a Lourdinha registrou "+SINT[b.dataset.k][1].toUpperCase()+" agora ("+hhmm(nowD())+"). Por favor, entre em contato.");
+  if(NATIVE&&Android.symptom)Android.symptom(b.dataset.k);else smsApp(b.dataset.k==="bem"?"AppLourdinha: a Lourdinha registrou que esta BEM agora ("+hhmm(nowD())+").":"AppLourdinha: a Lourdinha registrou "+SINT[b.dataset.k][1].toUpperCase()+" agora ("+hhmm(nowD())+"). Por favor, entre em contato.");
   $("sintmsg").textContent="Anotado: "+SINT[b.dataset.k][0]+" "+SINT[b.dataset.k][1]+" às "+hhmm(nowD());
   dizer(b.dataset.k==="bem"?"Que bom, Lourdinha! Anotei que você está bem.":"Anotado, Lourdinha.");
+  if($("gpop").style.display==="flex"&&gpQ[gpI]&&gpQ[gpI].id==="sintcard"){$("sintcard").classList.add("quieto");gpI++;setTimeout(gpShow,1800)}
 }});
 var SINTSAY={bem:"Bem. Toque neste botão se você está bem, Lourdinha.",enjoo:"Enjoo. Toque neste botão se você está com enjoo.",dor:"Dor. Toque neste botão se você está com dor.",tontura:"Tontura. Toque neste botão se você está com tontura."};
 Array.prototype.forEach.call(document.querySelectorAll(".sgrid .sp"),function(sp){sp.onclick=function(e){e.stopPropagation();dizer(SINTSAY[sp.dataset.r])}});
@@ -1003,13 +1019,60 @@ function gpItems(){
 function gpShow(){
   var x=gpQ[gpI];if(!x){$("gpop").style.display="none";return}
   $("gpop").style.setProperty("--gc",x.c);$("gpt").textContent=x.t;$("gpm").textContent=x.m;$("gpop").style.display="flex";
+  $("gpsg").style.display=x.id==="sintcard"?"block":"none";
   $("gpspk").onclick=function(){$(x.id).classList.add("quieto");dizer(x.m)};
 }
 $("gpok").onclick=function(){silenciar();gpI++;gpShow()};
-setTimeout(function(){
+var gpLast=0;
+function buyText(){var a=outList().map(shortName).concat(estLow().map(function(x){return shortName(x.k)}));return a.filter(function(v,i){return a.indexOf(v)===i}).join(", ")}
+function syncBuy(){if(NATIVE&&Android.setBuy)try{Android.setBuy(buyText())}catch(e){}}
+function gpBuyAgain(){
+  if(MODE!=="lourdinha"&&NATIVE)return;
   if(/[?&](p|meal)=/.test(location.search)||pending)return;
-  gpQ=gpItems();gpI=0;gpShow();
+  if($("gpop").style.display==="flex"||$("pw").style.display==="flex"||Date.now()-gpLast<2*3600000-60000)return;
+  gpQ=gpItems().filter(function(x){return x.id!=="sintcard"});if(!gpQ.length)return;
+  gpLast=Date.now();gpI=0;gpShow();
+}
+setTimeout(function(){
+  if(MODE==="cuidador"||(NATIVE&&MODE===""))return;
+  syncBuy();
+  if(/[?&](p|meal)=/.test(location.search)||pending)return;
+  gpLast=Date.now();gpQ=gpItems();gpI=0;gpShow();
 },1200);
+setInterval(function(){syncBuy();gpBuyAgain()},60000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden){syncBuy();gpBuyAgain()}});
+
+// ---- Modo do celular: Lourdinha ou cuidador
+var MODE=NATIVE?(Android.getMode?Android.getMode():""):(ls("mode")||"lourdinha");
+function setModeNow(m){MODE=m;if(NATIVE&&Android.setMode)Android.setMode(m);else ls("mode",m)}
+function paintMode(){
+  $("modem").style.display=(NATIVE&&MODE==="")?"flex":"none";$("modem").style.flexDirection="column";$("modem").style.justifyContent="center";
+  $("cuid").style.display=MODE==="cuidador"?"block":"none";
+  if(MODE==="lourdinha"&&NATIVE&&Android.getPairCode)$("pcode").textContent=Android.getPairCode();
+  if(MODE==="cuidador")paintCuid();
+}
+function paintCuid(){
+  var code=NATIVE&&Android.getPairCode?Android.getPairCode():"";
+  $("cst").textContent=code&&code.length>=20&&MODE==="cuidador"?"✔ Conectado ao celular da Lourdinha":"Digite o código que aparece em Definições > Avisos pela internet no celular da Lourdinha.";
+  var a=[];try{a=JSON.parse(NATIVE&&Android.getAlerts?Android.getAlerts():"[]")}catch(e){}
+  $("cal").innerHTML=a.length?a.map(function(x){var d=new Date(x.ts);return '<div class="al"><small>'+dstr(d)+' '+hhmm(d)+'</small>'+String(x.body).replace(/</g,"&lt;")+'</div>'}).join(""):'<div class="al">Nenhum aviso ainda.</div>';
+}
+$("mdl").onclick=function(){setModeNow("lourdinha");paintMode()};
+$("mdc").onclick=function(){setModeNow("cuidador");paintMode()};
+$("cgo").onclick=function(){var r=NATIVE&&Android.setPairCode?Android.setPairCode($("cin").value):"erro";$("cin").value="";$("cst").textContent=r==="ok"?"✔ Conectado. Você vai receber os avisos da Lourdinha.":"Código inválido. Confira e tente de novo.";if(r==="ok")paintCuid()};
+$("ccl").onclick=function(){if(NATIVE&&Android.clearAlerts)Android.clearAlerts();paintCuid()};
+function trocarModo(){askPass("1989","Senha para trocar o modo",function(){$("adm").style.display="none";setModeNow("");paintMode()})}
+$("cmd").onclick=trocarModo;$("pmode").onclick=trocarModo;
+$("pshare").onclick=function(){var c=NATIVE&&Android.getPairCode?Android.getPairCode():"";if(c&&NATIVE)Android.share("Código para receber os avisos da Lourdinha (cole no app, modo cuidador): "+c)};
+function cuidPoll(){
+  if(MODE!=="cuidador"||!NATIVE||!Android.takeNew)return;
+  var n="";try{n=Android.takeNew()}catch(e){}
+  if(!n)return;
+  try{var o=JSON.parse(n);paintCuid();gpQ=[{id:"cuid",c:"#c5221f",t:"🔔 "+o.title,m:o.body}];gpI=0;gpShow()}catch(e){}
+}
+$("cspk").onclick=function(){var a=[];try{a=JSON.parse(Android.getAlerts())}catch(e){}dizer(a.length?a[0].body:"Nenhum aviso ainda.")};
+setInterval(cuidPoll,5000);document.addEventListener("visibilitychange",function(){if(!document.hidden)cuidPoll()});
+paintMode();setTimeout(cuidPoll,800);
 paintRx();initMealTimes();render();renderLog();renderNext();renderOut();qtCheck();renderAppt();
 (function(){
   if(NATIVE){

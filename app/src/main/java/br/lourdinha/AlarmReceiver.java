@@ -3,6 +3,8 @@ import android.content.*;
 import android.os.Build;
 public class AlarmReceiver extends BroadcastReceiver {
     @Override public void onReceive(Context c, Intent in){
+        // celular em modo cuidador nunca toca despertador nem agenda nada (alarmes antigos ficam sem efeito)
+        if ("cuidador".equals(LogStore.sp(c).getString("mode", ""))) return;
         if (in.hasExtra("watch")) { Watch.run(c); Watch.schedule(c); return; }
         if (in.hasExtra("meal")) {
             int m = in.getIntExtra("meal", 0), st = in.getIntExtra("stage", 0), at = in.getIntExtra("att", 1);

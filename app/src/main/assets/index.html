@@ -1196,6 +1196,7 @@ var CTAB="av",KINDS=[["remedio","💊 Remédio não tomado ou não confirmado"],
 var KIC={remedio:"💊",sintoma:"🤕",bem:"😊",bateria:"🔋",vida:"💓",compra:"🛒",consulta:"🩺",resumo:"📋",contato:"📞",outro:"🔔"};
 function kindOf(t){t=String(t).toLowerCase();return /nao confirmou|nao tomou/.test(t)?"remedio":/esta bem/.test(t)?"bem":/registrou (dor|enjoo|tontura)/.test(t)?"sintoma":/bateria/.test(t)?"bateria":/sinal de vida/.test(t)?"vida":/para comprar/.test(t)?"compra":/lembrete/.test(t)?"consulta":/resumo da semana/.test(t)?"resumo":/esta ligando/.test(t)?"contato":"outro"}
 function getOff(){try{return JSON.parse(ls("cflt")||"[]")}catch(e){return[]}}
+function srvMsg(){var v=NATIVE&&Android.getSrv?Android.getSrv():"";return v==="antigo"?"⚠ O servidor (Cloudflare) está com a versão antiga. Cole o worker.js novo em Edit code e toque em Deploy.":v==="offline"?"📶 Sem conexão com o servidor.":v==="erro"?"⚠ O servidor não respondeu.":v==="novo"?"Servidor atualizado. A Lourdinha ainda não enviou os dados: abra o app no celular dela.":"Toque em 🔄 para sincronizar."}
 function remState(){try{return JSON.parse(NATIVE&&Android.getState?Android.getState():"{}")||{}}catch(e){return{}}}
 function connected(){var c=NATIVE&&Android.getPairCode?Android.getPairCode():"";return MODE==="cuidador"&&c&&c.length>=20?c:""}
 var editNew=false;
@@ -1236,7 +1237,7 @@ function tabAl(){
     h+=card(low.length?"📉":"✅",'<b>'+(low.length?"Estoque baixo (menos de 10 doses)":"Estoque em dia")+'</b>'+low.map(function(x){return cEsc(x.k)+': '+x.v+(x.v===1?" dose":" doses")+' · cerca de '+x.d+(x.d===1?" dia":" dias")}).join("<br>"),low.length?"bad":"good");
   }
   h+=card("💬",'<b>Como a Lourdinha está</b>'+(sint?(nm[sint.k]||sint.k)+' · '+dstr(new Date(sint.ts))+' '+hhmm(new Date(sint.ts)):"Sem resposta ainda."),sint&&sint.k!=="bem"?"warn":"good");
-  if(!hasSt)h+='<div class="empty" style="padding:10px 6px">⏳ Ainda sem a sincronização completa da Lourdinha. Toque em 🔄. Se continuar assim, o servidor (Cloudflare) precisa ser atualizado.</div>';
+  if(!hasSt)h+='<div class="empty" style="padding:10px 6px">⏳ '+srvMsg()+'</div>';
   return h}
 function tabHr(){
   var st=remState(),log=st.week||[],now=nowD(),occ=[];
@@ -1247,7 +1248,7 @@ function tabHr(){
     h+='<div class="cd" style="align-items:center;padding:10px 14px"><span class="pill" style="background:'+x.p.c+';flex:1;font-size:16px">'+x.p.t+' · '+x.p.n+'</span><b style="font-size:24px;color:'+(s===1?"#16a34a":s===2?"#f59e0b":past?"#e11d48":"#cbd5e1")+'">'+(s===1?"✔":s===2?"◐":past?"✖":"○")+'</b></div>'});
   return h}
 function tabCo(){
-  var st=remState(),a=st.appt;if(!a)return empty("Sem dados ainda");
+  var st=remState(),a=st.appt;if(!a)return empty("Sem dados ainda<br><small>"+srvMsg()+"</small>");
   var d=pIso(a.c),h=a.h.split(":"),C=new Date(d.getFullYear(),d.getMonth(),d.getDate(),+h[0],+h[1]),E=new Date(d.getFullYear(),d.getMonth(),d.getDate()-3),n0=nowD(),k=function(x){return Math.round((new Date(x.getFullYear(),x.getMonth(),x.getDate())-new Date(n0.getFullYear(),n0.getMonth(),n0.getDate()))/864e5)};
   var r=function(n){return n<0?"":n===0?"HOJE":n===1?"amanhã":"em "+n+" dias"},fut=k(C)>=0,t="";
   if(fut&&k(E)>=0)t+=card("🧪",'<b>Exames</b>'+DIAS[E.getDay()]+', '+dbr(E),"warn",r(k(E)));
@@ -1255,12 +1256,12 @@ function tabCo(){
   if(a.u){var U=pIso(a.u);t+=card("🕘",'<b>Última consulta</b>'+DIAS[U.getDay()]+', '+dbr(U))}
   return t||empty("Nenhuma consulta marcada")}
 function tabEs(){
-  var st=remState(),r=st.stock||[];if(!r.length)return empty("Sem dados de estoque ainda");
+  var st=remState(),r=st.stock||[];if(!r.length)return empty("Sem dados de estoque ainda<br><small>"+srvMsg()+"</small>");
   return r.map(function(x){return card(x.falta?"📉":"📦",'<b>'+cEsc(x.k)+'</b>Receitado '+(x.rec===null?"—":x.rec)+' · Atual '+(x.has===null?"?":x.has)+'<br>Precisa '+x.need+' · Faltam <b style="display:inline">'+(x.falta===null?"—":x.falta?x.falta:"✔")+'</b>',x.falta?"bad":"good")}).join("")}
 function tabSe(){
   var st=remState(),log=st.week||[],by={},ord=[];
   log.forEach(function(l){if(!by[l.d]){by[l.d]={ok:0,no:0,miss:[],ml:[]};ord.push(l.d)}var b=by[l.d];if(l.meal){b.ml.push(l.n.toLowerCase()+(l.ok===true?" ✅":l.ok===false?" ❌":" ⏰"))}else if(l.ok===true)b.ok++;else{b.no++;b.miss.push(l.t+" "+l.n)}});
-  var h=ord.length?ord.slice().reverse().map(function(d){var b=by[d];return card(b.no?"⚠️":"✅",'<b>'+d+'</b>💊 '+b.ok+' tomados, '+b.no+' não'+(b.miss.length?' ('+b.miss.join(", ")+')':'')+(b.ml.length?'<br>🍽️ '+b.ml.join(", "):''),b.no?"warn":"good")}).join(""):empty("Sem registros ainda");
+  var h=ord.length?ord.slice().reverse().map(function(d){var b=by[d];return card(b.no?"⚠️":"✅",'<b>'+d+'</b>💊 '+b.ok+' tomados, '+b.no+' não'+(b.miss.length?' ('+b.miss.join(", ")+')':'')+(b.ml.length?'<br>🍽️ '+b.ml.join(", "):''),b.no?"warn":"good")}).join(""):empty("Sem registros ainda<br><small>"+srvMsg()+"</small>");
   var c={};(st.sint||[]).forEach(function(x){c[x.k]=(c[x.k]||0)+1});
   return h+card("🩺",'<b>Sintomas (7 dias)</b>😊 '+(c.bem||0)+' bem · 🤢 '+(c.enjoo||0)+' enjoo · 🤕 '+(c.dor||0)+' dor · 😵 '+(c.tontura||0)+' tontura')}
 function paintCuid(){

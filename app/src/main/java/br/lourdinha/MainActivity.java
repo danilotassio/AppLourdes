@@ -175,6 +175,7 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void setName(String n){ LogStore.sp(MainActivity.this).edit().putString("cname", n == null ? "" : n.trim()).apply(); Push.profile(MainActivity.this, false); updateIcon(); }
         @JavascriptInterface public void sendProfile(){ Push.profile(MainActivity.this, false); }
         @JavascriptInterface public String getMyId(){ String t = LogStore.sp(MainActivity.this).getString("ftok", ""); return t.length() >= 12 ? t.substring(t.length() - 12) : ""; }
+        @JavascriptInterface public String getSrv(){ return LogStore.sp(MainActivity.this).getString("srv", ""); }
         @JavascriptInterface public String getProfs(){ return LogStore.sp(MainActivity.this).getString("profs", "[]"); }
         @JavascriptInterface public void fetchProfs(){ Push.profs(MainActivity.this, () -> runOnUiThread(() -> web.evaluateJavascript("window.onProfs&&onProfs()", null))); }
         @JavascriptInterface public void askLoc(String id){ Push.locReq(MainActivity.this, id); }

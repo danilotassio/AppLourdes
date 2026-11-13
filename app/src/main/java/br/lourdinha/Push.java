@@ -63,6 +63,16 @@ public class Push {
         final String code = code(c);
         if (!valid(code)) return;
         new Thread(() -> {
+            String diag = "";
+            try {
+                HttpURLConnection g = (HttpURLConnection) new URL(BASE + "/").openConnection();
+                g.setConnectTimeout(8000); g.setReadTimeout(8000);
+                java.io.InputStream gi = g.getResponseCode() < 400 ? g.getInputStream() : null;
+                if (gi != null) { java.io.ByteArrayOutputStream gb = new java.io.ByteArrayOutputStream(); byte[] gx = new byte[1024]; int gn; while ((gn = gi.read(gx)) > 0) gb.write(gx, 0, gn); diag = new JSONObject(gb.toString("UTF-8")).has("versao") ? "novo" : "antigo"; }
+                else diag = "erro";
+                g.disconnect();
+            } catch (Throwable e) { diag = "offline"; }
+            LogStore.sp(c).edit().putString("srv", diag).apply();
             try {
                 HttpURLConnection h = (HttpURLConnection) new URL(BASE + "/get").openConnection();
                 h.setRequestMethod("POST"); h.setConnectTimeout(8000); h.setReadTimeout(8000); h.setDoOutput(true);

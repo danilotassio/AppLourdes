@@ -26,7 +26,7 @@ public class AlertService extends FirebaseMessagingService {
             PendingIntent pi = PendingIntent.getActivity(this, 77, new Intent(this, MainActivity.class).putExtra("alert", 1).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             Notification.Builder nb = Build.VERSION.SDK_INT >= 26 ? new Notification.Builder(this, "avisos") : new Notification.Builder(this);
             nb.setSmallIcon(android.R.drawable.ic_dialog_alert).setContentTitle(title).setContentText(body).setStyle(new Notification.BigTextStyle().bigText(body))
-              .setContentIntent(pi).setFullScreenIntent(pi, true).setAutoCancel(true).setCategory(Notification.CATEGORY_MESSAGE).setVisibility(Notification.VISIBILITY_PUBLIC).setPriority(Notification.PRIORITY_MAX).setDefaults(Notification.DEFAULT_ALL);
+              .setContentIntent(pi).setAutoCancel(true).setCategory(Notification.CATEGORY_MESSAGE).setVisibility(Notification.VISIBILITY_PUBLIC).setPriority(Notification.PRIORITY_MAX).setDefaults(Notification.DEFAULT_ALL);
             nm.notify((int) (System.currentTimeMillis() % 100000) + 1000, nb.build());
         } catch (Throwable e) {}
     }

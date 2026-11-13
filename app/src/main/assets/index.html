@@ -477,7 +477,9 @@ function renderOut(){
   if(ks.length&&$("outcard").style.display!=="block")$("outcard").classList.remove("quieto");
   $("outcard").style.display=ks.length?"block":"none";
   $("outl").innerHTML=ks.map(function(n,i){return '<div class="medrow" style="margin:8px 0"><div class="med" style="margin:0;flex:1;min-width:0;font-weight:bold;color:#c5221f;font-size:24px">'+n+'</div><button class="small" data-n="'+i+'" style="flex:none;font-weight:bold">✔ Comprei</button></div>'}).join("");
-  Array.prototype.forEach.call(document.querySelectorAll("#outl button"),function(b){b.onclick=function(){var x=getOut();delete x[ks[+b.dataset.n]];ls("out",JSON.stringify(x));renderOut()}});
+  Array.prototype.forEach.call(document.querySelectorAll("#outl button"),function(b){b.onclick=function(){var x=getOut(),nome=ks[+b.dataset.n];delete x[nome];ls("out",JSON.stringify(x));renderOut();
+    if(NATIVE&&Android.notifySms)try{Android.notifySms("AppLourdinha: a Lourdinha comprou o remedio "+shortName(nome)+" (tirado da lista de remedios para comprar).")}catch(e){}
+    try{syncBuy();syncState(true)}catch(e){}}});
 }
 $("shout").onclick=function(){
   var ks=Object.keys(getOut());if(!ks.length)return;

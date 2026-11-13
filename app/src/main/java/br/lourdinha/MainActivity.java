@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
         web.setWebChromeClient(new WebChromeClient());
         web.addJavascriptInterface(new Bridge(), "Android");
         setContentView(web);
-        tts = new android.speech.tts.TextToSpeech(this, st -> { if (st == android.speech.tts.TextToSpeech.SUCCESS) { Voice.apply(tts); ttsOk = true; } });
+        try { tts = new android.speech.tts.TextToSpeech(this, st -> { try { if (st == android.speech.tts.TextToSpeech.SUCCESS && tts != null) { Voice.apply(tts); ttsOk = true; } } catch (Throwable e) {} }); } catch (Throwable e) {}
         Scheduler.scheduleAll(this);
         load(getIntent());
     }

@@ -70,7 +70,7 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
   <div id="now"></div>
   <div class="card" style="background:#fff">
     <div class="medrow" style="margin:0"><label style="flex:1"><input type="checkbox" id="qt"><span>Dias pós-quimio. Incluir remédios de enjoo. <b id="qtd" style="color:#c5221f"></b></span></label><button class="spk" id="spkqt" style="margin:0 0 0 8px">🔊</button></div>
-    <div id="adm" style="display:none"><div class="row"><button class="small" id="enable"></button></div><div class="row"><button class="small" id="test">Testar alarme</button><button class="small" id="stop">Parar música</button></div><div class="row"><button class="small" id="mealsw"></button></div><div class="row"><button class="small" id="tm0">Testar café</button><button class="small" id="tm1">Testar almoço</button><button class="small" id="tm2">Testar janta</button></div><div class="row"><button class="small" id="clear">Limpar registro</button></div></div>
+    <div id="adm" style="display:none"><div class="row"><button class="small" id="enable"></button></div><div class="row"><button class="small" id="test">Testar alarme</button><button class="small" id="stop">Parar música</button></div><div class="row"><button class="small" id="mealsw"></button></div><div class="row"><button class="small" id="tm0">Testar café</button><button class="small" id="tm1">Testar almoço</button><button class="small" id="tm2">Testar janta</button></div><div class="row"><button class="small" id="voz">🗣️ Trocar voz</button></div><div class="row"><button class="small" id="clear">Limpar registro</button></div></div>
   </div>
   <div class="card" style="background:#fff"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px"><b style="font-size:22px">Próximos horários</b><button class="small" id="nextbtn" style="flex:none;background:#f57c00;color:#fff;font-weight:bold">🔔 Qual o próximo?</button></div><div id="next" style="font-size:20px;margin-top:6px"></div></div>
   <div class="card" style="background:#fff"><b style="font-size:22px">Registro da semana</b>
@@ -116,8 +116,7 @@ function falar(p){
   if(NATIVE||!sndOn())return;
   if(Date.now()-lastDz<20000)return;
   try{
-    var u=new SpeechSynthesisUtterance("Bora, Lourdinha! Tomar o remédio da bolsa "+p.n.toLowerCase()+"!");
-    u.lang="pt-BR";u.volume=1;u.rate=.9;
+    var u=mkU("Bora, Lourdinha! Tomar o remédio da bolsa "+p.n.toLowerCase()+"!");u.volume=1;
     speechSynthesis.cancel();speechSynthesis.speak(u);
   }catch(e){}
 }
@@ -164,10 +163,19 @@ function mealsOn(){return NATIVE?Android.getMeals():ls("meals")!=="0"}
 function paintMealsSw(){$("mealsw").textContent=mealsOn()?"🍽️ Despertadores de refeições: LIGADOS (tocar para desligar)":"🍽️ Despertadores de refeições: DESLIGADOS (tocar para ligar)"}
 $("mealsw").onclick=function(){var on=!mealsOn();if(NATIVE)Android.setMeals(on);else ls("meals",on?"1":"0");paintMealsSw()};
 paintMealsSw();
+$("voz").onclick=function(){
+  var n=0;
+  if(NATIVE){n=Android.nextVoice()}
+  else{try{var vs=pvoices();if(vs.length){var k=+ls("voice")||0;k=(k+1)%vs.length;ls("voice",String(k));n=k+1}}catch(e){}}
+  if(!n){aviso("Nenhuma voz em português encontrada neste aparelho.");return}
+  dizer("Oi Lourdinha, esta é a voz número "+n+". Tudo bem com você?");
+};
 $("pwo").onclick=passDone;$("pwc").onclick=function(){$("pw").style.display="none"};
 $("gear").onclick=function(){askPass("1989","Senha para opções",function(){var a=$("adm");a.style.display=a.style.display==="none"?"block":"none"})};
 $("test").onclick=function(){if(NATIVE){Android.test();fire(POTS[0],true)}else fire(POTS[0],true)};
-function dizer(t){if(NATIVE){Android.speak(t)}else{try{musicVol=.1;lastDz=Date.now();var u=new SpeechSynthesisUtterance(t);u.onend=u.onerror=function(){musicVol=1;lastDz=Date.now()};u.lang="pt-BR";u.pitch=.6;u.rate=.9;var vs=speechSynthesis.getVoices().filter(function(v){return /pt/i.test(v.lang)&&/male|masc|daniel|felipe|ricardo/i.test(v.name)&&!/female|fem/i.test(v.name)});if(vs.length)u.voice=vs[0];speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}}
+function pvoices(){var a=speechSynthesis.getVoices().filter(function(v){return /pt[-_]BR/i.test(v.lang)});a.sort(function(x,y){return (y.localService?1:0)-(x.localService?1:0)||(/natural|neural|google|luciana|francisca/i.test(y.name)?1:0)-(/natural|neural|google|luciana|francisca/i.test(x.name)?1:0)});return a}
+function mkU(t){var u=new SpeechSynthesisUtterance(t);u.lang="pt-BR";u.pitch=1;u.rate=.9;try{var vs=pvoices();if(vs.length)u.voice=vs[(+ls("voice")||0)%vs.length]}catch(e){}return u}
+function dizer(t){if(NATIVE){Android.speak(t)}else{try{musicVol=.1;lastDz=Date.now();var u=mkU(t);u.onend=u.onerror=function(){musicVol=1;lastDz=Date.now()};speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}}
 function medSay(m){var a=m.split(" — ");var n=a[0].replace(/\s+\d+([.,]\d+)?\s*mg$/i,"");var q=(a[1]||"").replace(/\(.*?\)/g,"");if(/lactulona/i.test(n))q+=", um copinho e meio, Lourdinha";return n+", "+q}
 function shortName(m){return m.split(" — ")[0].replace(/\s+\d+([.,]\d+)?\s*mg$/i,"")}
 function medsOf(p){var a=p.m.slice();if(mem.qt&&p.q)a=a.concat(QT);return a}
@@ -252,9 +260,7 @@ function dizerSeq(parts){
       if(i>=parts.length){musicVol=1;lastDz=Date.now();return}
       var x=parts[i++];
       if(x.p){setTimeout(next,x.p)}
-      else{var u=new SpeechSynthesisUtterance(x.t);u.lang="pt-BR";u.pitch=.6;u.rate=.9;
-        var vs=speechSynthesis.getVoices().filter(function(v){return /pt/i.test(v.lang)&&/male|masc|daniel|felipe|ricardo/i.test(v.name)&&!/female|fem/i.test(v.name)});if(vs.length)u.voice=vs[0];
-        u.onend=u.onerror=next;speechSynthesis.speak(u)}
+      else{var u=mkU(x.t);u.onend=u.onerror=next;speechSynthesis.speak(u)}
     })();
   }catch(e){}
 }

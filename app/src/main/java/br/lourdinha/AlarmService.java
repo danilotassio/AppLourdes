@@ -52,7 +52,7 @@ public class AlarmService extends Service {
         if (snd) startAudio();
         tts = new TextToSpeech(this, status -> {
             if (status == TextToSpeech.SUCCESS && tts != null) {
-                Voice.apply(tts);
+                Voice.apply(this, tts);
                 tts.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build());
                 ttsReady = true;
                 h.post(speak);

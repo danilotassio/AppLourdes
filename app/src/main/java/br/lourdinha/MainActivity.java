@@ -112,6 +112,9 @@ public class MainActivity extends Activity {
             if (on) { for (int m = 0; m < Scheduler.MEAL_TIME.length; m++) { try { Scheduler.scheduleMeal(MainActivity.this, m); } catch (Throwable e) {} } }
             else Scheduler.cancelMeals(MainActivity.this);
         }
+        @JavascriptInterface public int nextVoice(){
+            try { return tts == null ? 0 : Voice.next(MainActivity.this, tts); } catch (Exception e) { return 0; }
+        }
         @JavascriptInterface public boolean getMeals(){ return Scheduler.mealsOn(MainActivity.this); }
         @JavascriptInterface public void testMeal(int m){
             if (m < 0 || m >= Scheduler.MEAL_TIME.length) return;
@@ -175,7 +178,7 @@ public class MainActivity extends Activity {
         web.setWebChromeClient(new WebChromeClient());
         web.addJavascriptInterface(new Bridge(), "Android");
         setContentView(web);
-        try { tts = new android.speech.tts.TextToSpeech(this, st -> { try { if (st == android.speech.tts.TextToSpeech.SUCCESS && tts != null) { Voice.apply(tts);
+        try { tts = new android.speech.tts.TextToSpeech(this, st -> { try { if (st == android.speech.tts.TextToSpeech.SUCCESS && tts != null) { Voice.apply(this, tts);
                 tts.setOnUtteranceProgressListener(new android.speech.tts.UtteranceProgressListener(){
                     public void onStart(String id){}
                     public void onDone(String id){ if (id != null && id.startsWith("p")) return; startService(new Intent(MainActivity.this, AlarmService.class).setAction("UNDUCK")); }

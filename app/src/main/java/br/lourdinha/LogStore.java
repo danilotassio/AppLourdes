@@ -5,7 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 public class LogStore {
     static SharedPreferences sp(Context c){ return c.getSharedPreferences("lourdinha", Context.MODE_PRIVATE); }
-    public static synchronized void add(Context c, String time, int idx, Boolean ok){
+    public static void add(Context c, String time, int idx, Boolean ok){ add(c, time, idx, ok, null); }
+    public static synchronized void add(Context c, String time, int idx, Boolean ok, String metaJson){
         try {
             JSONArray a = new JSONArray(sp(c).getString("log", "[]"));
             JSONObject o = new JSONObject();
@@ -13,6 +14,7 @@ public class LogStore {
             o.put("t", time);
             o.put("n", idx >= 0 && idx < Scheduler.NAMES.length ? Scheduler.NAMES[idx].toUpperCase() : "");
             if (ok == null) o.put("ok", JSONObject.NULL); else o.put("ok", ok.booleanValue());
+            if (metaJson != null) o.put("m", new JSONArray(metaJson));
             a.put(o);
             JSONArray b = new JSONArray();
             for (int k = Math.max(0, a.length() - 200); k < a.length(); k++) b.put(a.get(k));

@@ -25,10 +25,29 @@ table{width:100%;border-collapse:collapse;font-size:18px;background:#fff}
 td,th{border:1px solid #999;padding:6px;text-align:center}
 .pill{display:inline-block;padding:2px 10px;border-radius:10px;font-weight:bold}
 #alarmbar{display:none}
+#callbtn{background:#1e8e3e;width:100%}
+#confirm,#warn{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;align-items:center;justify-content:center;padding:20px}
+#confirm .box,#warn .box{background:#fff;border-radius:20px;padding:24px;width:100%;text-align:center}
+#confirm .q,#warn .q{font-size:34px;font-weight:bold;margin-bottom:6px}
 #gear{background:none;color:#fff;font-size:26px;padding:0 8px;flex:none}
 .ov{position:fixed;left:0;top:0;right:0;bottom:0;overflow:auto;padding:14px;z-index:50}
 .spk{background:#1F3864;color:#fff;font-size:26px;padding:6px 12px;border-radius:12px;flex:none;margin-right:8px}
 .medrow{display:flex;align-items:center;margin:12px 0}
+.mb{display:flex;flex-direction:column;gap:6px;flex:none;margin-left:8px}
+.tk,.ac{font-size:20px;padding:10px 12px;border-radius:12px;flex:none}
+.tk{background:#f5c400;color:#111}
+.tk.on{background:#1e8e3e;color:#fff}
+.medrow.out{background:#ffd6d6;border:3px solid #c5221f;border-radius:12px;padding:6px}
+.ac{background:#e0e0e0;color:#111}
+.ac.on{background:#c5221f;color:#fff}
+#next{display:flex;gap:8px}
+.dg{flex:1;border:2px solid #999;border-radius:12px;padding:8px;background:#fafafa;min-width:0}
+.dg h4{margin:0 0 6px;font-size:16px;text-align:center;color:#1F3864}
+.ni{display:flex;align-items:center;justify-content:space-between;margin:5px 0;font-size:16px}
+.ni.past{opacity:.6}
+.ni{flex-wrap:wrap;gap:4px}
+.ni .spk{font-size:20px;padding:4px 10px;margin:0}
+.ni input{width:24px;height:24px;flex:none;margin-left:6px}
 #pw{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:none;z-index:99;align-items:center;justify-content:center}
 #pw div.b{background:#fff;border-radius:18px;padding:20px;width:85%}
 #pwi{font-size:34px;width:100%;padding:10px;text-align:center}
@@ -38,16 +57,20 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
 <div id="top"><div>Remédios da Lourdinha</div><div style="display:flex;align-items:center"><button id="gear">⚙</button><div id="clock">--:--</div></div></div>
 <div id="pw"><div class="b"><div class="sub" id="pwt">Senha</div><input id="pwi" type="password" inputmode="numeric"><div class="btns"><button class="small" id="pwc" style="flex:1">Cancelar</button><button id="pwo" style="background:#1F3864;flex:1;font-size:24px">OK</button></div></div></div>
 <div id="main">
-  <div id="sound" class="card" style="background:#fff3cd"><div class="sub"><b>1) Toque aqui para ligar o som</b></div><button id="enable" style="background:#1F3864;width:100%">🔔 Ligar alarme</button><div style="font-size:16px;margin-top:8px">Deixe esta tela aberta e o volume alto. O alarme toca nos horários dos remédios.</div></div>
+  <div class="card" style="background:#e8f5e9"><button id="callbtn">📞 Ligar para Anne Filha!</button></div>
+  <div id="confirm"><div class="box"><div class="medrow" style="justify-content:center"><button class="spk" id="spkq">🔊</button><div class="q" style="margin:0">Ligar para Anne Filha?</div></div><div class="btns"><button class="spk" id="spky">🔊</button><button id="callyes" style="background:#1e8e3e">✅ Sim</button><button class="spk" id="spkn">🔊</button><button id="callno" style="background:#c5221f">❌ Não</button></div></div></div>
+  <div id="warn"><div class="box"><div class="q" id="warnt">Faltam remédios!</div><div id="warnl" style="font-size:26px;margin:10px 0"></div><button id="warnok" style="background:#1F3864;width:100%">OK</button></div></div>
+  <div id="outcard" class="card" style="display:none;background:#ffe5e5;border-color:#c5221f"><b style="color:#c5221f;font-size:22px">⚠ Remédios que acabaram</b><div id="outl"></div></div>
+  <div id="sound" style="display:none"></div>
   <div id="now"></div>
   <div class="card" style="background:#fff">
     <label><input type="checkbox" id="qt"> Dias pós-quimio (incluir remédios de enjoo)</label>
-    <div id="adm" style="display:none"><div class="row"><button class="small" id="test">Testar alarme</button><button class="small" id="stop">Parar música</button></div></div>
+    <div id="adm" style="display:none"><div class="row"><button class="small" id="enable"></button></div><div class="row"><button class="small" id="test">Testar alarme</button><button class="small" id="stop">Parar música</button></div><div class="row"><button class="small" id="clear">Limpar registro</button></div></div>
   </div>
-  <div class="card" style="background:#fff"><b style="font-size:22px">Próximos horários</b><div id="next" style="font-size:20px;margin-top:6px"></div></div>
+  <div class="card" style="background:#fff"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px"><b style="font-size:22px">Próximos horários</b><button class="small" id="nextbtn" style="flex:none;background:#f57c00;color:#fff;font-weight:bold">🔔 Qual o próximo?</button></div><div id="next" style="font-size:20px;margin-top:6px"></div></div>
   <div class="card" style="background:#fff"><b style="font-size:22px">Registro da semana</b>
     <div id="log" style="margin-top:8px"></div>
-    <div class="row"><button class="small" id="copy">Copiar resumo (WhatsApp)</button><button class="small" id="clear">Limpar registro</button></div>
+    <div class="row"><button class="small" id="copy">Enviar Resumo (WhatsApp)</button></div>
     <pre id="sum" style="white-space:pre-wrap;font-size:16px"></pre>
   </div>
 </div>
@@ -72,24 +95,25 @@ function passDone(){var v=$("pwi").value;$("pw").style.display="none";if(v===pas
 var mem={log:[],qt:false};
 try{mem.log=JSON.parse(ls("log")||"[]");mem.qt=ls("qt")==="1"}catch(e){}
 $("qt").checked=mem.qt;
-$("qt").onchange=function(){mem.qt=this.checked;ls("qt",this.checked?"1":"0");render()};
+$("qt").onclick=function(e){e.preventDefault();var cb=this;askPass("1989","Senha para pós-quimio",function(){cb.checked=!cb.checked;mem.qt=cb.checked;ls("qt",cb.checked?"1":"0");render()})};
 var spk=null;
 function falar(p){
-  if(NATIVE)return;
+  if(NATIVE||!sndOn())return;
+  if(Date.now()-lastDz<20000)return;
   try{
     var u=new SpeechSynthesisUtterance("Bora, Lourdinha! Tomar o remédio da bolsa "+p.n.toLowerCase()+"!");
     u.lang="pt-BR";u.volume=1;u.rate=.9;
     speechSynthesis.cancel();speechSynthesis.speak(u);
   }catch(e){}
 }
-var ac=null,playing=null,pending=null,fired={};
+var ac=null,playing=null,pending=null,fired={},musicVol=1,lastDz=0;
 function pad(n){return (n<10?"0":"")+n}
 function hhmm(d){return pad(d.getHours())+":"+pad(d.getMinutes())}
 function dstr(d){return pad(d.getDate())+"/"+pad(d.getMonth()+1)}
 // melodia suave original (loop)
 var NOTES=[523,659,784,659,587,698,880,698,523,659,784,1047,784,659,587,523];
 function startMusic(){
-  if(NATIVE)return;
+  if(NATIVE||!sndOn())return;
   stopMusic();
   try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){return}
   var i=0;
@@ -98,7 +122,7 @@ function startMusic(){
       var o=ac.createOscillator(),g=ac.createGain();
       o.type="square";o.frequency.value=NOTES[i%NOTES.length];
       g.gain.setValueAtTime(0,ac.currentTime);
-      g.gain.linearRampToValueAtTime(.9,ac.currentTime+.05);
+      g.gain.linearRampToValueAtTime(.9*musicVol,ac.currentTime+.05);
       g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.7);
       o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.75);
     }catch(e){}
@@ -109,16 +133,24 @@ function startMusic(){
 }
 function stopMusic(){if(playing){clearInterval(playing);playing=null}}
 $("stop").onclick=function(){if(NATIVE)Android.stop();stopMusic();clearInterval(spk);try{speechSynthesis.cancel()}catch(e){}};
+function sndOn(){return NATIVE?Android.getSound():ls("snd")!=="0"}
+function paintSnd(){$("enable").textContent=sndOn()?"🔔 Som do alarme: LIGADO (tocar para desligar)":"🔕 Som do alarme: DESLIGADO (tocar para ligar)"}
 $("enable").onclick=function(){
-  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}
-  try{if(navigator.wakeLock)navigator.wakeLock.request("screen").catch(function(){})}catch(e){}
-  $("sound").style.display="none";startMusic();setTimeout(stopMusic,1200);
+  var on=!sndOn();
+  if(NATIVE)Android.setSound(on);else ls("snd",on?"1":"0");
+  if(on){
+    try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}
+    try{if(navigator.wakeLock)navigator.wakeLock.request("screen").catch(function(){})}catch(e){}
+    paintSnd();startMusic();setTimeout(stopMusic,1200);
+  }else{stopMusic();clearInterval(spk);try{speechSynthesis.cancel()}catch(e){}paintSnd()}
 };
+paintSnd();
 $("pwo").onclick=passDone;$("pwc").onclick=function(){$("pw").style.display="none"};
 $("gear").onclick=function(){askPass("1989","Senha para opções",function(){var a=$("adm");a.style.display=a.style.display==="none"?"block":"none"})};
 $("test").onclick=function(){if(NATIVE){Android.test();fire(POTS[0],true)}else fire(POTS[0],true)};
-function dizer(t){if(NATIVE){try{Android.hush()}catch(e){}Android.speak(t)}else{try{var u=new SpeechSynthesisUtterance(t);u.lang="pt-BR";u.pitch=.6;u.rate=.9;var vs=speechSynthesis.getVoices().filter(function(v){return /pt/i.test(v.lang)&&/male|masc|daniel|felipe|ricardo/i.test(v.name)&&!/female|fem/i.test(v.name)});if(vs.length)u.voice=vs[0];speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}}
-function medSay(m){var a=m.split(" — ");var n=a[0].replace(/\s+\d+([.,]\d+)?\s*mg$/i,"");var q=(a[1]||"").replace(/\(.*?\)/g,"");return n+", "+q}
+function dizer(t){if(NATIVE){Android.speak(t)}else{try{musicVol=.1;lastDz=Date.now();var u=new SpeechSynthesisUtterance(t);u.onend=u.onerror=function(){musicVol=1;lastDz=Date.now()};u.lang="pt-BR";u.pitch=.6;u.rate=.9;var vs=speechSynthesis.getVoices().filter(function(v){return /pt/i.test(v.lang)&&/male|masc|daniel|felipe|ricardo/i.test(v.name)&&!/female|fem/i.test(v.name)});if(vs.length)u.voice=vs[0];speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}}
+function medSay(m){var a=m.split(" — ");var n=a[0].replace(/\s+\d+([.,]\d+)?\s*mg$/i,"");var q=(a[1]||"").replace(/\(.*?\)/g,"");if(/lactulona/i.test(n))q+=", um copinho e meio, Lourdinha";return n+", "+q}
+function shortName(m){return m.split(" — ")[0].replace(/\s+\d+([.,]\d+)?\s*mg$/i,"")}
 function medsOf(p){var a=p.m.slice();if(mem.qt&&p.q)a=a.concat(QT);return a}
 function fire(p,test){
   pending={p:p,test:!!test,day:dstr(new Date()),time:p.t};
@@ -132,10 +164,59 @@ function showMsg(p,r){
   $("mok").onclick=function(){render()};
   dizer(t);
 }
+function medsResult(){
+  var ms=medsOf(pending.p),tk=pending.tk||{};
+  return ms.map(function(m,k){var n=m.split(" — ")[0];return tk[k]==="a"?{n:n,ok:false,a:true}:{n:n,ok:true}});
+}
+function missingMeds(){var tk=pending.tk||{};return medsOf(pending.p).filter(function(m,k){return !tk[k]})}
+function getOut(){try{return JSON.parse(ls("out")||"{}")}catch(e){return {}}}
+function renderOut(){
+  var o=getOut(),ks=Object.keys(o);
+  $("outcard").style.display=ks.length?"block":"none";
+  $("outl").innerHTML=ks.map(function(n,i){return '<div class="medrow" style="margin:8px 0"><div class="med" style="margin:0;flex:1;font-weight:bold;color:#c5221f">'+n+'</div><button class="small" data-n="'+i+'">✔ Comprei</button></div>'}).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("#outl button"),function(b){b.onclick=function(){var x=getOut();delete x[ks[+b.dataset.n]];ls("out",JSON.stringify(x));renderOut()}});
+}
+function paintMeds(){
+  var tk=pending.tk||{};
+  Array.prototype.forEach.call(document.querySelectorAll(".tk"),function(b){var on=tk[+b.dataset.k]==="t";b.className="tk"+(on?" on":"");b.textContent=on?"✅ Tomei":"Tomei"});
+  Array.prototype.forEach.call(document.querySelectorAll(".ac"),function(b){var on=tk[+b.dataset.k]==="a";b.className="ac"+(on?" on":"");b.parentNode.parentNode.className="medrow"+(on?" out":"");b.textContent=on?"❌ Acabou":"Acabou"});
+  if($("ok"))$("ok").style.opacity=missingMeds().length?".45":"1";
+}
+function nextInfo(){
+  var now=new Date(),best=null;
+  for(var o=0;o<=1;o++)POTS.forEach(function(p){var t=p.t.split(":"),d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+o,+t[0],+t[1],0);if(d>now&&(!best||d<best.d))best={p:p,d:d}});
+  return best;
+}
+function slotSpeech(p,d,pre){
+  var n=new Date(),dd=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5),h=d.getHours();
+  var q=(dd===1?"amanhã, ":dd>1?DIAS[d.getDay()]+", ":"")+(h===0?"à meia-noite":"às "+h+" horas");
+  return pre+q+", bolsa "+p.n.toLowerCase().replace(/o$/,"a")+". Remédios: "+medsOf(p).map(shortName).join(", ")+".";
+}
+function showSlot(p,d,pre){
+  var names=medsOf(p).map(shortName);
+  $("warnt").textContent="Próximo: "+p.t;
+  $("warnl").innerHTML=DIAS[d.getDay()]+", "+dstr(d)+"<br><span class='pill' style='background:"+p.c+"'>BOLSA "+p.n+"</span><br><b>"+names.join("<br>")+"</b>";
+  $("warn").style.display="flex";
+  dizer(slotSpeech(p,d,pre));
+}
+function showNext(){var b=nextInfo();if(b)showSlot(b.p,b.d,"Lourdinha, o próximo horário é ")}
+function silenciar(){
+  if(NATIVE){try{Android.silence()}catch(e){}}
+  else{try{speechSynthesis.cancel()}catch(e){}musicVol=1;lastDz=Date.now()}
+}
+function warnMeds(mi){
+  $("warnt").textContent="Faltam remédios!";
+  var names=mi.map(shortName);
+  $("warnl").innerHTML="Não foram marcados:<br><b>"+names.join("<br>")+"</b><br><span style='font-size:20px'>Marque \"Tomei\" ou \"Acabou\" em cada um.</span>";
+  $("warn").style.display="flex";
+  dizer("Lourdinha, faltam estes remédios: "+names.join(", ")+". Marque tomei ou acabou em cada um.");
+}
 function answer(ok){
+  var meds=(ok&&pending&&!pending.test)?medsResult():null;
+  if(meds){var ox=getOut();meds.forEach(function(m){if(m.a)ox[m.n]=1;else delete ox[m.n]});ls("out",JSON.stringify(ox));renderOut()}
   if(NATIVE){
     if(pending&&!pending.test){
-      var r=Android.answer(ok,pending.time);
+      var r=ok?Android.answer2(true,pending.time,JSON.stringify(meds)):Android.answer(false,pending.time);
       if(!ok&&(r==="retry"||r==="final")){showMsg(pending.p,r);pending=null;renderLog();return}
     }else Android.stop();
     pending=null;render();renderLog();return;
@@ -146,46 +227,93 @@ function answer(ok){
     var at=(pending.att||0)+1;
     if(at<3){var pp=pending.p;showMsg(pp,"retry");var dd=pending;pending=null;setTimeout(function(){fire(dd.p,false);pending.att=at},600000);renderLog();return}
   }
-  if(!pending.test){mem.log.push({d:pending.day,t:pending.time,ok:ok,n:pending.p.n});ls("log",JSON.stringify(mem.log))}
+  if(!pending.test){var e={d:pending.day,t:pending.time,ok:ok,n:pending.p.n};if(meds)e.m=meds;mem.log.push(e);ls("log",JSON.stringify(mem.log))}
   pending=null;render();renderLog();
 }
+var IDLE="Nenhum remédio agora. Quando chegar a hora, a música toca e mostra a cor da bolsa.";
 function render(){
   var h="";
   if(pending){
     var p=pending.p;
     h+='<div class="ov" style="background:'+p.c+'"><div class="big">BOLSA '+p.n+'</div><div class="sub">'+p.t+(pending.test?" (teste)":"")+'</div>';
-    medsOf(p).forEach(function(m,k){h+='<div class="medrow"><button class="spk" data-k="'+k+'">🔊</button><div class="med" style="margin:0">'+m+'</div></div>'});
+    medsOf(p).forEach(function(m,k){h+='<div class="medrow"><button class="spk" data-k="'+k+'">🔊</button><div class="med" style="margin:0;flex:1">'+m+'</div><div class="mb"><button class="tk" data-k="'+k+'">Tomei</button><button class="ac" data-k="'+k+'">Acabou</button></div></div>'});
     h+='<div class="btns"><button id="ok">✅ Tomei tudo</button><button id="no">❌ Não consegui</button></div></div>';
   }else{
-    h+='<div class="card" style="background:#fff"><div class="sub">Nenhum remédio agora. Quando chegar a hora, a música toca e mostra a cor da bolsa.</div></div>';
+    h+='<div class="card" style="background:#fff"><div class="medrow" style="margin:0"><button class="spk" id="spkidle">🔊</button><div class="sub" id="idletxt" style="flex:1;margin:0;font-weight:bold">'+IDLE+'</div></div></div>';
   }
   $("now").innerHTML=h;
-  if(pending){var ms=medsOf(pending.p);Array.prototype.forEach.call(document.querySelectorAll(".spk"),function(b){b.onclick=function(){dizer(medSay(ms[+b.dataset.k]))}})}
-  if($("ok")){$("ok").onclick=function(){answer(true)};$("no").onclick=function(){answer(false)}}
+  if($("spkidle"))$("spkidle").onclick=function(){dizer(IDLE)};
+  if(pending){var ms=medsOf(pending.p);Array.prototype.forEach.call(document.querySelectorAll("#now .spk[data-k]"),function(b){b.onclick=function(){dizer(medSay(ms[+b.dataset.k]))}})}
+  if(pending){
+    Array.prototype.forEach.call(document.querySelectorAll(".tk,.ac"),function(b){b.onclick=function(){
+      pending.tk=pending.tk||{};var k=+b.dataset.k,v=b.classList.contains("tk")?"t":"a";
+      if(pending.tk[k]===v)delete pending.tk[k];else pending.tk[k]=v;paintMeds()}});
+    paintMeds();
+  }
+  if($("ok")){$("ok").onclick=function(){var mi=missingMeds();if(mi.length)warnMeds(mi);else answer(true)};$("no").onclick=function(){answer(false)}}
 }
+var DIAS=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 function renderNext(){
-  var now=new Date(),cur=now.getHours()*60+now.getMinutes(),arr=POTS.map(function(p){var s=p.t.split(":");var m=+s[0]*60+ +s[1];return {p:p,d:(m-cur+1440)%1440}}).sort(function(a,b){return a.d-b.d}).slice(0,3);
-  $("next").innerHTML=arr.map(function(x){return '<div style="margin:4px 0"><span class="pill" style="background:'+x.p.c+'">'+x.p.t+' — '+x.p.n+'</span></div>'}).join("");
+  var now=new Date(),occ=[];
+  for(var o=-1;o<=2;o++)POTS.forEach(function(p){var s=p.t.split(":"),d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+o,+s[0],+s[1],0);occ.push({p:p,d:d})});
+  occ.sort(function(a,b){return a.d-b.d});
+  var f=0;while(f<occ.length&&occ[f].d<=now)f++;
+  var sel=occ.slice(Math.max(0,f-3),f+4),data=getLogData(),groups=[];
+  sel.forEach(function(x){
+    var ds=dstr(x.d),g=groups.length&&groups[groups.length-1].ds===ds?groups[groups.length-1]:null;
+    if(!g){g={ds:ds,wd:DIAS[x.d.getDay()],items:[]};groups.push(g)}
+    var st=0;data.forEach(function(l){if(l.d===ds&&l.t===x.p.t&&l.ok===true){st=(l.m&&l.m.some(function(m){return !m.ok&&!m.a}))?2:1}});
+    g.items.push({p:x.p,past:x.d<=now,st:st,ts:x.d.getTime()});
+  });
+  $("next").innerHTML=groups.map(function(g){
+    return '<div class="dg"><h4>'+g.wd+'<br>'+g.ds+'</h4>'+g.items.map(function(it){
+      return '<div class="ni'+(it.past?' past':'')+'"><span class="pill" style="background:'+it.p.c+'">'+it.p.t+' '+it.p.n+'</span>'+(it.past?'<input type="checkbox" disabled data-st="'+it.st+'"'+(it.st===1?' checked':'')+'>':'<button class="spk sl" data-t="'+it.p.t+'" data-ts="'+it.ts+'">🔊</button>')+'</div>'
+    }).join("")+'</div>'
+  }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("#next input"),function(c){if(c.dataset.st==="2")c.indeterminate=true});
+  Array.prototype.forEach.call(document.querySelectorAll("#next .sl"),function(b){b.onclick=function(){var pp=POTS.filter(function(x){return x.t===b.dataset.t})[0];showSlot(pp,new Date(+b.dataset.ts),"Lourdinha, ")}});
+  var pend=groups.some(function(g){return g.items.some(function(it){return it.past&&it.st!==1})});
+  if($("idletxt"))$("idletxt").style.color=pend?"#c5221f":"#1e8e3e";
 }
 function getLogData(){
   if(NATIVE){try{return JSON.parse(Android.getLog())}catch(e){return []}}
   return mem.log;
 }
+function nm(a,f){return a.filter(f).map(function(m){return m.n}).join(", ")}
+function resTxt(l){
+  if(l.ok===false)return "❌ não conseguiu";
+  if(l.ok!==true)return "⏰ sem resposta";
+  if(!l.m)return "✅ tomou tudo";
+  var yes=nm(l.m,function(m){return m.ok}),ac=nm(l.m,function(m){return m.a}),no=nm(l.m,function(m){return !m.ok&&!m.a});
+  return (no?"⚠ parcial":"✅ tomou tudo")+'<div style="font-size:14px;text-align:left">'+(yes?"✅ "+yes:"")+(ac?"<br>🟥 Acabou: "+ac:"")+(no?"<br>❌ "+no:"")+"</div>";
+}
 function renderLog(){
-  var data=getLogData();var rows=data.slice(-40).reverse().map(function(l){return "<tr><td>"+l.d+"</td><td>"+l.t+" "+l.n+"</td><td>"+(l.ok===true?"✅ tomou tudo":(l.ok===false?"❌ não conseguiu":"⏰ sem resposta"))+"</td></tr>"}).join("");
+  var data=getLogData();var rows=data.slice(-40).reverse().map(function(l){return "<tr><td>"+l.d+"</td><td>"+l.t+" "+l.n+"</td><td>"+resTxt(l)+"</td></tr>"}).join("");
   $("log").innerHTML=rows?"<table><tr><th>Dia</th><th>Bolsa</th><th>Resultado</th></tr>"+rows+"</table>":"Sem registros ainda.";
-  var by={};data.forEach(function(l){by[l.d]=by[l.d]||{ok:0,no:0,fails:[]};if(l.ok===true)by[l.d].ok++;else{by[l.d].no++;by[l.d].fails.push(l.t)}});
-  var s="Resumo remédios da Lourdinha:\n";Object.keys(by).forEach(function(d){s+=d+": "+by[d].ok+" ok, "+by[d].no+" não"+(by[d].no?" ("+by[d].fails.join(", ")+")":"")+"\n"});
+  var by={};data.forEach(function(l){by[l.d]=by[l.d]||{ok:0,no:0,fails:[],miss:[],ac:[]};if(l.ok===true){by[l.d].ok++;if(l.m)l.m.forEach(function(m){if(m.a)by[l.d].ac.push(m.n);else if(!m.ok)by[l.d].miss.push(m.n+" "+l.t)})}else{by[l.d].no++;by[l.d].fails.push(l.t)}});
+  var s="Resumo remédios da Lourdinha:\n";Object.keys(by).forEach(function(d){s+=d+": "+by[d].ok+" ok, "+by[d].no+" não"+(by[d].no?" ("+by[d].fails.join(", ")+")":"")+(by[d].miss.length?" | não tomou: "+by[d].miss.join(", "):"")+(by[d].ac.length?" | acabou: "+by[d].ac.join(", "):"")+"\n"});
   $("sum").textContent=data.length?s:"";
 }
-$("copy").onclick=function(){try{navigator.clipboard.writeText($("sum").textContent)}catch(e){}};
+var ANNE_TEL="81999999999"; // TODO: trocar pelo número real da Anne (DDD + número)
+$("callbtn").onclick=function(){$("confirm").style.display="flex"};
+$("nextbtn").onclick=showNext;
+$("warnok").onclick=function(){$("warn").style.display="none";silenciar()};
+$("spkq").onclick=function(){dizer("Ligar para Anne Filha?")};$("spky").onclick=function(){dizer("Sim")};$("spkn").onclick=function(){dizer("Não")};
+$("callno").onclick=function(){$("confirm").style.display="none"};
+$("callyes").onclick=function(){$("confirm").style.display="none";if(window.Android&&Android.ligar){Android.ligar(ANNE_TEL)}else{alert("Protótipo: ligaria para "+ANNE_TEL)}};
+$("copy").onclick=function(){
+  var t=$("sum").textContent;if(!t){alert("Sem registros para enviar.");return}
+  if(NATIVE){Android.share(t);return}
+  try{navigator.clipboard.writeText(t)}catch(e){}
+  try{window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}catch(e){}
+};
 $("clear").onclick=function(){askPass("1988","Senha para limpar",function(){mem.log=[];ls("log","[]");if(NATIVE)Android.clearLog();renderLog()})};
 setInterval(function(){
   var d=new Date();$("clock").textContent=hhmm(d);renderNext();
   var k=dstr(d)+hhmm(d);
   if(!NATIVE)POTS.forEach(function(p){if(p.t===hhmm(d)&&!fired[k+p.t]){fired[k+p.t]=1;fire(p)}});
 },1000);
-render();renderLog();renderNext();
+render();renderLog();renderNext();renderOut();
 (function(){
   if(NATIVE){
     $("sound").style.display="none";

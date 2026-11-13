@@ -9,20 +9,51 @@ import android.view.WindowManager;
 import android.webkit.*;
 public class MainActivity extends Activity {
     WebView web; android.speech.tts.TextToSpeech tts; boolean ttsOk = false;
+    Uri pendingCall;
     class Bridge {
-        @JavascriptInterface public String answer(boolean ok, String time){
+        @JavascriptInterface public void ligar(String tel){
+            if (tel == null || !tel.matches("[0-9+]{8,15}")) return;
+            final Uri u = Uri.parse("tel:" + tel);
+            runOnUiThread(() -> {
+                if (checkSelfPermission(Manifest.permission.CALL_PHONE) == android.content.pm.PackageManager.PERMISSION_GRANTED)
+                    startActivity(new Intent(Intent.ACTION_CALL, u));
+                else { pendingCall = u; requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, 2); }
+            });
+        }
+        @JavascriptInterface public String answer(boolean ok, String time){ return answer2(ok, time, null); }
+        @JavascriptInterface public String answer2(boolean ok, String time, String metaJson){
             int idx = java.util.Arrays.asList(Scheduler.TIMES).indexOf(time);
             String r = "ok";
             if (idx >= 0) {
-                if (ok) { LogStore.add(MainActivity.this, time, idx, true); Scheduler.resetAtt(MainActivity.this); }
+                if (ok) { LogStore.add(MainActivity.this, time, idx, true, metaJson); Scheduler.resetAtt(MainActivity.this); }
                 else r = Scheduler.no(MainActivity.this, idx);
             }
             startService(new Intent(MainActivity.this, AlarmService.class).setAction("STOP"));
             return r;
         }
+        @JavascriptInterface public void setSound(boolean on){
+            LogStore.sp(MainActivity.this).edit().putBoolean("snd", on).apply();
+            if (!on) startService(new Intent(MainActivity.this, AlarmService.class).setAction("HUSH"));
+        }
+        @JavascriptInterface public boolean getSound(){ return LogStore.sp(MainActivity.this).getBoolean("snd", true); }
+        @JavascriptInterface public void share(String text){
+            runOnUiThread(() -> {
+                Intent i = new Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text);
+                try { startActivity(new Intent(i).setPackage("com.whatsapp")); }
+                catch (Exception e) { try { startActivity(Intent.createChooser(i, "Enviar resumo")); } catch (Exception e2) {} }
+            });
+        }
+        @JavascriptInterface public void silence(){
+            runOnUiThread(() -> { try { if (tts != null) tts.stop(); } catch (Exception e) {} });
+            startService(new Intent(MainActivity.this, AlarmService.class).setAction("UNDUCK"));
+        }
         @JavascriptInterface public void hush(){ startService(new Intent(MainActivity.this, AlarmService.class).setAction("HUSH")); }
         @JavascriptInterface public void speak(String t){
-            runOnUiThread(() -> { if (tts != null && ttsOk) tts.speak(t, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, "u"); });
+            startService(new Intent(MainActivity.this, AlarmService.class).setAction("DUCK"));
+            runOnUiThread(() -> {
+                if (tts != null && ttsOk) tts.speak(t, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, "u");
+                else startService(new Intent(MainActivity.this, AlarmService.class).setAction("UNDUCK"));
+            });
         }
         @JavascriptInterface public void stop(){ startService(new Intent(MainActivity.this, AlarmService.class).setAction("STOP")); }
         @JavascriptInterface public void test(){
@@ -74,7 +105,13 @@ public class MainActivity extends Activity {
         web.setWebChromeClient(new WebChromeClient());
         web.addJavascriptInterface(new Bridge(), "Android");
         setContentView(web);
-        try { tts = new android.speech.tts.TextToSpeech(this, st -> { try { if (st == android.speech.tts.TextToSpeech.SUCCESS && tts != null) { Voice.apply(tts); ttsOk = true; } } catch (Throwable e) {} }); } catch (Throwable e) {}
+        try { tts = new android.speech.tts.TextToSpeech(this, st -> { try { if (st == android.speech.tts.TextToSpeech.SUCCESS && tts != null) { Voice.apply(tts);
+                tts.setOnUtteranceProgressListener(new android.speech.tts.UtteranceProgressListener(){
+                    public void onStart(String id){}
+                    public void onDone(String id){ startService(new Intent(MainActivity.this, AlarmService.class).setAction("UNDUCK")); }
+                    public void onError(String id){ startService(new Intent(MainActivity.this, AlarmService.class).setAction("UNDUCK")); }
+                });
+                ttsOk = true; } } catch (Throwable e) {} }); } catch (Throwable e) {}
         Scheduler.scheduleAll(this);
         load(getIntent());
     }
@@ -82,6 +119,14 @@ public class MainActivity extends Activity {
         String p = in != null ? in.getStringExtra("p") : null;
         boolean t = in != null && in.getBooleanExtra("test", false);
         web.loadUrl("file:///android_asset/index.html" + (p != null ? "?p=" + p + (t ? "&test=1" : "") : ""));
+    }
+    @Override public void onRequestPermissionsResult(int rc, String[] p, int[] g){
+        if (rc == 2 && pendingCall != null && g.length > 0 && g[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) startActivity(new Intent(Intent.ACTION_CALL, pendingCall));
+        pendingCall = null;
+    }
+    @Override public boolean onKeyDown(int k, android.view.KeyEvent e){
+        if (k == android.view.KeyEvent.KEYCODE_VOLUME_UP || k == android.view.KeyEvent.KEYCODE_VOLUME_DOWN || k == android.view.KeyEvent.KEYCODE_VOLUME_MUTE) return true;
+        return super.onKeyDown(k, e);
     }
     @Override protected void onDestroy(){ try { if (tts != null) tts.shutdown(); } catch (Exception e) {} super.onDestroy(); }
     @Override protected void onNewIntent(Intent in){ super.onNewIntent(in); setIntent(in); load(in); }

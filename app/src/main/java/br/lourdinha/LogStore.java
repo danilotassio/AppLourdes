@@ -18,6 +18,8 @@ public class LogStore {
             if (metaJson != null) o.put("m", new JSONArray(metaJson));
             a.put(o);
             sp(c).edit().putString("log", prune(a).toString()).apply();
+            if (ok != null) Watch.touch(c);
+            if (ok == null || !ok.booleanValue()) Sms.alert(c, time, idx);
         } catch (Exception e) {}
     }
     public static synchronized void addMeal(Context c, String time, String name, Boolean ok){

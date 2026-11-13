@@ -66,7 +66,7 @@ public class AlarmService extends Service {
         try {
             Bundle b = new Bundle();
             b.putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_ALARM);
-            tts.speak(meal >= 0 ? (stage == 0 ? Scheduler.MEAL_WAKE[meal] : Scheduler.MEAL_Q[meal]) : rem >= 0 ? Scheduler.REM_MSG[rem] : "Bora, Lourdinha! Tomar o remédio da bolsa " + Scheduler.NAMES[idx] + "!", TextToSpeech.QUEUE_FLUSH, b, "lourdinha");
+            tts.speak(meal >= 0 ? (stage == 0 ? Scheduler.MEAL_WAKE[meal] : Scheduler.MEAL_Q[meal]) : rem >= 0 ? Scheduler.remMsg(this, rem) : "Bora, Lourdinha! Tomar o remédio da bolsa " + Scheduler.NAMES[idx] + "!", TextToSpeech.QUEUE_FLUSH, b, "lourdinha");
         } catch (Exception e) {}
     }
 
@@ -142,9 +142,9 @@ public class AlarmService extends Service {
         if (r || (ml && stage == 0)) open.putExtra("stopAlarm", true);
         PendingIntent pi = PendingIntent.getActivity(this, ml ? 700 + meal * 10 + stage : (r ? 350 : 300 + idx), open, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         String title = ml ? (stage == 0 ? "Hora do " + Scheduler.MEAL_NAME[meal] : "Você já fez: " + Scheduler.MEAL_NAME[meal] + "?")
-                : (r ? Scheduler.REM_TITLE[rem] : "Hora do remédio! Bolsa " + Scheduler.NAMES[idx].toUpperCase());
+                : (r ? Scheduler.remTitle(this, rem) : "Hora do remédio! Bolsa " + Scheduler.NAMES[idx].toUpperCase());
         String text = ml ? (stage == 0 ? Scheduler.MEAL_WAKE[meal] : Scheduler.MEAL_Q[meal])
-                : (r ? Scheduler.REM_MSG[rem] : "Toque para ver os remédios");
+                : (r ? Scheduler.remMsg(this, rem) : "Toque para ver os remédios");
         Notification.Builder b = Build.VERSION.SDK_INT >= 26 ? new Notification.Builder(this, CH) : new Notification.Builder(this);
         b.setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
          .setContentTitle(title)

@@ -3,6 +3,7 @@ import android.content.*;
 import android.os.Build;
 public class AlarmReceiver extends BroadcastReceiver {
     @Override public void onReceive(Context c, Intent in){
+        if (in.hasExtra("watch")) { Watch.run(c); Watch.schedule(c); return; }
         if (in.hasExtra("meal")) {
             int m = in.getIntExtra("meal", 0), st = in.getIntExtra("stage", 0), at = in.getIntExtra("att", 1);
             boolean t = in.getBooleanExtra("test", false);
@@ -13,6 +14,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             return;
         }
         if (in.hasExtra("rem")) {
+            if (in.getIntExtra("rem", 0) >= 2) { if (!Scheduler.actOn(c)) return; Scheduler.scheduleReminders(c); }
             Intent r = new Intent(c, AlarmService.class).putExtra("rem", in.getIntExtra("rem", 0));
             if (Build.VERSION.SDK_INT >= 26) c.startForegroundService(r); else c.startService(r);
             return;

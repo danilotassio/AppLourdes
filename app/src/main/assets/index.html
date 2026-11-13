@@ -33,6 +33,48 @@ table{width:100%;border-collapse:collapse;font-size:18px;background:#fff}
 td,th{border:1px solid #999;padding:6px;text-align:center}
 .pill{display:inline-block;padding:2px 10px;border-radius:10px;font-weight:bold}
 #alarmbar{display:none}
+/* ===== Layout moderno (modo Lourdinha) ===== */
+body.mL{background:#f4f1fb;font-family:-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:100px}
+body.mL #top{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border-radius:0 0 30px 30px;padding:16px 14px 100px;min-height:0;grid-template-columns:auto 1fr auto;align-items:center}
+body.mL #top .deco{display:none}
+body.mL #top .tt{background:none;color:#fff;font-size:21px;text-align:left;justify-self:start;padding:0;margin-left:10px}
+body.mL #top .lf{display:flex;align-items:center}
+body.mL #top .rt{background:none;padding:0;color:#fff;gap:6px}
+body.mL #clock{font-size:28px;font-weight:800;color:#fff}body.mL #clock small{font-size:12px;font-weight:600;opacity:.9}
+body.mL #gear{color:#fff;background:rgba(255,255,255,.2);border-radius:14px;width:42px;height:42px;padding:0;font-size:20px}
+body.mL #fe{position:absolute;left:14px;top:78px;z-index:3;white-space:nowrap;font-size:14px;padding:7px 14px;flex:none;width:auto;background:rgba(255,255,255,.22);color:#fff;border:0;box-shadow:none;border-radius:14px}
+#av2{width:54px;height:54px;border-radius:50%;border:3px solid #fff;background:url(data:image/jpeg;base64,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) center/cover;flex:none;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+#hero{display:none}
+body.mL #hero{display:block;position:relative;z-index:2;margin:-48px 0 14px;background:#fff;border-radius:26px;padding:18px;box-shadow:0 14px 34px rgba(76,29,149,.18)}
+#hero .lb{font-size:13px;font-weight:800;letter-spacing:.08em;color:#7c3aed;text-transform:uppercase}
+#hero .hb{display:flex;align-items:center;gap:12px;margin:8px 0 4px}
+#hero .dt{width:24px;height:24px;border-radius:50%;flex:none;border:3px solid rgba(0,0,0,.25)}
+#hero .ht{font-size:40px;font-weight:900;line-height:1}#hero .hn{font-size:22px;font-weight:800}
+#hero .hw{font-size:15px;color:#6b7280}#hero .hp{font-size:15px;font-weight:800;color:#dc2626;margin-top:4px}
+#hero .bar{height:10px;background:#ede9fe;border-radius:8px;margin:12px 0 14px;overflow:hidden}#hero .bar i{display:block;height:100%;background:linear-gradient(90deg,#7c3aed,#db2777);border-radius:8px}
+#hero button{width:100%;font-size:20px;padding:16px;border-radius:18px;background:linear-gradient(135deg,#7c3aed,#db2777);box-shadow:0 6px 14px rgba(0,0,0,.14)}
+body.mL #main{padding:0 14px}
+body.mL .card{border:0!important;border-radius:22px;box-shadow:0 4px 14px rgba(0,0,0,.07);padding:16px}
+body.mL .ov{border-radius:24px;box-shadow:0 10px 28px rgba(0,0,0,.18)}
+body.mL button{border-radius:18px}
+body.mL .spk{background:#312e81;border-radius:14px}
+body.mL .small{border-radius:14px;background:#ede9fe;color:#4c1d95;font-weight:700}
+body.mL #sintcard{background:transparent!important;box-shadow:none;padding:4px 0}
+body.mL #sintcard>.medrow{margin-bottom:0}
+body.mL .sgrid{grid-template-columns:repeat(4,1fr);gap:8px}
+body.mL .sgrid button{flex-direction:column;font-size:15px;padding:12px 2px;gap:2px;white-space:normal;box-shadow:0 5px 12px rgba(0,0,0,.14);border-radius:20px}
+body.mL .sgrid button>span:first-child{display:flex;flex-direction:column;align-items:center;font-size:15px;font-weight:800}
+body.mL .sgrid .spk{font-size:13px;padding:2px 8px}
+body.mL #next .dg{border:0}
+body.mL #next .pill{border-radius:12px;padding:6px 12px;font-size:17px}
+body.mL #stbtn,body.mL #callbtn{border-radius:20px;box-shadow:0 6px 14px rgba(0,0,0,.14)}
+body.mL #callbtn{background:linear-gradient(135deg,#ec4899,#db2777);padding:16px;font-size:18px}
+#lnav{display:none}
+body.mL #lnav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-radius:26px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:8px 4px;z-index:6}
+#lnav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:800;color:#6b7280;padding:6px 0;border-radius:18px}
+#lnav button i{font-style:normal;font-size:22px}
+#lnav button:active{background:#f3e8ff;color:#7c3aed}
+
 #callbtn{background:#e0489e;color:#fff;flex:1;display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:bold;padding:12px;border-radius:12px;text-align:center}
 #callbtn{line-height:21px}#callbtn .spk{margin:0;flex:none;font-size:16px;line-height:21px;padding:0 8px;border-radius:8px}#copy{line-height:21px}
 #outm,#estm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;align-items:center;justify-content:center;padding:14px}
@@ -195,9 +237,11 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
 </style>
 </head>
 <body>
-<div id="top"><div class="deco">🌸 💗 🌿 🦋 💕 🌷 🍃 💗 🌼 🌿 💕 🌸 🌻 💞 🍀 🐝 🌸 💗 🌿 🦋 💕 🌷 🍃 💗 🌼 🌿 💕 🌸 🌻 💞 🍀 🐝 🌸 💗 🌿 🦋 💕 🌷 🍃 💗 🌼 🌿 💕 🌸 🌻 💞 🍀 🐝</div><div class="lf"><button id="fe">✝ Fé</button></div><div class="tt">Medicações de Lourdinha</div><div class="rt"><button id="gear">⚙</button><div id="clock">--:--</div></div></div>
+<div id="top"><div class="deco">🌸 💗 🌿 🦋 💕 🌷 🍃 💗 🌼 🌿 💕 🌸 🌻 💞 🍀 🐝 🌸 💗 🌿 🦋 💕 🌷 🍃 💗 🌼 🌿 💕 🌸 🌻 💞 🍀 🐝 🌸 💗 🌿 🦋 💕 🌷 🍃 💗 🌼 🌿 💕 🌸 🌻 💞 🍀 🐝</div><div class="lf"><div id="av2"></div><button id="fe">✝ Fé</button></div><div class="tt">Medicações de Lourdinha</div><div class="rt"><button id="gear">⚙</button><div id="clock">--:--</div></div></div>
+<div id="lnav"><button id="ln0"><i>💊</i>Hoje</button><button id="ln1"><i>📅</i>Horários</button><button id="ln2"><i>📦</i>Estoque</button><button id="ln3"><i>🩺</i>Médica</button><button id="ln4"><i>📞</i>Ligar</button></div>
 <div id="pw"><div class="b"><div class="sub" id="pwt">Senha</div><input id="pwi" type="password" inputmode="numeric"><div class="btns"><button class="small" id="pwc" style="flex:1">Cancelar</button><button id="pwo" style="background:#1F3864;flex:1;font-size:24px">OK</button></div></div></div>
 <div id="main">
+  <div id="hero"></div>
   <div id="confirm"><div class="box"><div class="medrow" style="justify-content:center"><div class="q" style="margin:0">Ligar para Anne Filha?</div><button class="spk" id="spkc" style="margin:0 0 0 10px">🔊</button></div><div class="btns"><button id="callyes" style="background:#1e8e3e">✅ Sim</button><button id="callno" style="background:#c5221f">❌ Não</button></div></div></div>
   <div id="outm"><div class="box"><b style="font-size:26px;color:#c5221f">⚠ Remédios que acabaram</b><div id="outml" style="margin:10px 0"></div><div style="font-size:19px;margin-bottom:12px">Para compartilhar a lista de remédios para comprar, aperte o botão verde. Ou aperte o OK azul para apenas sair.</div><div class="btns"><button id="outsh" style="background:#1e8e3e;font-size:20px;padding:16px 6px"><svg class="wa" viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.8 2 6.8L3.5 29l6.6-1.7c1.9 1 4 1.5 6 1.5 7.2 0 13-5.7 13-12.8S23.200 3 16 3z"/><path fill="#25D366" d="M16 5.200c-6 0-10.800 4.700-10.800 10.600 0 2.100.6 4 1.700 5.700l.3.5-1 3.700 3.800-1 .5.3c1.600 1 3.500 1.500 5.500 1.500 6 0 10.800-4.700 10.800-10.600S22 5.200 16 5.200z"/><path fill="#fff" d="M21.600 18.900c-.3-.2-1.800-.9-2.100-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.200-.2.2-.4.2-.7.1-1.800-.9-3-1.600-4.200-3.600-.3-.5.3-.5.9-1.600.1-.2 0-.4 0-.5-.1-.2-.7-1.700-1-2.300-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1.100 1.100-1.100 2.600s1.100 3 1.300 3.200c.2.2 2.200 3.400 5.300 4.700 2 .8 2.700.9 3.700.7.6-.1 1.800-.7 2.100-1.500.3-.7.3-1.300.2-1.500-.1-.1-.3-.2-.6-.4z"/></svg>Compartilhar lista (WhatsApp)</button><button id="outok" style="background:#1F3864;font-size:24px;padding:16px 6px;flex:.5">OK</button></div></div></div>
 <div id="stm"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b style="font-size:23px;color:#00595f">📦 Estoque de remédios</b><button class="small" id="stx" style="flex:none">✖ Fechar</button></div><div id="stsum" style="font-size:16px;color:#333;margin-top:6px"></div><div id="stl"></div><div class="btns" style="margin-top:0"><button id="stspk" style="background:#1F3864;font-size:20px;padding:14px 6px;flex:.45">🔊</button><button id="stok" style="background:#00838f;font-size:22px;padding:14px 6px">OK</button></div></div></div>
@@ -662,6 +706,10 @@ function renderNext(){
     IDLE_NOW="⚠ Remédio pendente de tomar:<br>"+pl.map(function(p){return p.t+" "+p.n}).join("<br>");
     IDLE_SAY="Lourdinha, remédio pendente de tomar: "+pl.map(function(p){return "bolsa "+p.n.toLowerCase().replace(/o$/,"a")+", "+(+p.t.split(":")[0])+" horas"}).join("; ")+".";
   }else{IDLE_NOW=IDLE;IDLE_SAY=IDLE+" Beleza, Lourdinha!"}
+
+  try{var nx=occ[f],pv=occ[f-1];if(nx&&$("hero")){var mins=Math.max(0,Math.round((nx.d-now)/60000)),hh=Math.floor(mins/60),mm=mins%60,fr=pv?Math.min(1,Math.max(0,(now-pv.d)/(nx.d-pv.d))):0;
+    $("hero").innerHTML='<div class="lb">Próximo remédio</div><div class="hb"><div class="dt" style="background:'+nx.p.c+'"></div><div><div class="ht">'+nx.p.t+'</div><div class="hn">'+nx.p.n+'</div></div></div><div class="hw">Faltam '+(hh?hh+"h":"")+pad(mm)+(hh?"":" min")+'</div>'+(pl.length?'<div class="hp">⚠ Pendente: '+pl.map(function(p){return p.t+" "+p.n}).join(", ")+'</div>':'')+'<div class="bar"><i style="width:'+Math.round(fr*100)+'%"></i></div><button id="heroSpk">🔊 Ouvir o próximo</button>';
+    $("heroSpk").onclick=function(){showSlot(nx.p,nx.d,"Lourdinha, o próximo horário é ")}}}catch(e){}
   if($("idletxt")){$("idletxt").innerHTML=IDLE_NOW;$("idletxt").style.color=pl.length?"#c5221f":"#1e8e3e"}
 }
 function getLogData(){
@@ -1127,7 +1175,15 @@ document.addEventListener("visibilitychange",function(){if(!document.hidden){syn
 
 // ---- Modo do celular: Lourdinha ou cuidador
 var MODE=NATIVE?(Android.getMode?Android.getMode():""):(ls("mode")||"lourdinha");
-function setModeNow(m){MODE=m;if(NATIVE&&Android.setMode)Android.setMode(m);else ls("mode",m)}
+function applyMode(){document.body.classList.toggle("mL",MODE==="lourdinha")}
+function setModeNow(m){MODE=m;applyMode();if(NATIVE&&Android.setMode)Android.setMode(m);else ls("mode",m)}
+applyMode();
+function goTo(id){var e=$(id);if(e&&e.scrollIntoView)e.scrollIntoView({behavior:"smooth",block:"start"})}
+$("ln0").onclick=function(){window.scrollTo({top:0,behavior:"smooth"})};
+$("ln1").onclick=function(){goTo("next")};
+$("ln2").onclick=function(){$("stbtn").click()};
+$("ln3").onclick=function(){goTo("pmic")};
+$("ln4").onclick=function(){$("callbtn").click()};
 function paintMode(){
   $("modem").style.display=(NATIVE&&MODE==="")?"flex":"none";$("modem").style.flexDirection="column";$("modem").style.justifyContent="center";
   $("cuid").style.display=MODE==="cuidador"?"block":"none";

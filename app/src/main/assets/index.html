@@ -1225,7 +1225,11 @@ function tabAv(){
   var h="",last="";a.forEach(function(x){var d=new Date(x.ts),ds=dstr(d);if(ds!==last){h+='<div class="dh">'+dlabel(d)+'</div>';last=ds}var k=kindOf(x.body);h+=card(KIC[k],cMsg(x.body)+(k==="sintoma"?'<br><button class="callnow" onclick="cuidCall('+x.ts+',\''+callTxt(x.body)+'\')">📞 Ligar agora para a Lourdinha</button>':""),"k-"+k+(k==="sintoma"||k==="remedio"?" bad":""),hhmm(d))});return h}
 function alertsList(){var a=[];try{a=JSON.parse(NATIVE&&Android.getAlerts?Android.getAlerts():"[]")}catch(e){}return a}
 function tabAl(){
-  var st=remState(),h="",hasSt=!!st.ts||!!(st.out||st.low||st.sint),al=alertsList(),out=st.out||[],low=st.low||[],sint=(st.sint||[]).slice(-1)[0];
+  var st=remState(),h="",hasSt=!!st.ts||!!(st.out||st.low||st.sint),al=alertsList(),out=(st.out||[]).slice(),low=(st.low||[]).slice(),sint=(st.sint||[]).slice(-1)[0];
+  // estoque zerado ou baixo também vem da aba Estoque (mesmos dados), não só das listas marcadas pela Lourdinha
+  (st.stock||[]).forEach(function(x){if(x.has===null||x.has===undefined)return;
+    if(+x.has<=0){if(!out.some(function(o){return normNome(o)===normNome(x.k)||normNome(x.k).indexOf(normNome(o))===0}))out.push(x.k);low=low.filter(function(l){return l.k!==x.k})}
+    else if(+x.has<10&&!low.some(function(l){return l.k===x.k}))low.push({k:x.k,v:+x.has,d:null})});
   var nm={bem:"😊 Bem",enjoo:"🤢 Enjoo",dor:"🤕 Dor",tontura:"😵 Tontura"};
   // último estado informado também pelos avisos recebidos (não depende da sincronização)
   var fa=null;al.forEach(function(x){var t=String(x.body).toLowerCase(),m=t.match(/registrou (dor|enjoo|tontura) agora/),k=m?m[1]:(/esta bem/.test(t)?"bem":null);if(k&&(!fa||x.ts>fa.ts))fa={k:k,ts:x.ts}});
@@ -1234,7 +1238,7 @@ function tabAl(){
   if(!hasSt&&buy){h+=card("⚠️",'<b>Remédios para comprar</b>'+cEsc(buy.t)+'<br><span style="opacity:.7">aviso de '+dstr(new Date(buy.ts))+' '+hhmm(new Date(buy.ts))+'</span>',"bad")}
   else{
     h+=card(out.length?"⚠️":"✅",'<b>'+(out.length?"Remédios que acabaram":"Nenhum remédio acabou")+'</b>'+(out.length?out.map(cEsc).join(", "):""),out.length?"bad":"good");
-    h+=card(low.length?"📉":"✅",'<b>'+(low.length?"Estoque baixo (menos de 10 doses)":"Estoque em dia")+'</b>'+low.map(function(x){return cEsc(x.k)+': '+x.v+(x.v===1?" dose":" doses")+' · cerca de '+x.d+(x.d===1?" dia":" dias")}).join("<br>"),low.length?"bad":"good");
+    h+=card(low.length?"📉":"✅",'<b>'+(low.length?"Estoque baixo (menos de 10 doses)":"Estoque em dia")+'</b>'+low.map(function(x){return cEsc(x.k)+': '+x.v+(x.v===1?" dose":" doses")+(x.d===null||x.d===undefined?"":' · cerca de '+x.d+(x.d===1?" dia":" dias"))}).join("<br>"),low.length?"bad":"good");
   }
   h+=card("💬",'<b>Como a Lourdinha está</b>'+(sint?(nm[sint.k]||sint.k)+' · '+dstr(new Date(sint.ts))+' '+hhmm(new Date(sint.ts)):"Sem resposta ainda."),sint&&sint.k!=="bem"?"warn":"good");
   if(!hasSt)h+='<div class="empty" style="padding:10px 6px">⏳ '+srvMsg()+'</div>';

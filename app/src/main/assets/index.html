@@ -25,16 +25,24 @@ table{width:100%;border-collapse:collapse;font-size:18px;background:#fff}
 td,th{border:1px solid #999;padding:6px;text-align:center}
 .pill{display:inline-block;padding:2px 10px;border-radius:10px;font-weight:bold}
 #alarmbar{display:none}
+#gear{background:none;color:#fff;font-size:26px;padding:0 8px;flex:none}
+.ov{position:fixed;left:0;top:0;right:0;bottom:0;overflow:auto;padding:14px;z-index:50}
+.spk{background:#1F3864;color:#fff;font-size:26px;padding:6px 12px;border-radius:12px;flex:none;margin-right:8px}
+.medrow{display:flex;align-items:center;margin:12px 0}
+#pw{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:none;z-index:99;align-items:center;justify-content:center}
+#pw div.b{background:#fff;border-radius:18px;padding:20px;width:85%}
+#pwi{font-size:34px;width:100%;padding:10px;text-align:center}
 </style>
 </head>
 <body>
-<div id="top"><div>Remédios da Lourdinha</div><div id="clock">--:--</div></div>
+<div id="top"><div>Remédios da Lourdinha</div><div style="display:flex;align-items:center"><button id="gear">⚙</button><div id="clock">--:--</div></div></div>
+<div id="pw"><div class="b"><div class="sub" id="pwt">Senha</div><input id="pwi" type="password" inputmode="numeric"><div class="btns"><button class="small" id="pwc" style="flex:1">Cancelar</button><button id="pwo" style="background:#1F3864;flex:1;font-size:24px">OK</button></div></div></div>
 <div id="main">
   <div id="sound" class="card" style="background:#fff3cd"><div class="sub"><b>1) Toque aqui para ligar o som</b></div><button id="enable" style="background:#1F3864;width:100%">🔔 Ligar alarme</button><div style="font-size:16px;margin-top:8px">Deixe esta tela aberta e o volume alto. O alarme toca nos horários dos remédios.</div></div>
   <div id="now"></div>
   <div class="card" style="background:#fff">
     <label><input type="checkbox" id="qt"> Dias pós-quimio (incluir remédios de enjoo)</label>
-    <div class="row"><button class="small" id="test">Testar alarme</button><button class="small" id="stop">Parar música</button></div>
+    <div id="adm" style="display:none"><div class="row"><button class="small" id="test">Testar alarme</button><button class="small" id="stop">Parar música</button></div></div>
   </div>
   <div class="card" style="background:#fff"><b style="font-size:22px">Próximos horários</b><div id="next" style="font-size:20px;margin-top:6px"></div></div>
   <div class="card" style="background:#fff"><b style="font-size:22px">Registro da semana</b>
@@ -58,6 +66,9 @@ var POTS=[
 var QT=["Ondansetrona 8 mg — 1 comprimido — enjoo","Metoclopramida — 40 gotas — enjoo"];
 function $(i){return document.getElementById(i)}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+var passCb=null,passWant="";
+function askPass(want,title,cb){passWant=want;passCb=cb;$("pwt").textContent=title;$("pwi").value="";$("pw").style.display="flex";setTimeout(function(){$("pwi").focus()},100)}
+function passDone(){var v=$("pwi").value;$("pw").style.display="none";if(v===passWant){passCb&&passCb()}else{alert("Senha incorreta")}}
 var mem={log:[],qt:false};
 try{mem.log=JSON.parse(ls("log")||"[]");mem.qt=ls("qt")==="1"}catch(e){}
 $("qt").checked=mem.qt;
@@ -103,7 +114,11 @@ $("enable").onclick=function(){
   try{if(navigator.wakeLock)navigator.wakeLock.request("screen").catch(function(){})}catch(e){}
   $("sound").style.display="none";startMusic();setTimeout(stopMusic,1200);
 };
+$("pwo").onclick=passDone;$("pwc").onclick=function(){$("pw").style.display="none"};
+$("gear").onclick=function(){askPass("1989","Senha para opções",function(){var a=$("adm");a.style.display=a.style.display==="none"?"block":"none"})};
 $("test").onclick=function(){if(NATIVE){Android.test();fire(POTS[0],true)}else fire(POTS[0],true)};
+function dizer(t){if(NATIVE){try{Android.hush()}catch(e){}Android.speak(t)}else{try{var u=new SpeechSynthesisUtterance(t);u.lang="pt-BR";u.pitch=.6;u.rate=.9;var vs=speechSynthesis.getVoices().filter(function(v){return /pt/i.test(v.lang)&&/male|masc|daniel|felipe|ricardo/i.test(v.name)&&!/female|fem/i.test(v.name)});if(vs.length)u.voice=vs[0];speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}}
+function medSay(m){var a=m.split(" — ");var n=a[0].replace(/\s+\d+([.,]\d+)?\s*mg$/i,"");var q=(a[1]||"").replace(/\(.*?\)/g,"");return n+", "+q}
 function medsOf(p){var a=p.m.slice();if(mem.qt&&p.q)a=a.concat(QT);return a}
 function fire(p,test){
   pending={p:p,test:!!test,day:dstr(new Date()),time:p.t};
@@ -111,13 +126,26 @@ function fire(p,test){
   clearInterval(spk);spk=setInterval(function(){if(pending)falar(pending.p)},9000);
   render();
 }
+function showMsg(p,r){
+  var t=r==="retry"?"Tem certeza que não tomou, Lourdinha? Vou chamar de novo em 10 minutos.":"Tudo bem, Lourdinha. Registrei que não conseguiu tomar.";
+  $("now").innerHTML='<div class="ov" style="background:'+p.c+'"><div class="big">BOLSA '+p.n+'</div><div class="med" style="text-align:center;font-size:36px;margin-top:30px">'+t+'</div><div class="btns"><button id="mok" style="background:#1F3864">OK</button></div></div>';
+  $("mok").onclick=function(){render()};
+  dizer(t);
+}
 function answer(ok){
   if(NATIVE){
-    if(pending&&!pending.test)Android.answer(ok,pending.time);else Android.stop();
+    if(pending&&!pending.test){
+      var r=Android.answer(ok,pending.time);
+      if(!ok&&(r==="retry"||r==="final")){showMsg(pending.p,r);pending=null;renderLog();return}
+    }else Android.stop();
     pending=null;render();renderLog();return;
   }
   stopMusic();clearInterval(spk);try{speechSynthesis.cancel()}catch(e){}
   if(!pending)return;
+  if(!ok&&!pending.test){
+    var at=(pending.att||0)+1;
+    if(at<3){var pp=pending.p;showMsg(pp,"retry");var dd=pending;pending=null;setTimeout(function(){fire(dd.p,false);pending.att=at},600000);renderLog();return}
+  }
   if(!pending.test){mem.log.push({d:pending.day,t:pending.time,ok:ok,n:pending.p.n});ls("log",JSON.stringify(mem.log))}
   pending=null;render();renderLog();
 }
@@ -125,13 +153,14 @@ function render(){
   var h="";
   if(pending){
     var p=pending.p;
-    h+='<div class="card" style="background:'+p.c+'"><div class="big">BOLSA '+p.n+'</div><div class="sub">'+p.t+(pending.test?" (teste)":"")+'</div>';
-    medsOf(p).forEach(function(m){h+='<div class="med">• '+m+'</div>'});
+    h+='<div class="ov" style="background:'+p.c+'"><div class="big">BOLSA '+p.n+'</div><div class="sub">'+p.t+(pending.test?" (teste)":"")+'</div>';
+    medsOf(p).forEach(function(m,k){h+='<div class="medrow"><button class="spk" data-k="'+k+'">🔊</button><div class="med" style="margin:0">'+m+'</div></div>'});
     h+='<div class="btns"><button id="ok">✅ Tomei tudo</button><button id="no">❌ Não consegui</button></div></div>';
   }else{
     h+='<div class="card" style="background:#fff"><div class="sub">Nenhum remédio agora. Quando chegar a hora, a música toca e mostra a cor da bolsa.</div></div>';
   }
   $("now").innerHTML=h;
+  if(pending){var ms=medsOf(pending.p);Array.prototype.forEach.call(document.querySelectorAll(".spk"),function(b){b.onclick=function(){dizer(medSay(ms[+b.dataset.k]))}})}
   if($("ok")){$("ok").onclick=function(){answer(true)};$("no").onclick=function(){answer(false)}}
 }
 function renderNext(){
@@ -150,7 +179,7 @@ function renderLog(){
   $("sum").textContent=data.length?s:"";
 }
 $("copy").onclick=function(){try{navigator.clipboard.writeText($("sum").textContent)}catch(e){}};
-$("clear").onclick=function(){if(this.dataset.s==="1"){mem.log=[];ls("log","[]");if(NATIVE)Android.clearLog();renderLog();this.textContent="Limpar registro";this.dataset.s=""}else{this.dataset.s="1";this.textContent="Toque de novo para confirmar"}};
+$("clear").onclick=function(){askPass("1988","Senha para limpar",function(){mem.log=[];ls("log","[]");if(NATIVE)Android.clearLog();renderLog()})};
 setInterval(function(){
   var d=new Date();$("clock").textContent=hhmm(d);renderNext();
   var k=dstr(d)+hhmm(d);

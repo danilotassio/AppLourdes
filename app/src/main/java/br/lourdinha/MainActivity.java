@@ -8,12 +8,21 @@ import android.provider.Settings;
 import android.view.WindowManager;
 import android.webkit.*;
 public class MainActivity extends Activity {
-    WebView web;
+    WebView web; android.speech.tts.TextToSpeech tts; boolean ttsOk = false;
     class Bridge {
-        @JavascriptInterface public void answer(boolean ok, String time){
+        @JavascriptInterface public String answer(boolean ok, String time){
             int idx = java.util.Arrays.asList(Scheduler.TIMES).indexOf(time);
-            LogStore.add(MainActivity.this, time, idx, ok);
+            String r = "ok";
+            if (idx >= 0) {
+                if (ok) { LogStore.add(MainActivity.this, time, idx, true); Scheduler.resetAtt(MainActivity.this); }
+                else r = Scheduler.no(MainActivity.this, idx);
+            }
             startService(new Intent(MainActivity.this, AlarmService.class).setAction("STOP"));
+            return r;
+        }
+        @JavascriptInterface public void hush(){ startService(new Intent(MainActivity.this, AlarmService.class).setAction("HUSH")); }
+        @JavascriptInterface public void speak(String t){
+            runOnUiThread(() -> { if (tts != null && ttsOk) tts.speak(t, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, "u"); });
         }
         @JavascriptInterface public void stop(){ startService(new Intent(MainActivity.this, AlarmService.class).setAction("STOP")); }
         @JavascriptInterface public void test(){
@@ -47,6 +56,7 @@ public class MainActivity extends Activity {
         web.setWebChromeClient(new WebChromeClient());
         web.addJavascriptInterface(new Bridge(), "Android");
         setContentView(web);
+        tts = new android.speech.tts.TextToSpeech(this, st -> { if (st == android.speech.tts.TextToSpeech.SUCCESS) { Voice.apply(tts); ttsOk = true; } });
         Scheduler.scheduleAll(this);
         load(getIntent());
     }
@@ -55,5 +65,6 @@ public class MainActivity extends Activity {
         boolean t = in != null && in.getBooleanExtra("test", false);
         web.loadUrl("file:///android_asset/index.html" + (p != null ? "?p=" + p + (t ? "&test=1" : "") : ""));
     }
+    @Override protected void onDestroy(){ try { if (tts != null) tts.shutdown(); } catch (Exception e) {} super.onDestroy(); }
     @Override protected void onNewIntent(Intent in){ super.onNewIntent(in); setIntent(in); load(in); }
 }

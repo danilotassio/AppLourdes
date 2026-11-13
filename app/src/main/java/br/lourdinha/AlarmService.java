@@ -20,10 +20,9 @@ public class AlarmService extends Service {
     @Override public int onStartCommand(Intent in, int flags, int startId){
         String act = in != null ? in.getAction() : null;
         if (in != null) { idx = in.getIntExtra("i", idx); test = in.getBooleanExtra("test", test); }
-        if ("OK".equals(act) || "NO".equals(act)) {
-            if (active && !test) LogStore.add(this, Scheduler.TIMES[idx], idx, "OK".equals(act));
-            finish(); return START_NOT_STICKY;
-        }
+        if ("OK".equals(act)) { if (active && !test) { LogStore.add(this, Scheduler.TIMES[idx], idx, true); Scheduler.resetAtt(this); } finish(); return START_NOT_STICKY; }
+        if ("NO".equals(act)) { if (active && !test) Scheduler.no(this, idx); finish(); return START_NOT_STICKY; }
+        if ("HUSH".equals(act)) { playing = false; h.removeCallbacks(speak); try { if (tts != null) tts.stop(); } catch (Exception e) {} return START_NOT_STICKY; }
         if ("STOP".equals(act)) { finish(); return START_NOT_STICKY; }
         if (active) return START_NOT_STICKY;
         start();
@@ -42,7 +41,7 @@ public class AlarmService extends Service {
         startAudio();
         tts = new TextToSpeech(this, status -> {
             if (status == TextToSpeech.SUCCESS && tts != null) {
-                tts.setLanguage(new Locale("pt", "BR"));
+                Voice.apply(tts);
                 tts.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build());
                 ttsReady = true;
                 h.post(speak);
@@ -131,6 +130,7 @@ public class AlarmService extends Service {
          .setContentTitle("Hora do remédio! Bolsa " + Scheduler.NAMES[idx].toUpperCase())
          .setContentText("Toque para ver os remédios")
          .setContentIntent(pi).setFullScreenIntent(pi, true)
+         .setColor(Scheduler.COLORS[idx]).setColorized(true)
          .setCategory(Notification.CATEGORY_ALARM).setOngoing(true)
          .addAction(android.R.drawable.checkbox_on_background, "Tomei tudo", svc("OK", 1))
          .addAction(android.R.drawable.ic_delete, "Não consegui", svc("NO", 2));

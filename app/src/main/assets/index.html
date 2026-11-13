@@ -44,17 +44,18 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
   </div>
 </div>
 <script>
+var NATIVE=(typeof Android!=="undefined");
 var POTS=[
- {t:"06:00",n:"AMARELO",c:"#FFF2A8",m:["Omeprazol 20 mg — 2 comprimidos (em jejum)","Morfina 10 mg — 1 comprimido","Lactulona — 15 ml","Dipirona 500 mg — 2 comprimidos","Simeticona — 40 gotas","Dexametasona 4 mg — 1 comprimido (com o café)"],q:1},
- {t:"10:00",n:"VERDE",c:"#BFE3BF",m:["Morfina 10 mg — 1 comprimido"]},
- {t:"12:00",n:"LARANJA",c:"#FFD3A1",m:["Dipirona 500 mg — 2 comprimidos","Simeticona — 40 gotas"]},
- {t:"14:00",n:"AZUL",c:"#B7D3F5",m:["Morfina 10 mg — 1 comprimido","Lactulona — 15 ml"],q:1},
- {t:"18:00",n:"ROSA",c:"#F9C6E0",m:["Morfina 10 mg — 1 comprimido","Dipirona 500 mg — 2 comprimidos","Simeticona — 40 gotas"]},
- {t:"22:00",n:"ROXO",c:"#D8C4EE",m:["Morfina 10 mg — 1 comprimido","Lactulona — 15 ml","Bisacodil 5 mg — 1 comprimido"],q:1},
- {t:"00:00",n:"CINZA",c:"#D0D0D0",m:["Dipirona 500 mg — 2 comprimidos","Simeticona — 40 gotas"]},
- {t:"02:00",n:"VERMELHO",c:"#F8B4B4",m:["Morfina 10 mg — 1 comprimido"]}
+ {t:"06:00",n:"AMARELO",c:"#FFF2A8",m:["Omeprazol 20 mg — 2 comprimidos (em jejum) — protege o estômago","Morfina 10 mg — 1 comprimido — dor","Lactulona — 15 ml — intestino (laxante)","Dipirona 500 mg — 2 comprimidos — dor e febre","Simeticona — 40 gotas — gases","Dexametasona 4 mg — 1 comprimido (com o café) — apetite e dor"],q:1},
+ {t:"10:00",n:"VERDE",c:"#BFE3BF",m:["Morfina 10 mg — 1 comprimido — dor"]},
+ {t:"12:00",n:"LARANJA",c:"#FFD3A1",m:["Dipirona 500 mg — 2 comprimidos — dor e febre","Simeticona — 40 gotas — gases"]},
+ {t:"14:00",n:"AZUL",c:"#B7D3F5",m:["Morfina 10 mg — 1 comprimido — dor","Lactulona — 15 ml — intestino (laxante)"],q:1},
+ {t:"18:00",n:"ROSA",c:"#F9C6E0",m:["Morfina 10 mg — 1 comprimido — dor","Dipirona 500 mg — 2 comprimidos — dor e febre","Simeticona — 40 gotas — gases"]},
+ {t:"22:00",n:"ROXO",c:"#D8C4EE",m:["Morfina 10 mg — 1 comprimido — dor","Lactulona — 15 ml — intestino (laxante)","Bisacodil 5 mg — 1 comprimido — intestino (laxante)"],q:1},
+ {t:"00:00",n:"CINZA",c:"#D0D0D0",m:["Dipirona 500 mg — 2 comprimidos — dor e febre","Simeticona — 40 gotas — gases"]},
+ {t:"02:00",n:"VERMELHO",c:"#F8B4B4",m:["Morfina 10 mg — 1 comprimido — dor"]}
 ];
-var QT=["Ondansetrona 8 mg — 1 comprimido","Metoclopramida — 40 gotas"];
+var QT=["Ondansetrona 8 mg — 1 comprimido — enjoo","Metoclopramida — 40 gotas — enjoo"];
 function $(i){return document.getElementById(i)}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
 var mem={log:[],qt:false};
@@ -63,6 +64,7 @@ $("qt").checked=mem.qt;
 $("qt").onchange=function(){mem.qt=this.checked;ls("qt",this.checked?"1":"0");render()};
 var spk=null;
 function falar(p){
+  if(NATIVE)return;
   try{
     var u=new SpeechSynthesisUtterance("Bora, Lourdinha! Tomar o remédio da bolsa "+p.n.toLowerCase()+"!");
     u.lang="pt-BR";u.volume=1;u.rate=.9;
@@ -76,6 +78,7 @@ function dstr(d){return pad(d.getDate())+"/"+pad(d.getMonth()+1)}
 // melodia suave original (loop)
 var NOTES=[523,659,784,659,587,698,880,698,523,659,784,1047,784,659,587,523];
 function startMusic(){
+  if(NATIVE)return;
   stopMusic();
   try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){return}
   var i=0;
@@ -94,13 +97,13 @@ function startMusic(){
   tick();playing=setInterval(tick,600);
 }
 function stopMusic(){if(playing){clearInterval(playing);playing=null}}
-$("stop").onclick=function(){stopMusic();clearInterval(spk);try{speechSynthesis.cancel()}catch(e){}};
+$("stop").onclick=function(){if(NATIVE)Android.stop();stopMusic();clearInterval(spk);try{speechSynthesis.cancel()}catch(e){}};
 $("enable").onclick=function(){
   try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}
   try{if(navigator.wakeLock)navigator.wakeLock.request("screen").catch(function(){})}catch(e){}
   $("sound").style.display="none";startMusic();setTimeout(stopMusic,1200);
 };
-$("test").onclick=function(){fire(POTS[0],true)};
+$("test").onclick=function(){if(NATIVE){Android.test();fire(POTS[0],true)}else fire(POTS[0],true)};
 function medsOf(p){var a=p.m.slice();if(mem.qt&&p.q)a=a.concat(QT);return a}
 function fire(p,test){
   pending={p:p,test:!!test,day:dstr(new Date()),time:p.t};
@@ -109,6 +112,10 @@ function fire(p,test){
   render();
 }
 function answer(ok){
+  if(NATIVE){
+    if(pending&&!pending.test)Android.answer(ok,pending.time);else Android.stop();
+    pending=null;render();renderLog();return;
+  }
   stopMusic();clearInterval(spk);try{speechSynthesis.cancel()}catch(e){}
   if(!pending)return;
   if(!pending.test){mem.log.push({d:pending.day,t:pending.time,ok:ok,n:pending.p.n});ls("log",JSON.stringify(mem.log))}
@@ -131,22 +138,39 @@ function renderNext(){
   var now=new Date(),cur=now.getHours()*60+now.getMinutes(),arr=POTS.map(function(p){var s=p.t.split(":");var m=+s[0]*60+ +s[1];return {p:p,d:(m-cur+1440)%1440}}).sort(function(a,b){return a.d-b.d}).slice(0,3);
   $("next").innerHTML=arr.map(function(x){return '<div style="margin:4px 0"><span class="pill" style="background:'+x.p.c+'">'+x.p.t+' — '+x.p.n+'</span></div>'}).join("");
 }
+function getLogData(){
+  if(NATIVE){try{return JSON.parse(Android.getLog())}catch(e){return []}}
+  return mem.log;
+}
 function renderLog(){
-  var rows=mem.log.slice(-40).reverse().map(function(l){return "<tr><td>"+l.d+"</td><td>"+l.t+" "+l.n+"</td><td>"+(l.ok?"✅ tomou tudo":"❌ não conseguiu")+"</td></tr>"}).join("");
+  var data=getLogData();var rows=data.slice(-40).reverse().map(function(l){return "<tr><td>"+l.d+"</td><td>"+l.t+" "+l.n+"</td><td>"+(l.ok===true?"✅ tomou tudo":(l.ok===false?"❌ não conseguiu":"⏰ sem resposta"))+"</td></tr>"}).join("");
   $("log").innerHTML=rows?"<table><tr><th>Dia</th><th>Bolsa</th><th>Resultado</th></tr>"+rows+"</table>":"Sem registros ainda.";
-  var by={};mem.log.forEach(function(l){by[l.d]=by[l.d]||{ok:0,no:0,fails:[]};if(l.ok)by[l.d].ok++;else{by[l.d].no++;by[l.d].fails.push(l.t)}});
+  var by={};data.forEach(function(l){by[l.d]=by[l.d]||{ok:0,no:0,fails:[]};if(l.ok===true)by[l.d].ok++;else{by[l.d].no++;by[l.d].fails.push(l.t)}});
   var s="Resumo remédios da Lourdinha:\n";Object.keys(by).forEach(function(d){s+=d+": "+by[d].ok+" ok, "+by[d].no+" não"+(by[d].no?" ("+by[d].fails.join(", ")+")":"")+"\n"});
-  $("sum").textContent=mem.log.length?s:"";
+  $("sum").textContent=data.length?s:"";
 }
 $("copy").onclick=function(){try{navigator.clipboard.writeText($("sum").textContent)}catch(e){}};
-$("clear").onclick=function(){if(this.dataset.s==="1"){mem.log=[];ls("log","[]");renderLog();this.textContent="Limpar registro";this.dataset.s=""}else{this.dataset.s="1";this.textContent="Toque de novo para confirmar"}};
+$("clear").onclick=function(){if(this.dataset.s==="1"){mem.log=[];ls("log","[]");if(NATIVE)Android.clearLog();renderLog();this.textContent="Limpar registro";this.dataset.s=""}else{this.dataset.s="1";this.textContent="Toque de novo para confirmar"}};
 setInterval(function(){
   var d=new Date();$("clock").textContent=hhmm(d);renderNext();
   var k=dstr(d)+hhmm(d);
-  POTS.forEach(function(p){if(p.t===hhmm(d)&&!fired[k+p.t]){fired[k+p.t]=1;fire(p)}});
+  if(!NATIVE)POTS.forEach(function(p){if(p.t===hhmm(d)&&!fired[k+p.t]){fired[k+p.t]=1;fire(p)}});
 },1000);
 render();renderLog();renderNext();
-(function(){var m=/[?&]p=([0-9:]+)/.exec(location.search);if(m){$("sound").style.display="none";POTS.forEach(function(p){if(p.t===m[1]){fired[dstr(new Date())+hhmm(new Date())+p.t]=1;setTimeout(function(){fire(p)},500)}})}else if(window.AndroidApp!==undefined||/wv/.test(navigator.userAgent)){}})();
+(function(){
+  if(NATIVE){
+    $("sound").style.display="none";
+    var pc=document.createElement("div");pc.className="card";pc.style.background="#fff";
+    pc.innerHTML='<b style="font-size:22px">Permissões (fazer uma vez)</b><div style="font-size:17px;margin:6px 0">Toque em cada botão e permita:</div><div class="row"><button class="small" id="pn">1) Notificações</button><button class="small" id="pt">2) Tela cheia</button><button class="small" id="pb">3) Bateria sem restrição</button></div>';
+    $("main").insertBefore(pc,$("now"));
+    $("pn").onclick=function(){Android.openSetting("notif")};
+    $("pt").onclick=function(){Android.openSetting("tela")};
+    $("pb").onclick=function(){Android.openSetting("bateria")};
+  }
+  var m=/[?&]p=([0-9:]+)/.exec(location.search);
+  var isTest=/[?&]test=1/.test(location.search);
+  if(m){POTS.forEach(function(p){if(p.t===m[1]){setTimeout(function(){fire(p,isTest)},300)}})}
+})();
 </script>
 </body>
 </html>

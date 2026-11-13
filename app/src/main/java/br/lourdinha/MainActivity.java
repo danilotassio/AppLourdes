@@ -101,8 +101,8 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void mealAnswer(int m, boolean ok, int att, boolean testFlag){
             if (m < 0 || m >= Scheduler.MEAL_TIME.length) return;
             if (!testFlag) {
-                if (ok) LogStore.addMeal(MainActivity.this, Scheduler.MEAL_TIME[m], Scheduler.MEAL_LOG[m], true);
-                else if (att >= 2) LogStore.addMeal(MainActivity.this, Scheduler.MEAL_TIME[m], Scheduler.MEAL_LOG[m], false);
+                if (ok) LogStore.addMeal(MainActivity.this, Scheduler.mealTime(MainActivity.this, m), Scheduler.MEAL_LOG[m], true);
+                else if (att >= 2) LogStore.addMeal(MainActivity.this, Scheduler.mealTime(MainActivity.this, m), Scheduler.MEAL_LOG[m], false);
             }
             if (!ok && att < 2) Scheduler.mealQ(MainActivity.this, m, att + 1, testFlag ? 10000L : 25 * 60 * 1000L, testFlag);
             startService(new Intent(MainActivity.this, AlarmService.class).setAction("STOP"));
@@ -111,6 +111,14 @@ public class MainActivity extends Activity {
             LogStore.sp(MainActivity.this).edit().putBoolean("meals", on).apply();
             if (on) { for (int m = 0; m < Scheduler.MEAL_TIME.length; m++) { try { Scheduler.scheduleMeal(MainActivity.this, m); } catch (Throwable e) {} } }
             else Scheduler.cancelMeals(MainActivity.this);
+        }
+        @JavascriptInterface public void setMealTime(int m, String hhmm){
+            if (m < 0 || m >= Scheduler.MEAL_TIME.length || hhmm == null || !hhmm.matches("\\d\\d:\\d\\d")) return;
+            LogStore.sp(MainActivity.this).edit().putString("mt" + m, hhmm).apply();
+            if (Scheduler.mealsOn(MainActivity.this)) { try { Scheduler.scheduleMeal(MainActivity.this, m); } catch (Throwable e) {} }
+        }
+        @JavascriptInterface public String getMealTimes(){
+            return Scheduler.mealTime(MainActivity.this, 0) + "," + Scheduler.mealTime(MainActivity.this, 1) + "," + Scheduler.mealTime(MainActivity.this, 2);
         }
         @JavascriptInterface public int nextVoice(){
             try { return tts == null ? 0 : Voice.next(MainActivity.this, tts); } catch (Exception e) { return 0; }

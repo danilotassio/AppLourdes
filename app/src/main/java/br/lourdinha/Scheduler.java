@@ -22,6 +22,7 @@ public class Scheduler {
         }
     }
     public static final String[] MEAL_TIME = {"06:15", "13:00", "19:00"};
+    public static String mealTime(Context c, int m){ String v = LogStore.sp(c).getString("mt" + m, MEAL_TIME[m]); return v.matches("\\d\\d:\\d\\d") ? v : MEAL_TIME[m]; }
     public static final String[] MEAL_NAME = {"café da manhã", "almoço", "janta"};
     public static final String[] MEAL_LOG = {"CAFÉ DA MANHÃ", "ALMOÇO", "JANTA"};
     public static final String[] MEAL_WAKE = {"Bom dia, Lourdinha! Hora do café da manhã!", "Boa tarde, Lourdinha! Hora do almoço!", "Boa noite, Lourdinha! Hora da janta!"};
@@ -37,7 +38,7 @@ public class Scheduler {
         }
     }
     public static void scheduleMeal(Context c, int m){
-        String[] p = MEAL_TIME[m].split(":");
+        String[] p = mealTime(c, m).split(":");
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(p[0])); cal.set(Calendar.MINUTE, Integer.parseInt(p[1]));
         cal.set(Calendar.SECOND, 0); cal.set(Calendar.MILLISECOND, 0);

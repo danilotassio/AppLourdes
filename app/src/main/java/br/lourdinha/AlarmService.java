@@ -13,7 +13,7 @@ public class AlarmService extends Service {
     Handler h = new Handler(Looper.getMainLooper());
     PowerManager.WakeLock wl;
     final Runnable speak = new Runnable(){ public void run(){ if(!active) return; say(); h.postDelayed(this, 9000);} };
-    final Runnable timeout = new Runnable(){ public void run(){ if(active){ if(!test){ if(meal >= 0){ if(stage == 1) LogStore.addMeal(AlarmService.this, Scheduler.MEAL_TIME[meal], Scheduler.MEAL_LOG[meal], null); } else if(rem < 0) LogStore.add(AlarmService.this, Scheduler.TIMES[idx], idx, null); } finish(); } } };
+    final Runnable timeout = new Runnable(){ public void run(){ if(active){ if(!test){ if(meal >= 0){ if(stage == 1) LogStore.addMeal(AlarmService.this, Scheduler.mealTime(AlarmService.this, meal), Scheduler.MEAL_LOG[meal], null); } else if(rem < 0) LogStore.add(AlarmService.this, Scheduler.TIMES[idx], idx, null); } finish(); } } };
 
     final Runnable keepVol = new Runnable(){ public void run(){
         if (!active) return;

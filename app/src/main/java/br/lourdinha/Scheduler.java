@@ -19,9 +19,9 @@ public class Scheduler {
         Intent in = new Intent(c, AlarmReceiver.class).putExtra("i", i).putExtra("attempt", n);
         PendingIntent pi = PendingIntent.getBroadcast(c, 400 + i, in, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         PendingIntent spi = PendingIntent.getActivity(c, 200 + i, new Intent(c, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        ((AlarmManager) c.getSystemService(Context.ALARM_SERVICE)).setAlarmClock(new AlarmManager.AlarmClockInfo(System.currentTimeMillis() + delay, spi), pi);
+        try { ((AlarmManager) c.getSystemService(Context.ALARM_SERVICE)).setAlarmClock(new AlarmManager.AlarmClockInfo(System.currentTimeMillis() + delay, spi), pi); } catch (Throwable e) {}
     }
-    public static void scheduleAll(Context c){ for (int i = 0; i < TIMES.length; i++) schedule(c, i); }
+    public static void scheduleAll(Context c){ for (int i = 0; i < TIMES.length; i++) { try { schedule(c, i); } catch (Throwable e) {} } }
     public static void schedule(Context c, int i){
         String[] p = TIMES[i].split(":");
         Calendar cal = Calendar.getInstance();
@@ -34,6 +34,6 @@ public class Scheduler {
         Intent show = new Intent(c, MainActivity.class);
         PendingIntent spi = PendingIntent.getActivity(c, 200 + i, show, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
-        am.setAlarmClock(new AlarmManager.AlarmClockInfo(cal.getTimeInMillis(), spi), pi);
+        try { am.setAlarmClock(new AlarmManager.AlarmClockInfo(cal.getTimeInMillis(), spi), pi); } catch (Throwable e) {}
     }
 }

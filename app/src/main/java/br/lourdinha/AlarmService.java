@@ -7,13 +7,13 @@ import android.speech.tts.TextToSpeech;
 import java.util.Locale;
 public class AlarmService extends Service {
     static final String CH = "remedio_alarme";
-    int idx = 0; boolean test = false, active = false;
+    int idx = 0, rem = -1, meal = -1, stage = 0, att = 1; boolean test = false, active = false;
     volatile boolean playing = false; volatile float vol = 1f; long lastDuck = 0; boolean snd = true;
     Thread audioThread; TextToSpeech tts; boolean ttsReady = false;
     Handler h = new Handler(Looper.getMainLooper());
     PowerManager.WakeLock wl;
     final Runnable speak = new Runnable(){ public void run(){ if(!active) return; say(); h.postDelayed(this, 9000);} };
-    final Runnable timeout = new Runnable(){ public void run(){ if(active){ if(!test) LogStore.add(AlarmService.this, Scheduler.TIMES[idx], idx, null); finish(); } } };
+    final Runnable timeout = new Runnable(){ public void run(){ if(active){ if(!test){ if(meal >= 0){ if(stage == 1) LogStore.addMeal(AlarmService.this, Scheduler.MEAL_TIME[meal], Scheduler.MEAL_LOG[meal], null); } else if(rem < 0) LogStore.add(AlarmService.this, Scheduler.TIMES[idx], idx, null); } finish(); } } };
 
     final Runnable keepVol = new Runnable(){ public void run(){
         if (!active) return;
@@ -26,6 +26,7 @@ public class AlarmService extends Service {
     @Override public int onStartCommand(Intent in, int flags, int startId){
         String act = in != null ? in.getAction() : null;
         if (in != null) { idx = in.getIntExtra("i", idx); test = in.getBooleanExtra("test", test); }
+        if (in != null && act == null) { rem = in.getIntExtra("rem", -1); meal = in.getIntExtra("meal", -1); stage = in.getIntExtra("stage", 0); att = in.getIntExtra("att", 1); }
         if ("OK".equals(act)) { if (active && !test) { LogStore.add(this, Scheduler.TIMES[idx], idx, true); Scheduler.resetAtt(this); } finish(); return START_NOT_STICKY; }
         if ("NO".equals(act)) { if (active && !test) Scheduler.no(this, idx); finish(); return START_NOT_STICKY; }
         if ("HUSH".equals(act)) { if (!active) { stopSelf(); return START_NOT_STICKY; } playing = false; h.removeCallbacks(speak); try { if (tts != null) tts.stop(); } catch (Exception e) {} return START_NOT_STICKY; }
@@ -65,7 +66,7 @@ public class AlarmService extends Service {
         try {
             Bundle b = new Bundle();
             b.putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_ALARM);
-            tts.speak("Bora, Lourdinha! Tomar o remédio da bolsa " + Scheduler.NAMES[idx] + "!", TextToSpeech.QUEUE_FLUSH, b, "lourdinha");
+            tts.speak(meal >= 0 ? (stage == 0 ? Scheduler.MEAL_WAKE[meal] : Scheduler.MEAL_Q[meal]) : rem >= 0 ? Scheduler.REM_MSG[rem] : "Bora, Lourdinha! Tomar o remédio da bolsa " + Scheduler.NAMES[idx] + "!", TextToSpeech.QUEUE_FLUSH, b, "lourdinha");
         } catch (Exception e) {}
     }
 
@@ -134,17 +135,23 @@ public class AlarmService extends Service {
     }
 
     Notification buildNotification(){
-        Intent open = new Intent(this, MainActivity.class).putExtra("p", Scheduler.TIMES[idx]).putExtra("test", test).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pi = PendingIntent.getActivity(this, 300 + idx, open, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        boolean r = rem >= 0, ml = meal >= 0;
+        Intent open = new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        if (ml) open.putExtra("meal", meal).putExtra("stage", stage).putExtra("att", att).putExtra("test", test);
+        else if (!r) open.putExtra("p", Scheduler.TIMES[idx]).putExtra("test", test);
+        PendingIntent pi = PendingIntent.getActivity(this, ml ? 700 + meal * 10 + stage : (r ? 350 : 300 + idx), open, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        String title = ml ? (stage == 0 ? "Hora do " + Scheduler.MEAL_NAME[meal] : "Você já fez: " + Scheduler.MEAL_NAME[meal] + "?")
+                : (r ? Scheduler.REM_TITLE[rem] : "Hora do remédio! Bolsa " + Scheduler.NAMES[idx].toUpperCase());
+        String text = ml ? (stage == 0 ? Scheduler.MEAL_WAKE[meal] : Scheduler.MEAL_Q[meal])
+                : (r ? Scheduler.REM_MSG[rem] : "Toque para ver os remédios");
         Notification.Builder b = Build.VERSION.SDK_INT >= 26 ? new Notification.Builder(this, CH) : new Notification.Builder(this);
         b.setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-         .setContentTitle("Hora do remédio! Bolsa " + Scheduler.NAMES[idx].toUpperCase())
-         .setContentText("Toque para ver os remédios")
+         .setContentTitle(title)
+         .setContentText(text)
          .setContentIntent(pi).setFullScreenIntent(pi, true)
-         .setColor(Scheduler.COLORS[idx]).setColorized(true)
-         .setCategory(Notification.CATEGORY_ALARM).setOngoing(true)
-         .addAction(android.R.drawable.checkbox_on_background, "Tomei tudo", svc("OK", 1))
-         .addAction(android.R.drawable.ic_delete, "Não consegui", svc("NO", 2));
+         .setColor((ml || r) ? 0xFFF08A00 : Scheduler.COLORS[idx]).setColorized(true)
+         .setCategory(Notification.CATEGORY_ALARM).setOngoing(true);
+        if (r || (ml && stage == 0)) b.addAction(android.R.drawable.checkbox_on_background, "OK", svc("STOP", 3));
         return b.build();
     }
 }

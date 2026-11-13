@@ -190,6 +190,7 @@ public class MainActivity extends Activity {
         web.postDelayed(() -> nextPerm(), 800);
     }
     void load(Intent in){
+        if (in != null && in.getBooleanExtra("stopAlarm", false)) startService(new Intent(this, AlarmService.class).setAction("STOP"));
         if (in != null && in.hasExtra("meal")) {
             web.loadUrl("file:///android_asset/index.html?meal=" + in.getIntExtra("meal", 0) + "&stage=" + in.getIntExtra("stage", 0) + "&att=" + in.getIntExtra("att", 1) + (in.getBooleanExtra("test", false) ? "&test=1" : ""));
             return;

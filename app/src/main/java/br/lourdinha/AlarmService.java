@@ -139,6 +139,7 @@ public class AlarmService extends Service {
         Intent open = new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         if (ml) open.putExtra("meal", meal).putExtra("stage", stage).putExtra("att", att).putExtra("test", test);
         else if (!r) open.putExtra("p", Scheduler.TIMES[idx]).putExtra("test", test);
+        if (r || (ml && stage == 0)) open.putExtra("stopAlarm", true);
         PendingIntent pi = PendingIntent.getActivity(this, ml ? 700 + meal * 10 + stage : (r ? 350 : 300 + idx), open, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         String title = ml ? (stage == 0 ? "Hora do " + Scheduler.MEAL_NAME[meal] : "Você já fez: " + Scheduler.MEAL_NAME[meal] + "?")
                 : (r ? Scheduler.REM_TITLE[rem] : "Hora do remédio! Bolsa " + Scheduler.NAMES[idx].toUpperCase());
@@ -151,7 +152,6 @@ public class AlarmService extends Service {
          .setContentIntent(pi).setFullScreenIntent(pi, true)
          .setColor((ml || r) ? 0xFFF08A00 : Scheduler.COLORS[idx]).setColorized(true)
          .setCategory(Notification.CATEGORY_ALARM).setOngoing(true);
-        if (r || (ml && stage == 0)) b.addAction(android.R.drawable.checkbox_on_background, "OK", svc("STOP", 3));
         return b.build();
     }
 }

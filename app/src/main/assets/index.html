@@ -61,7 +61,6 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
 <div id="top"><div>Remédios da Lourdinha</div><div style="display:flex;align-items:center"><button id="gear">⚙</button><div id="clock">--:--</div></div></div>
 <div id="pw"><div class="b"><div class="sub" id="pwt">Senha</div><input id="pwi" type="password" inputmode="numeric"><div class="btns"><button class="small" id="pwc" style="flex:1">Cancelar</button><button id="pwo" style="background:#1F3864;flex:1;font-size:24px">OK</button></div></div></div>
 <div id="main">
-  <div class="card" style="background:#e8f5e9"><div id="callbtn" role="button"><span>📞 Ligar para Anne Filha!</span><span class="spk" id="spkcall">🔊</span></div></div>
   <div id="confirm"><div class="box"><div class="medrow" style="justify-content:center"><div class="q" style="margin:0">Ligar para Anne Filha?</div><button class="spk" id="spkc" style="margin:0 0 0 10px">🔊</button></div><div class="btns"><button id="callyes" style="background:#1e8e3e">✅ Sim</button><button id="callno" style="background:#c5221f">❌ Não</button></div></div></div>
   <div id="warn"><div class="box"><div class="q" id="warnt">Faltam remédios!</div><div id="warnl" style="font-size:26px;margin:10px 0"></div><button id="warnok" style="background:#1F3864;width:100%">OK</button></div></div>
   <div id="appt" class="card" style="background:#fff8e1;border-color:#f57c00"><div class="medrow" style="margin:0"><button class="spk" id="spkappt" style="margin:0 10px 0 0">🔊</button><div style="flex:1"><div style="font-size:22px;font-weight:bold;color:#e65100">🩺 Próxima consulta</div><div id="apptl" style="font-size:19px;margin-top:4px"></div></div></div></div>
@@ -75,9 +74,10 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
   <div class="card" style="background:#fff"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px"><b style="font-size:22px">Próximos horários</b><button class="small" id="nextbtn" style="flex:none;background:#f57c00;color:#fff;font-weight:bold">🔔 Qual o próximo?</button></div><div id="next" style="font-size:20px;margin-top:6px"></div></div>
   <div class="card" style="background:#fff"><b style="font-size:22px">Registro da semana</b>
     <div id="log" style="margin-top:8px"></div>
-    <div class="row"><button class="small" id="copy">Enviar Resumo (WhatsApp)</button></div>
+    <div class="row"><button class="small" id="copy" style="background:#8e44ad;color:#fff;font-weight:bold">Enviar Resumo (WhatsApp)</button></div>
     <pre id="sum" style="white-space:pre-wrap;font-size:16px"></pre>
   </div>
+  <div class="card" style="background:#e8f5e9"><div id="callbtn" role="button"><span>📞 Ligar para Anne Filha!</span><span class="spk" id="spkcall">🔊</span></div></div>
   <div id="foot" style="text-align:center;font-size:12px;color:#666;margin:14px 0 24px">Desenvolvido por Danilo Tássio 2026</div>
 </div>
 <script>
@@ -103,13 +103,13 @@ var mem={log:[],qt:false};
 try{mem.log=JSON.parse(ls("log")||"[]");mem.qt=ls("qt")==="1"}catch(e){}
 $("qt").checked=mem.qt;
 $("qt").onclick=function(e){e.preventDefault();var cb=this;askPass("1989","Senha para pós-quimio",function(){cb.checked=!cb.checked;mem.qt=cb.checked;ls("qt",cb.checked?"1":"0");ls("qtS",cb.checked?isoToday():"");render();qtCheck()})};
-$("spkqt").onclick=function(){dizer(mem.qt?"Dias pós-quimio, incluir remédios de enjoo, e recebe o dia "+qtDay()+" de 3, Lourdinha.":"Dias pós-quimio, incluir remédios de enjoo. Desligado, Lourdinha.")};
+$("spkqt").onclick=function(){dizer(mem.qt?"Dias pós-quimio, incluir remédios de enjoo. Hoje é o "+["","primeiro","segundo","terceiro"][qtDay()]+" dia após a quimio, Lourdinha.":"Dias pós-quimio, incluir remédios de enjoo. Desligado, Lourdinha.")};
 function isoToday(){var d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 function qtDay(){var s=ls("qtS");if(!s)return 0;var a=s.split("-"),st=new Date(+a[0],+a[1]-1,+a[2]),n=new Date(),t=new Date(n.getFullYear(),n.getMonth(),n.getDate());return Math.round((t-st)/864e5)+1}
 function qtCheck(){
   if(mem.qt){var d=qtDay();if(d===0){ls("qtS",isoToday());d=1}
     if(d>3){mem.qt=false;ls("qt","0");ls("qtS","");$("qt").checked=false;render()}}
-  $("qtd").textContent=mem.qt?"Dia "+qtDay()+" de 3":"";
+  $("qtd").textContent=mem.qt?qtDay()+"º dia após quimio":"";
 }
 var spk=null;
 function falar(p){
@@ -403,10 +403,10 @@ function renderNext(){
   Array.prototype.forEach.call(document.querySelectorAll("#next input"),function(c){if(c.dataset.st==="2")c.indeterminate=true});
   Array.prototype.forEach.call(document.querySelectorAll("#next .sl"),function(b){b.onclick=function(){var pp=POTS.filter(function(x){return x.t===b.dataset.t})[0];showSlot(pp,new Date(+b.dataset.ts),"Lourdinha, ")}});
   var pend=groups.some(function(g){return g.items.some(function(it){return it.past&&it.st!==1})});
-  var pl=[];groups.forEach(function(g){g.items.forEach(function(it){if(it.past&&it.st!==1)pl.push(it.p)})});
+  var pl=[],lastPast=null;groups.forEach(function(g){g.items.forEach(function(it){if(it.past)lastPast=it})});if(lastPast&&lastPast.st!==1)pl.push(lastPast.p);
   if(pl.length){
-    IDLE_NOW="⚠ Remédios pendentes de tomar:<br>"+pl.map(function(p){return p.t+" "+p.n}).join("<br>");
-    IDLE_SAY="Lourdinha, remédios pendentes de tomar: "+pl.map(function(p){return "bolsa "+p.n.toLowerCase().replace(/o$/,"a")+", "+(+p.t.split(":")[0])+" horas"}).join("; ")+".";
+    IDLE_NOW="⚠ Remédio pendente de tomar:<br>"+pl.map(function(p){return p.t+" "+p.n}).join("<br>");
+    IDLE_SAY="Lourdinha, remédio pendente de tomar: "+pl.map(function(p){return "bolsa "+p.n.toLowerCase().replace(/o$/,"a")+", "+(+p.t.split(":")[0])+" horas"}).join("; ")+".";
   }else{IDLE_NOW=IDLE;IDLE_SAY=IDLE+" Beleza, Lourdinha!"}
   if($("idletxt")){$("idletxt").innerHTML=IDLE_NOW;$("idletxt").style.color=pl.length?"#c5221f":"#1e8e3e"}
 }
@@ -440,8 +440,8 @@ function logText(data){
 function renderLog(){
   var data=getLogData();var rows=data.slice(-40).reverse().map(function(l){return "<tr><td>"+l.d+"</td><td>"+l.t+" "+l.n+"</td><td>"+resTxt(l)+"</td></tr>"}).join("");
   $("log").innerHTML=rows?"<table><tr><th>Dia</th><th>Bolsa</th><th>Resultado</th></tr>"+rows+"</table>":"Sem registros ainda.";
-  var by={};recentLog(data,7).forEach(function(l){if(l.meal)return;by[l.d]=by[l.d]||{ok:0,no:0,fails:[],miss:[],ac:[]};if(l.ok===true){by[l.d].ok++;if(l.m)l.m.forEach(function(m){if(m.a)by[l.d].ac.push(m.n);else if(!m.ok)by[l.d].miss.push(m.n+" "+l.t)})}else{by[l.d].no++;by[l.d].fails.push(l.t)}});
-  var s="Resumo remédios da Lourdinha:\n";Object.keys(by).forEach(function(d){s+=d+": "+by[d].ok+" ok, "+by[d].no+" não"+(by[d].no?" ("+by[d].fails.join(", ")+")":"")+(by[d].miss.length?" | não tomou: "+by[d].miss.join(", "):"")+(by[d].ac.length?" | acabou: "+by[d].ac.join(", "):"")+"\n"});
+  var by={};recentLog(data,7).forEach(function(l){by[l.d]=by[l.d]||{ok:0,no:0,fails:[],miss:[],ac:[],ml:[]};if(l.meal){by[l.d].ml.push(l.n.toLowerCase()+(l.ok===true?" ✅":l.ok===false?" ❌":" ⏰"));return}if(l.ok===true){by[l.d].ok++;if(l.m)l.m.forEach(function(m){if(m.a)by[l.d].ac.push(m.n);else if(!m.ok)by[l.d].miss.push(m.n+" "+l.t)})}else{by[l.d].no++;by[l.d].fails.push(l.t)}});
+  var s="Resumo remédios da Lourdinha:\n";Object.keys(by).forEach(function(d){s+=d+": "+by[d].ok+" ok, "+by[d].no+" não"+(by[d].no?" ("+by[d].fails.join(", ")+")":"")+(by[d].miss.length?" | não tomou: "+by[d].miss.join(", "):"")+(by[d].ac.length?" | acabou: "+by[d].ac.join(", "):"")+(by[d].ml.length?" | refeições: "+by[d].ml.join(", "):"")+"\n"});
   $("sum").textContent=Object.keys(by).length?s:"";
 }
 var ANNE_TEL="81996739556";

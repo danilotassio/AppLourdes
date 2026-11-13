@@ -20,6 +20,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             return;
         }
         int i = in.getIntExtra("i", 0);
+        try { Push.stateRefresh(c); } catch (Throwable e) {}
         if (!in.hasExtra("attempt")) { Scheduler.schedule(c, i); Scheduler.resetAtt(c); }
         Intent s = new Intent(c, AlarmService.class).putExtra("i", i);
         if (Build.VERSION.SDK_INT >= 26) c.startForegroundService(s); else c.startService(s);

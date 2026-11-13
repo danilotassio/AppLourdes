@@ -20,6 +20,22 @@ async function accessToken(env) {
   return j.access_token;
 }
 
+async function fanout(env, k, list, except, data, only) {
+  const dest = only || list.filter(t => t !== except);
+  if (!dest.length) return 0;
+  const tok = await accessToken(env), pid = JSON.parse(env.FCM_SA).project_id;
+  let sent = 0; const keep = except && list.includes(except) ? [except] : [];
+  for (const t of dest) {
+    const r = await fetch("https://fcm.googleapis.com/v1/projects/" + pid + "/messages:send", {
+      method: "POST", headers: { authorization: "Bearer " + tok, "content-type": "application/json" },
+      body: JSON.stringify({ message: { token: t, data: { title: data.title, body: data.body, kind: data.kind, ts: String(Date.now()) }, android: { priority: "HIGH" } } })
+    });
+    if (r.ok) { sent++; keep.push(t); } else if (r.status !== 404 && r.status !== 400) keep.push(t);
+  }
+  if (!only && keep.length !== list.length) await env.KV.put(k, JSON.stringify(keep));
+  return sent;
+}
+
 export default {
   async fetch(req, env) {
     if (req.method !== "POST") return J({ ok: true });
@@ -51,20 +67,36 @@ export default {
     if (url.pathname === "/get") {              // cuidador le o resumo
       return J({ d: (await env.KV.get("s:" + b.c)) || "" });
     }
+    if (url.pathname === "/prof") {             // cuidador publica seus dados (nome, aparelho, bateria, local)
+      if (typeof b.t !== "string" || b.t.length < 20) return J({ erro: "token" }, 400);
+      const id = b.t.slice(-12), pk = "p:" + b.c, all = (await env.KV.get(pk, "json")) || {};
+      const old = all[id] || {};
+      all[id] = { t: b.t, name: String(b.name || old.name || "").slice(0, 40), dev: String(b.dev || old.dev || "").slice(0, 60), bat: Number.isFinite(b.bat) ? b.bat : (old.bat ?? null), ts: Date.now(),
+        lat: Number.isFinite(b.lat) ? b.lat : old.lat, lon: Number.isFinite(b.lon) ? b.lon : old.lon, place: b.place !== undefined ? String(b.place).slice(0, 120) : old.place, lts: Number.isFinite(b.lat) ? Date.now() : old.lts };
+      const ids = Object.keys(all); if (ids.length > 10) delete all[ids.sort((x, y) => all[x].ts - all[y].ts)[0]];
+      await env.KV.put(pk, JSON.stringify(all)); return J({ ok: true, id });
+    }
+    if (url.pathname === "/profs") {            // lista os cuidadores (sem expor o token)
+      const all = (await env.KV.get("p:" + b.c, "json")) || {};
+      return J({ d: Object.keys(all).map(id => { const x = all[id]; return { id, name: x.name, dev: x.dev, bat: x.bat, ts: x.ts, lat: x.lat, lon: x.lon, place: x.place, lts: x.lts }; }) });
+    }
+    if (url.pathname === "/locreq") {           // pede ao aparelho de um cuidador que atualize seus dados e a localizacao
+      const all = (await env.KV.get("p:" + b.c, "json")) || {}, x = all[String(b.id || "")];
+      if (!x) return J({ erro: "id" }, 404);
+      return J({ ok: true, n: await fanout(env, k, list, null, { title: "", body: "", kind: "locreq" }, [x.t]) });
+    }
     if (url.pathname === "/send") {             // celular da Lourdinha envia um aviso
       const title = String(b.title || "AppLourdinha").slice(0, 80), body = String(b.body || "").slice(0, 400), kind = String(b.kind || "info").slice(0, 20);
-      if (!list.length) return J({ ok: true, n: 0 });
-      const tok = await accessToken(env), pid = JSON.parse(env.FCM_SA).project_id;
-      let sent = 0; const keep = [];
-      for (const t of list) {
-        const r = await fetch("https://fcm.googleapis.com/v1/projects/" + pid + "/messages:send", {
-          method: "POST", headers: { authorization: "Bearer " + tok, "content-type": "application/json" },
-          body: JSON.stringify({ message: { token: t, data: { title, body, kind, ts: String(Date.now()) }, android: { priority: "HIGH" } } })
-        });
-        if (r.ok) { sent++; keep.push(t); } else if (r.status !== 404 && r.status !== 400) keep.push(t);
-      }
-      if (keep.length !== list.length) await env.KV.put(k, JSON.stringify(keep));
-      return J({ ok: true, n: sent });
+      return J({ ok: true, n: await fanout(env, k, list, null, { title, body, kind }) });
+    }
+    if (url.pathname === "/care") {             // cuidador ligou: o primeiro avisa os demais
+      const n = String(b.n || "").trim().slice(0, 40), r = String(b.r || "").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 40), x = String(b.x || "").slice(0, 80);
+      if (!n || !r) return J({ erro: "dados" }, 400);
+      const ck = "k:" + b.c + ":" + r, prev = await env.KV.get(ck);
+      if (prev) return J({ ok: true, first: false, by: prev });
+      await env.KV.put(ck, n, { expirationTtl: 3600 });
+      const sent = await fanout(env, k, list, typeof b.t === "string" ? b.t : null, { title: "AppLourdinha", body: "o cuidador " + n + " esta ligando para a Lourdinha" + (x ? " (resposta a " + x + ")" : "") + ".", kind: "contato" });
+      return J({ ok: true, first: true, n: sent });
     }
     return J({ erro: "rota" }, 404);
   }

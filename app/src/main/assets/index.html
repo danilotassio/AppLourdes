@@ -82,6 +82,23 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
 #cuid .tt{flex:1;min-width:0}#cuid .tt b{display:block;font-size:20px;letter-spacing:.2px}#cuid .tt small{display:flex;align-items:center;gap:6px;font-size:12.5px;opacity:.92}
 #cuid .dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.3)}
 #cuid .chd button{flex:none;width:46px;height:46px;border:0;border-radius:50%;font-size:20px;color:#fff;background:rgba(255,255,255,.2);backdrop-filter:blur(6px);padding:0}
+#cuid .chd #csync{background:rgba(255,255,255,.22)}#cuid .chd #csync.spin{animation:giro 1s linear infinite}
+@keyframes giro{to{transform:rotate(360deg)}}
+#csyncov{display:none;position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(30,10,60,.55);backdrop-filter:blur(4px);z-index:105;align-items:center;justify-content:center;padding:18px;box-sizing:border-box}
+#csyncov .sbox{width:100%;background:#fff;border-radius:26px;padding:22px 18px 16px;box-shadow:0 20px 50px rgba(0,0,0,.35);text-align:center;font-family:-apple-system,"Segoe UI",Roboto,sans-serif}
+#csyncov .stt{font-size:19px;font-weight:700;color:#4c1d95;margin-bottom:130px}
+#csyncov .strack{position:relative;height:16px;border-radius:10px;background:#ede9fe}
+#csyncov .sfill{position:absolute;left:0;top:0;height:100%;width:0;border-radius:10px;background:linear-gradient(90deg,#7c3aed,#db2777)}
+#csyncov .scarw{position:absolute;left:0;top:-30px;width:96px;will-change:transform}
+#csyncov .scarw svg{display:block}
+#csyncov .whl{transform-box:fill-box;transform-origin:center;animation:giro .5s linear infinite}
+#csyncov .sman{position:absolute;left:34px;top:-34px;width:34px;height:34px;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;font-weight:800;font-size:17px;line-height:30px;text-align:center}
+#csyncov .sman img{width:100%;height:100%;object-fit:cover;position:absolute;left:0;top:0}
+#csyncov .sbal{display:none;position:absolute;bottom:100%;left:50%;margin-bottom:46px;width:190px;transform:translateX(-50%);background:#fff;border:2.5px solid #1f2937;border-radius:16px;padding:8px 10px;font:700 13px/1.25 "Comic Sans MS","Segoe UI",sans-serif;color:#1f2937;text-align:center;z-index:3;box-shadow:3px 3px 0 #1f2937}
+#csyncov .sbal:after{content:"";position:absolute;left:50%;bottom:-12px;margin-left:-8px;border:8px solid transparent;border-top:10px solid #1f2937;border-bottom:0}
+#csyncov.stop .whl{animation-play-state:paused}
+#csyncov .spc{margin-top:16px;font-size:15px;color:#6b7280;font-weight:700}
+#cuid .toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);background:#312e81;color:#fff;padding:10px 18px;border-radius:20px;font-size:14px;z-index:7;box-shadow:0 6px 20px rgba(0,0,0,.3)}
 #cuid .chd #ccall{background:#22c55e;box-shadow:0 6px 16px rgba(34,197,94,.5)}
 #cuid #cbody{padding:16px 14px 0}
 #cuid .nav{position:fixed;left:12px;right:12px;bottom:12px;display:flex;justify-content:space-between;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border-radius:26px;padding:8px 6px;box-shadow:0 10px 30px rgba(76,29,149,.22);z-index:6}
@@ -97,6 +114,7 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
 #cuid .cd.good{background:linear-gradient(135deg,#f0fdf4,#dcfce7)}#cuid .cd.good .ic{background:#bbf7d0}
 #cuid .cd.warn{background:linear-gradient(135deg,#fffbeb,#fef3c7)}#cuid .cd.warn .ic{background:#fde68a}
 #cuid .cd.k-sintoma .ic{background:#fecdd3}#cuid .cd.k-bem .ic{background:#bbf7d0}#cuid .cd.k-remedio .ic{background:#fde68a}
+#cuid .callnow{margin-top:10px;width:100%;border:0;border-radius:14px;padding:13px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16a34a,#22c55e);box-shadow:0 6px 16px rgba(34,197,94,.4)}
 #cuid .pill{border-radius:12px;padding:5px 12px}
 #cuid .bt{display:inline-block;margin-top:8px;margin-right:6px;padding:6px 10px;border-radius:12px;background:#fef3c7;color:#92400e;font-weight:700;font-size:14px}
 #cuid a.map{display:inline-block;margin-top:8px;padding:8px 12px;border-radius:12px;background:#ede9fe;color:#6d28d9;font-weight:700;font-size:15px;text-decoration:none}
@@ -111,13 +129,16 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
 #cset button.gh{background:#f1f5f9;color:#475569;border:0}
 #cset input#cin{width:100%;box-sizing:border-box;font-size:16px;padding:14px;border:2px solid #ddd6fe;border-radius:16px;background:#faf5ff;color:#4c1d95}
 #cset input#cin:read-only{background:#f1f5f9;color:#64748b;border-color:#e2e8f0}
-#cset .st{font-size:15px;margin:10px 2px;color:#475569}#cset .st.ok{color:#15803d;font-weight:700}
+#cset .st{font-size:15px;margin:10px 2px;color:#475569}#cset .st.ok{color:#15803d;font-weight:700}#cset .st.warn{color:#e11d48;font-weight:700}
 .sw{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 4px;font-size:16px;color:#2d1b4e;border-bottom:1px solid #f1f5f9}
 .sw input{appearance:none;-webkit-appearance:none;width:50px;height:30px;border-radius:15px;background:#cbd5e1;position:relative;flex:none;transition:.2s;margin:0}
 .sw input:after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.3);transition:.2s}
 .sw input:checked{background:linear-gradient(135deg,#7c3aed,#db2777)}.sw input:checked:after{left:23px}
 #csec{display:none;position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(30,10,60,.7);backdrop-filter:blur(4px);z-index:102;align-items:flex-end;justify-content:center}
 #cset #csx,#csec #csecx{width:44px!important;height:44px;padding:0!important;border-radius:50%!important;flex:none;margin:0!important}
+#csec .stabs{display:flex;gap:8px;margin:14px 0 6px}#csec .stabs button{flex:1;border:2px solid #ddd6fe;background:#faf5ff;color:#6d28d9;font-weight:700;font-size:15px;border-radius:14px;padding:11px 4px}#csec .stabs button.on{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border-color:transparent}
+#csec .pc{border:2px solid #ede9fe;border-radius:18px;padding:12px 14px;margin:10px 0;background:#fff}#csec .pc b{font-size:18px;color:#4c1d95}#csec .pc .ln{font-size:15px;color:#475569;margin-top:4px}
+#csec .pc button.lb{width:100%;margin-top:10px;border:0;border-radius:12px;padding:12px;font-size:15px;font-weight:700;color:#fff;background:linear-gradient(135deg,#7c3aed,#db2777)}
 #cdraw{position:fixed;left:0;top:0;width:100%;height:100%;z-index:50;pointer-events:none}
 #gpop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:103;align-items:center;justify-content:center;padding:18px}
 #gpop .box{background:#fff;border-radius:22px;padding:20px;width:100%;border:5px solid var(--gc,#c5221f);text-align:center}
@@ -181,18 +202,20 @@ td,th{border:1px solid #999;padding:6px;text-align:center}
   <div id="outm"><div class="box"><b style="font-size:26px;color:#c5221f">⚠ Remédios que acabaram</b><div id="outml" style="margin:10px 0"></div><div style="font-size:19px;margin-bottom:12px">Para compartilhar a lista de remédios para comprar, aperte o botão verde. Ou aperte o OK azul para apenas sair.</div><div class="btns"><button id="outsh" style="background:#1e8e3e;font-size:20px;padding:16px 6px"><svg class="wa" viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.8 2 6.8L3.5 29l6.6-1.7c1.9 1 4 1.5 6 1.5 7.2 0 13-5.7 13-12.8S23.200 3 16 3z"/><path fill="#25D366" d="M16 5.200c-6 0-10.800 4.700-10.800 10.600 0 2.100.6 4 1.700 5.700l.3.5-1 3.700 3.800-1 .5.3c1.600 1 3.500 1.500 5.500 1.500 6 0 10.800-4.700 10.800-10.600S22 5.200 16 5.200z"/><path fill="#fff" d="M21.600 18.900c-.3-.2-1.800-.9-2.100-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.200-.2.2-.4.2-.7.1-1.800-.9-3-1.600-4.200-3.600-.3-.5.3-.5.9-1.600.1-.2 0-.4 0-.5-.1-.2-.7-1.700-1-2.300-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1.100 1.100-1.100 2.600s1.100 3 1.300 3.200c.2.2 2.200 3.400 5.300 4.700 2 .8 2.700.9 3.700.7.6-.1 1.800-.7 2.100-1.500.3-.7.3-1.300.2-1.500-.1-.1-.3-.2-.6-.4z"/></svg>Compartilhar lista (WhatsApp)</button><button id="outok" style="background:#1F3864;font-size:24px;padding:16px 6px;flex:.5">OK</button></div></div></div>
 <div id="stm"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b style="font-size:23px;color:#00595f">📦 Estoque de remédios</b><button class="small" id="stx" style="flex:none">✖ Fechar</button></div><div id="stsum" style="font-size:16px;color:#333;margin-top:6px"></div><div id="stl"></div><div class="btns" style="margin-top:0"><button id="stspk" style="background:#1F3864;font-size:20px;padding:14px 6px;flex:.45">🔊</button><button id="stok" style="background:#00838f;font-size:22px;padding:14px 6px">OK</button></div></div></div>
 <div id="modem"><div style="text-align:center;font-size:28px;font-weight:bold;color:#c2185b;margin-top:30px">Como este celular será usado?</div><button class="mb" id="mdl" style="background:#e0489e">💊 Celular da Lourdinha</button><button class="mb" id="mdc" style="background:#1F3864">👀 Celular do cuidador</button></div>
-<div id="cuid"><div class="chd"><div class="av" id="cav"></div><div class="tt" id="ctitle"><b>Lourdes</b><small><span class="dot"></span><span id="cupd">cuidador</span></small></div><button id="ccall" title="Ligar">📞</button><button id="cgear" title="Configurações">⚙</button></div>
+<div id="cuid"><div class="chd"><div class="av" id="cav"></div><div class="tt" id="ctitle"><b>Lourdes</b><small><span class="dot"></span><span id="cupd">cuidador</span></small></div><button id="csync" title="Sincronizar">🔄</button><button id="ccall" title="Ligar">📞</button><button id="cgear" title="Configurações">⚙</button></div>
 <div id="cbody"></div>
 <div class="nav" id="ctabs"><button data-t="av" class="on"><i>🔔</i>Avisos</button><button data-t="al"><i>⚠️</i>Alertas</button><button data-t="hr"><i>🕒</i>Horários</button><button data-t="co"><i>🩺</i>Consultas</button><button data-t="es"><i>📦</i>Estoque</button><button data-t="se"><i>📋</i>Semana</button></div></div>
+<div id="csyncov"><div class="sbox"><div class="stt">Sincronizando…</div><div class="strack"><div class="sfill" id="sfill"></div><div class="scarw" id="scarw"><div class="sbal" id="sbal"></div><div class="sman" id="sman"><img id="smimg" alt="" src="data:image/jpeg;base64,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"><span>M</span></div><svg id="scar" viewBox="0 0 120 64" width="96" height="51" aria-hidden="true"><ellipse cx="60" cy="60" rx="46" ry="3.5" fill="rgba(0,0,0,.18)"/><path d="M8 44 L10 34 Q11 29 17 28 L34 26 Q40 14 52 12 L80 12 Q92 13 98 26 L108 29 Q114 31 114 38 L114 46 Q114 49 110 49 L10 49 Q8 49 8 46 Z" fill="#dc2626"/><path d="M40 27 Q45 17 54 16 L64 16 L64 27 Z" fill="#bfe3ff"/><path d="M69 16 L80 16 Q89 17 93 27 L69 27 Z" fill="#bfe3ff"/><rect x="63.500" y="16" width="5.500" height="11" fill="#b91c1c"/><path d="M8 38 L12 38 L12 44 L8 44 Z" fill="#fecaca"/><path d="M108 36 L114 36 L114 42 L108 42 Z" fill="#fde047"/><rect x="10" y="44" width="104" height="3" fill="#991b1b"/><g class="whl"><circle cx="34" cy="49" r="9.500" fill="#1f2937"/><circle cx="34" cy="49" r="4.500" fill="#d1d5db"/><path d="M34 44.500 V53.500 M29.500 49 H38.500" stroke="#6b7280" stroke-width="1.500"/></g><g class="whl"><circle cx="90" cy="49" r="9.500" fill="#1f2937"/><circle cx="90" cy="49" r="4.500" fill="#d1d5db"/><path d="M90 44.500 V53.500 M85.500 49 H94.500" stroke="#6b7280" stroke-width="1.500"/></g></svg></div></div><div class="spc" id="spc">0%</div></div></div>
 <div id="cset"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between"><h2>⚙ Configurações</h2><button id="csx" class="sb gh" style="width:auto;padding:8px 14px;margin:0">✕</button></div>
-<div class="sec">Conexão</div><input id="cin" placeholder="Código do celular da Lourdinha" autocapitalize="off" autocomplete="off"><div id="cst" class="st"></div>
+<div class="sec">Seu nome <span style="color:#e11d48">*</span></div><input id="cname" placeholder="Nome do cuidador (obrigatório)" autocomplete="off" maxlength="40" style="width:100%;box-sizing:border-box;font-size:16px;padding:14px;border:2px solid #ddd6fe;border-radius:16px;background:#faf5ff;color:#4c1d95"><div class="sec">Conexão</div><input id="cin" placeholder="Código do celular da Lourdinha" autocapitalize="off" autocomplete="off"><div id="cst" class="st"></div>
 <button id="cgo" class="pb">Conectar</button><button id="cnew" class="sb">🔑 Conectar com novo código</button>
 <div class="sec">Avisos que quero receber</div><div id="cflt"></div>
 <button id="ccl" class="sb gh">🗑 Limpar lista de avisos</button><button id="cmd" class="sb" style="display:none">🔁 Trocar modo</button></div></div>
-<div id="csec"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between"><h2>🔒 Definições secretas</h2><button id="csecx" class="sb gh" style="width:auto;padding:8px 14px;margin:0;border:0">✕</button></div>
-<div class="sec" style="font-size:12.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#8b5cf6;margin:16px 0 6px">Localização</div>
-<label class="sw"><span>📍 Enviar localização junto com o status (bem, enjoo, dor e tontura)</span><input type="checkbox" id="slocal"></label>
-<div style="font-size:13px;color:#64748b;margin-top:8px">Vale para o celular da Lourdinha, que pedirá a permissão de localização na próxima vez que o app for aberto. Só envia a posição quando ela tocar em um status.</div></div></div>
+<div id="csec"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between"><h2>🔒 Definições secretas</h2><button id="csecx" class="sb gh">✕</button></div>
+<div class="stabs"><button id="st_loc" class="on">📍 Localização</button><button id="st_cui">👥 Cuidadores</button></div>
+<div id="sp_loc"><label class="sw"><span>📍 Enviar localização junto com o status (bem, enjoo, dor e tontura)</span><input type="checkbox" id="slocal"></label>
+<div style="font-size:13px;color:#64748b;margin-top:8px">Vale para o celular da Lourdinha, que pedirá a permissão de localização na próxima vez que o app for aberto. Só envia a posição quando ela tocar em um status.</div></div>
+<div id="sp_cui" style="display:none"><div id="plist"></div><div style="font-size:12.5px;color:#64748b;margin-top:10px">A localização mostrada é a última conhecida de cada celular, com a hora da atualização. "Consultar" pede uma atualização ao aparelho.</div></div></div></div>
 <canvas id="cdraw"></canvas>
 <div id="gpop"><div class="box"><div class="gt2" id="gpt"></div><div class="gm" id="gpm"></div><div id="gpsg" style="display:none"><div class="sgrid"><button data-k="bem" style="background:#1e8e3e"><span>😊 Bem</span><span class="spk sp" data-r="bem">🔊</span></button><button data-k="enjoo" style="background:#7a8b1f"><span>🤢 Enjoo</span><span class="spk sp" data-r="enjoo">🔊</span></button><button data-k="dor" style="background:#c5221f"><span>🤕 Dor</span><span class="spk sp" data-r="dor">🔊</span></button><button data-k="tontura" style="background:#f57c00"><span>😵 Tontura</span><span class="spk sp" data-r="tontura">🔊</span></button></div></div><div class="btns"><button id="gpspk" style="background:#1F3864;flex:.45;font-size:22px">🔊</button><button id="gpok" style="background:#1e8e3e;font-size:24px">OK</button></div></div></div>
 <div id="sgm"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between"><b style="font-size:24px;color:#1b5e20">💬 Diário de bem-estar</b><button class="small" id="sclose" style="flex:none">✖ Fechar</button></div><div id="sgl" style="overflow:auto;flex:1;margin:10px 0"></div></div></div>
@@ -668,7 +691,7 @@ function logText(data){
   var rows=data.slice(-40).reverse();if(!rows.length)return "";
   return "*Registro da semana — Remédios da Lourdinha*\n\n"+rows.map(function(l){return "*"+l.d+" · "+l.t+" "+l.n+"*\n"+plainRes(l)}).join("\n\n");
 }
-function renderLog(){try{paintStars()}catch(e){}
+function renderLog(){try{paintStars()}catch(e){}try{setTimeout(function(){syncState(true)},400)}catch(e){}
   
   var data=getLogData();var rows=data.slice(-40).reverse().map(function(l){return "<tr><td>"+l.d+"</td><td>"+l.t+" "+l.n+"</td><td>"+resTxt(l)+"</td></tr>"}).join("");
   $("log").innerHTML=rows?"<table><tr><th>Dia</th><th>Bolsa</th><th>Resultado</th></tr>"+rows+"</table>":"Sem registros ainda.";
@@ -1081,9 +1104,9 @@ function buildState(){
   var c=Date.now()-7*864e5;
   return {out:outList().map(shortName),low:estLow(),stock:dias(CONSULTA)>=0?stRows():[],week:wk,sint:getSint().filter(function(x){return x.ts>=c}),appt:{c:ls("consulta")||"2026-12-02",h:CONSH,u:ls("ultima")||""}};
 }
-function syncState(){
+function syncState(force){
   if(MODE!=="lourdinha"||!NATIVE||!Android.pushState)return;
-  try{var o=buildState(),k=JSON.stringify(o);if(k===lastSt||Date.now()-lastPush<120000)return;lastSt=k;lastPush=Date.now();o.ts=Date.now();Android.pushState(JSON.stringify(o))}catch(e){}
+  try{var o=buildState(),k=JSON.stringify(o);if(k===lastSt||(!force&&Date.now()-lastPush<20000))return;lastSt=k;lastPush=Date.now();o.ts=Date.now();Android.pushState(JSON.stringify(o))}catch(e){}
 }
 function syncBuy(){syncState();if(NATIVE&&Android.setBuy)try{Android.setBuy(buyText())}catch(e){}}
 function gpBuyAgain(){
@@ -1111,18 +1134,20 @@ function paintMode(){
   if(MODE==="lourdinha"&&NATIVE&&Android.getPairCode)$("pcode").textContent=Android.getPairCode();
   if(MODE==="cuidador")paintCuid();
 }
-var CTAB="av",KINDS=[["remedio","💊 Remédio não tomado ou não confirmado"],["sintoma","🤕 Dor, enjoo ou tontura"],["bem","😊 Estou bem"],["bateria","🔋 Bateria baixa"],["vida","💓 Sinal de vida"],["compra","🛒 Remédios para comprar"],["consulta","🩺 Lembretes de consulta"],["resumo","📋 Resumo da semana"]];
-var KIC={remedio:"💊",sintoma:"🤕",bem:"😊",bateria:"🔋",vida:"💓",compra:"🛒",consulta:"🩺",resumo:"📋",outro:"🔔"};
-function kindOf(t){t=String(t).toLowerCase();return /nao confirmou|nao tomou/.test(t)?"remedio":/esta bem/.test(t)?"bem":/registrou (dor|enjoo|tontura)/.test(t)?"sintoma":/bateria/.test(t)?"bateria":/sinal de vida/.test(t)?"vida":/para comprar/.test(t)?"compra":/lembrete/.test(t)?"consulta":/resumo da semana/.test(t)?"resumo":"outro"}
+var CTAB="av",KINDS=[["remedio","💊 Remédio não tomado ou não confirmado"],["sintoma","🤕 Dor, enjoo ou tontura"],["bem","😊 Estou bem"],["bateria","🔋 Bateria baixa"],["vida","💓 Sinal de vida"],["compra","🛒 Remédios para comprar"],["consulta","🩺 Lembretes de consulta"],["resumo","📋 Resumo da semana"],["contato","📞 Outro cuidador ligou"]];
+var KIC={remedio:"💊",sintoma:"🤕",bem:"😊",bateria:"🔋",vida:"💓",compra:"🛒",consulta:"🩺",resumo:"📋",contato:"📞",outro:"🔔"};
+function kindOf(t){t=String(t).toLowerCase();return /nao confirmou|nao tomou/.test(t)?"remedio":/esta bem/.test(t)?"bem":/registrou (dor|enjoo|tontura)/.test(t)?"sintoma":/bateria/.test(t)?"bateria":/sinal de vida/.test(t)?"vida":/para comprar/.test(t)?"compra":/lembrete/.test(t)?"consulta":/resumo da semana/.test(t)?"resumo":/esta ligando/.test(t)?"contato":"outro"}
 function getOff(){try{return JSON.parse(ls("cflt")||"[]")}catch(e){return[]}}
 function remState(){try{return JSON.parse(NATIVE&&Android.getState?Android.getState():"{}")||{}}catch(e){return{}}}
 function connected(){var c=NATIVE&&Android.getPairCode?Android.getPairCode():"";return MODE==="cuidador"&&c&&c.length>=20?c:""}
 var editNew=false;
+function cNome(){return (ls("cname")||"").trim()}
 function paintSet(){
+  $("cname").value=ls("cname")||"";
   var c=connected(),lock=!!c&&!editNew;$("cin").readOnly=lock;if(lock||!editNew)$("cin").value=c&&!editNew?c:"";
-  $("cgo").disabled=lock;$("cnew").style.display=c&&!editNew?"block":"none";
-  $("cst").className="st"+(lock?" ok":"");
-  $("cst").textContent=lock?"✔ Conectado ao app cuidador de Lourdes":editNew?"Digite o novo código e toque em Conectar.":"Digite o código que aparece em Definições > Avisos pela internet no celular da Lourdinha.";
+  $("cgo").disabled=lock||!cNome();$("cnew").style.display=c&&!editNew?"block":"none";
+  $("cst").className="st"+(!cNome()?" warn":lock?" ok":"");
+  $("cst").textContent=!cNome()?"⚠ Informe seu nome para continuar.":lock?"✔ Conectado ao app cuidador de Lourdes":editNew?"Digite o novo código e toque em Conectar.":"Digite o código que aparece em Definições > Avisos pela internet no celular da Lourdinha.";
   var off=getOff();$("cflt").innerHTML=KINDS.map(function(k){return '<label class="sw"><span>'+k[1]+'</span><input type="checkbox" data-k="'+k[0]+'"'+(off.indexOf(k[0])<0?" checked":"")+'></label>'}).join("");
   Array.prototype.forEach.call($("cflt").querySelectorAll("input"),function(i){i.onchange=function(){var o=[];Array.prototype.forEach.call($("cflt").querySelectorAll("input"),function(x){if(!x.checked)o.push(x.dataset.k)});ls("cflt",JSON.stringify(o));if(NATIVE&&Android.setFilter)Android.setFilter(JSON.stringify(o))}});
 }
@@ -1134,10 +1159,11 @@ function cMsg2(t){var m=String(t).match(/^(.*?)\s*Local:\s*(.*?)\s*(https:\/\/ma
   if(!m)return cEsc(t);return cEsc(m[1])+'<br><a class="map" href="#" onclick="openMap(\''+m[3]+'\');return false">📍 '+(m[2]?cEsc(m[2]):"Ver no mapa")+' · Abrir no mapa</a>'}
 function card(ic,html,cls,tm){return '<div class="cd '+(cls||"")+'"><div class="ic">'+ic+'</div><div class="tx">'+html+'</div>'+(tm?'<div class="tm">'+tm+'</div>':'')+'</div>'}
 function empty(t){return '<div class="empty">'+t+'</div>'}
+function callTxt(b){var m=String(b).match(/registrou (\w+) agora \((\d\d:\d\d)\)/);return m?m[1].toUpperCase()+" das "+m[2]:"um aviso"}
 function tabAv(){
   var a=[];try{a=JSON.parse(NATIVE&&Android.getAlerts?Android.getAlerts():"[]")}catch(e){}
   if(!a.length)return empty("🌿 Nenhum aviso por enquanto");
-  var h="",last="";a.forEach(function(x){var d=new Date(x.ts),ds=dstr(d);if(ds!==last){h+='<div class="dh">'+dlabel(d)+'</div>';last=ds}var k=kindOf(x.body);h+=card(KIC[k],cMsg(x.body),"k-"+k+(k==="sintoma"||k==="remedio"?" bad":""),hhmm(d))});return h}
+  var h="",last="";a.forEach(function(x){var d=new Date(x.ts),ds=dstr(d);if(ds!==last){h+='<div class="dh">'+dlabel(d)+'</div>';last=ds}var k=kindOf(x.body);h+=card(KIC[k],cMsg(x.body)+(k==="sintoma"?'<br><button class="callnow" onclick="cuidCall('+x.ts+',\''+callTxt(x.body)+'\')">📞 Ligar agora para a Lourdinha</button>':""),"k-"+k+(k==="sintoma"||k==="remedio"?" bad":""),hhmm(d))});return h}
 function tabAl(){
   var st=remState(),h="",out=st.out||[],low=st.low||[],sint=(st.sint||[]).slice(-1)[0];
   h+=card(out.length?"⚠️":"✅",'<b>'+(out.length?"Remédios que acabaram":"Nenhum remédio acabou")+'</b>'+(out.length?out.map(cEsc).join(", "):""),out.length?"bad":"good");
@@ -1179,8 +1205,37 @@ window.onState=function(){if(MODE==="cuidador")paintCuid()};
 Array.prototype.forEach.call(document.querySelectorAll("#ctabs button"),function(b){b.onclick=function(){CTAB=b.dataset.t;paintCuid();window.scrollTo(0,0);$("cuid").scrollTop=0}});
 $("cgear").onclick=function(){editNew=false;paintSet();$("cset").style.display="flex"};
 $("csx").onclick=function(){$("cset").style.display="none";editNew=false};
-$("cnew").onclick=function(){editNew=true;$("cin").readOnly=false;$("cin").value="";$("cgo").disabled=false;$("cnew").style.display="none";$("cst").className="st";$("cst").textContent="Digite o novo código e toque em Conectar.";$("cin").focus()};
-$("ccall").onclick=function(){if(NATIVE&&Android.ligar)Android.ligar("81971151424");else alert("Protótipo: ligaria para 81971151424")};
+$("cname").oninput=function(){ls("cname",$("cname").value.trim());if(NATIVE&&Android.setName)Android.setName($("cname").value.trim());if(!connected()||editNew){$("cgo").disabled=!cNome()}if(cNome()&&!connected())$("cst").textContent="Digite o código que aparece em Definições > Avisos pela internet no celular da Lourdinha.";else if(!cNome())$("cst").textContent="⚠ Informe seu nome para continuar."};
+$("cnew").onclick=function(){editNew=true;$("cin").readOnly=false;$("cin").value="";$("cgo").disabled=!cNome();$("cnew").style.display="none";$("cst").className="st";$("cst").textContent="Digite o novo código e toque em Conectar.";$("cin").focus()};
+function precisaNome(){if(cNome())return false;editNew=false;paintSet();$("cset").style.display="flex";$("cname").focus();return true}
+function dial(){if(NATIVE&&Android.ligar)Android.ligar("81971151424");else alert("Protótipo: ligaria para 81971151424")}
+function cToast(t){var e=document.createElement("div");e.className="toast";e.textContent=t;$("cuid").appendChild(e);setTimeout(function(){e.remove()},2600)}
+var syncT=0;
+var PEG=["Cadê meu chapéu? Eita, muzenga!","Alguém viu a chave?","Espera aí, vou fazer um lanchinho.","Rapaz, ficasse sabendo? Depois te conto.","Muzenga, esqueci de tomar água. Espera aí!","Peraí, vou ali pegar o óculos…","Espera! Preciso tomar um cafezinho ☕","Opa, esqueci onde estacionei o Uno!","Deixa eu ver se a Lourdinha tomou o remédio…","Já volto, vou comer um pão com manteiga!"];
+function syncProgress(done){
+  var ov=$("csyncov"),tr=ov.querySelector(".strack"),car=$("scarw"),fill=$("sfill"),pc=$("spc"),bal=$("sbal"),
+  q=PEG.slice().sort(function(){return Math.random()-.5}).slice(0,Math.random()<.5?1:2),
+  pts=(q.length==1?[.25+Math.random()*.5]:[.2+Math.random()*.2,.6+Math.random()*.2]),
+  D=7000,P=2400,t0=Date.now(),lim=0,hold=0,paused=0,prog=0,last=t0;
+  ov.style.display="flex";bal.style.display="none";ov.classList.remove("stop");
+  (function step(){
+    var n=Date.now(),dt=n-last;last=n;
+    if(paused){hold-=dt;if(hold<=0){paused=0;bal.style.display="none";ov.classList.remove("stop");lim++}}
+    else{prog=Math.min(1,prog+dt/D);
+      if(lim<q.length&&prog>=pts[lim]){paused=1;hold=P;bal.textContent=q[lim];bal.style.display="block";ov.classList.add("stop")}}
+    var w=tr.clientWidth,x=(w-96)*prog;
+    car.style.transform="translateX("+x+"px)";fill.style.width=Math.min(w,x+60)+"px";pc.textContent=Math.round(prog*100)+"%";
+    if(prog<1||paused)(window.requestAnimationFrame||setTimeout)(step,16);else setTimeout(function(){ov.style.display="none";done()},250);
+  })();
+}
+$("csync").onclick=function(){
+  var b=$("csync");if(b.classList.contains("spin"))return;b.classList.add("spin");
+  var antes=(remState().ts)||0;
+  if(NATIVE){try{Android.refreshState&&Android.refreshState();Android.fetchProfs&&Android.fetchProfs();Android.sendProfile&&Android.sendProfile()}catch(e){}}
+  syncProgress(function(){b.classList.remove("spin");paintCuid();var t=(remState().ts)||0;cToast(!t?"Ainda sem dados da Lourdinha":t>antes?"✔ Sincronizado":"✔ Já estava atualizado ("+hhmm(new Date(t))+")")});
+};
+$("ccall").onclick=function(){if(precisaNome())return;dial()};
+window.cuidCall=function(ts,txt){if(precisaNome())return;if(NATIVE&&Android.careCall)Android.careCall(cNome(),"a"+ts,txt);dial()};
 var tapN=0,tapT=0;$("ctitle").onclick=function(){var n=Date.now();tapN=n-tapT<1500?tapN+1:1;tapT=n;if(tapN>=5){$("cmd").style.display="block";$("cset").style.display="flex";paintSet()}};
 // ---- Gesto secreto: desenhar "L" e depois "U" abre as definições secretas
 var strokes=[],cur=null,seqL=0,cv=$("cdraw"),cx=cv.getContext&&cv.getContext("2d");
@@ -1195,15 +1250,27 @@ function shapeOf(p){
 function gStart(x,y){if(MODE!=="cuidador"||$("cset").style.display==="flex"||$("csec").style.display==="flex")return;cur=[[x,y]];if(cx)cx.clearRect(0,0,cv.width,cv.height)}
 function gMove(x,y){if(!cur)return;var q=cur[cur.length-1];cur.push([x,y]);if(cx&&cur.length>3){cx.strokeStyle="rgba(124,58,237,.35)";cx.lineWidth=6;cx.lineCap="round";cx.beginPath();cx.moveTo(q[0],q[1]);cx.lineTo(x,y);cx.stroke()}}
 function gEnd(){if(!cur)return;var sh=shapeOf(cur);cur=null;setTimeout(function(){if(cx)cx.clearRect(0,0,cv.width,cv.height)},250);
-  var n=Date.now();if(sh==="L"){seqL=n}else if(sh==="U"&&n-seqL<4000){seqL=0;openSec()}}
-function openSec(){$("slocal").checked=(function(){try{return !!JSON.parse(NATIVE&&Android.getCfg?Android.getCfg():ls("cfg")||"{}").loc}catch(e){return false}})();$("csec").style.display="flex"}
+  var n=Date.now();if(sh==="L"){seqL=n}else if(sh==="U"&&n-seqL<4000){seqL=0;openSecGate()}}
+function openSecGate(){askPass("1989","Senha das definições secretas",openSec)}
+function openSec(){secTab("loc");$("slocal").checked=(function(){try{return !!JSON.parse(NATIVE&&Android.getCfg?Android.getCfg():ls("cfg")||"{}").loc}catch(e){return false}})();$("csec").style.display="flex"}
 document.addEventListener("touchstart",function(e){var t=e.touches[0];gStart(t.clientX,t.clientY)},{passive:true});
 document.addEventListener("touchmove",function(e){var t=e.touches[0];gMove(t.clientX,t.clientY)},{passive:true});
 document.addEventListener("touchend",gEnd,{passive:true});document.addEventListener("touchcancel",gEnd,{passive:true});
 document.addEventListener("mousedown",function(e){gStart(e.clientX,e.clientY)});document.addEventListener("mousemove",function(e){if(e.buttons)gMove(e.clientX,e.clientY)});document.addEventListener("mouseup",gEnd);
 $("csecx").onclick=function(){$("csec").style.display="none"};
+function secTab(t){$("sp_loc").style.display=t==="loc"?"block":"none";$("sp_cui").style.display=t==="cui"?"block":"none";$("st_loc").className=t==="loc"?"on":"";$("st_cui").className=t==="cui"?"on":"";if(t==="cui"){if(NATIVE&&Android.sendProfile)Android.sendProfile();setTimeout(function(){if(NATIVE&&Android.fetchProfs)Android.fetchProfs()},1200);paintProfs()}}
+$("st_loc").onclick=function(){secTab("loc")};$("st_cui").onclick=function(){secTab("cui")};
+function ago(ts){if(!ts)return "";var m=Math.round((Date.now()-ts)/60000);return m<1?"agora":m<60?"há "+m+" min":m<1440?"há "+Math.round(m/60)+" h":"há "+Math.round(m/1440)+" d"}
+function paintProfs(){
+  var a=[];try{a=JSON.parse(NATIVE&&Android.getProfs?Android.getProfs():"[]")}catch(e){}
+  var me=NATIVE&&Android.getMyId?Android.getMyId():"";
+  $("plist").innerHTML=a.length?a.map(function(x){
+    var loc=x.lat!==undefined&&x.lat!==null?'<div class="ln">📍 '+(x.place?cEsc(x.place):"posição conhecida")+' <small style="color:#94a3b8">('+ago(x.lts)+')</small> · <a class="map" style="margin:0;padding:4px 8px;font-size:13px" href="#" onclick="openMap(\'https://maps.google.com/?q='+x.lat+','+x.lon+'\');return false">Abrir no mapa</a></div>':'<div class="ln">📍 Localização ainda não informada</div>';
+    return '<div class="pc"><b>👤 '+cEsc(x.name||"(sem nome)")+(x.id===me?" (você)":"")+'</b><div class="ln">📱 '+cEsc(x.dev||"—")+'</div><div class="ln">🔋 '+(x.bat===null||x.bat===undefined?"—":x.bat+"%")+' <small style="color:#94a3b8">· atualizado '+ago(x.ts)+'</small></div>'+loc+'<button class="lb" onclick="askLocation(\''+x.id+'\')">📍 Consultar localização</button></div>'}).join(""):'<div class="empty" style="padding:20px 0">Nenhum cuidador registrado ainda.</div>'}
+window.onProfs=function(){paintProfs()};
+window.askLocation=function(id){if(NATIVE&&Android.askLoc)Android.askLoc(id);var b=event&&event.target;if(b){b.textContent="⏳ Consultando…";b.disabled=true}[5000,12000].forEach(function(t){setTimeout(function(){if(NATIVE&&Android.fetchProfs)Android.fetchProfs()},t)})};
 $("slocal").onchange=function(){var j=JSON.stringify({loc:$("slocal").checked});ls("cfg",j);if(NATIVE&&Android.setCfg)Android.setCfg(j)};
-window.__gesto=function(a){var r=shapeOf(a);if(r==="L"){seqL=Date.now()}else if(r==="U"&&Date.now()-seqL<4000){seqL=0;openSec()}return r};
+window.__gesto=function(a){var r=shapeOf(a);if(r==="L"){seqL=Date.now()}else if(r==="U"&&Date.now()-seqL<4000){seqL=0;openSecGate()}return r};
 $("mdl").onclick=function(){setModeNow("lourdinha");paintMode()};
 $("mdc").onclick=function(){setModeNow("cuidador");paintMode()};
 $("cgo").onclick=function(){var r=NATIVE&&Android.setPairCode?Android.setPairCode($("cin").value):"erro";if(r==="ok"){editNew=false;paintSet();paintCuid();if(Android.refreshState)Android.refreshState()}else{$("cst").className="st";$("cst").textContent="Código inválido. Confira e tente de novo."}};
@@ -1214,8 +1281,7 @@ $("pshare").onclick=function(){var c=NATIVE&&Android.getPairCode?Android.getPair
 function cuidPoll(){
   if(MODE!=="cuidador"||!NATIVE||!Android.takeNew)return;
   var n="";try{n=Android.takeNew()}catch(e){}
-  if(!n)return;
-  try{var o=JSON.parse(n);paintCuid();gpQ=[{id:"cuid",c:"#c5221f",t:"🔔 "+o.title,m:o.body}];gpI=0;gpShow()}catch(e){}
+  if(n)paintCuid();
 }
 setInterval(cuidPoll,5000);function cuidRefresh(){if(MODE==="cuidador"&&NATIVE&&Android.refreshState)Android.refreshState()}setInterval(cuidRefresh,60000);setTimeout(cuidRefresh,1500);document.addEventListener("visibilitychange",function(){if(!document.hidden)cuidPoll()});
 paintMode();setTimeout(cuidPoll,800);

@@ -151,8 +151,8 @@ public class MainActivity extends Activity {
             if (!"lourdinha".equals(m) && !"cuidador".equals(m)) return;
             android.content.SharedPreferences.Editor e = LogStore.sp(MainActivity.this).edit().putString("mode", m);
             if ("lourdinha".equals(m) && !Push.valid(Push.code(MainActivity.this))) e.putString("pair", Push.newCode());
-            e.apply();
-            if ("cuidador".equals(m)) runOnUiThread(() -> { if (Build.VERSION.SDK_INT >= 33) requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1); });
+            e.apply(); updateIcon();
+            if ("cuidador".equals(m)) runOnUiThread(() -> { java.util.ArrayList<String> pm = new java.util.ArrayList<>(); if (Build.VERSION.SDK_INT >= 33) pm.add(Manifest.permission.POST_NOTIFICATIONS); pm.add(Manifest.permission.SEND_SMS); pm.add(Manifest.permission.ACCESS_FINE_LOCATION); requestPermissions(pm.toArray(new String[0]), 1); });
             else Scheduler.scheduleAll(MainActivity.this);
         }
         @JavascriptInterface public String getPairCode(){ return Push.code(MainActivity.this); }
@@ -172,6 +172,13 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void openUrl(String u){
             try { if (u != null && u.startsWith("https://maps.google.com/")) startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(u)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); } catch (Throwable e) {}
         }
+        @JavascriptInterface public void setName(String n){ LogStore.sp(MainActivity.this).edit().putString("cname", n == null ? "" : n.trim()).apply(); Push.profile(MainActivity.this, false); updateIcon(); }
+        @JavascriptInterface public void sendProfile(){ Push.profile(MainActivity.this, false); }
+        @JavascriptInterface public String getMyId(){ String t = LogStore.sp(MainActivity.this).getString("ftok", ""); return t.length() >= 12 ? t.substring(t.length() - 12) : ""; }
+        @JavascriptInterface public String getProfs(){ return LogStore.sp(MainActivity.this).getString("profs", "[]"); }
+        @JavascriptInterface public void fetchProfs(){ Push.profs(MainActivity.this, () -> runOnUiThread(() -> web.evaluateJavascript("window.onProfs&&onProfs()", null))); }
+        @JavascriptInterface public void askLoc(String id){ Push.locReq(MainActivity.this, id); }
+        @JavascriptInterface public void careCall(String nome, String ref, String txt){ Push.care(MainActivity.this, nome, ref, txt); }
         @JavascriptInterface public void notifyCare(String msg){ try { Push.send(MainActivity.this, msg); } catch (Throwable e) {} }
         @JavascriptInterface public String getCfg(){ return LogStore.sp(MainActivity.this).getString("cfg", "{}"); }
         @JavascriptInterface public void setCfg(String json){
@@ -288,6 +295,7 @@ public class MainActivity extends Activity {
     }
     @Override protected void onCreate(Bundle s){
         super.onCreate(s);
+        updateIcon();
         final android.content.SharedPreferences cp = getSharedPreferences("crash", MODE_PRIVATE);
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> { cp.edit().putString("e", android.util.Log.getStackTraceString(e)).commit(); android.os.Process.killProcess(android.os.Process.myPid()); });
         String old = cp.getString("e", null);
@@ -322,6 +330,7 @@ public class MainActivity extends Activity {
                 });
                 ttsOk = true; } } catch (Throwable e) {} }); } catch (Throwable e) {}
         Scheduler.scheduleAll(this);
+        Push.profile(this, false);
         Push.cfgFetch(this, () -> runOnUiThread(() -> { if (Loc.on(MainActivity.this) && !Loc.allowed(MainActivity.this)) requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 6); }));
         load(getIntent());
         web.postDelayed(() -> nextPerm(), 800);
@@ -376,4 +385,20 @@ public class MainActivity extends Activity {
         return super.dispatchTouchEvent(ev);
     }
     @Override protected void onNewIntent(Intent in){ super.onNewIntent(in); setIntent(in); load(in); }
+
+    /** Ícone só com a foto da Lourdinha quando o cuidador não é Anne Amorim nem Danilo Tássio. */
+    void updateIcon(){
+        try {
+            String n = LogStore.sp(this).getString("cname", "").trim();
+            String f = java.text.Normalizer.normalize(n, java.text.Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase(java.util.Locale.ROOT);
+            boolean solo = !n.isEmpty() && "cuidador".equals(Push.mode(this)) && !f.equals("anne amorim") && !f.equals("danilo tassio");
+            android.content.pm.PackageManager pm = getPackageManager();
+            android.content.ComponentName pad = new android.content.ComponentName(this, "br.lourdinha.IconPadrao");
+            android.content.ComponentName sol = new android.content.ComponentName(this, "br.lourdinha.IconSolo");
+            int on = android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, off = android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+            if (pm.getComponentEnabledSetting(sol) == (solo ? on : off) && pm.getComponentEnabledSetting(pad) == (solo ? off : on)) return;
+            pm.setComponentEnabledSetting(solo ? sol : pad, on, android.content.pm.PackageManager.DONT_KILL_APP);
+            pm.setComponentEnabledSetting(solo ? pad : sol, off, android.content.pm.PackageManager.DONT_KILL_APP);
+        } catch (Throwable e) {}
+    }
 }

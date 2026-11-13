@@ -19,6 +19,7 @@ public class LogStore {
             a.put(o);
             sp(c).edit().putString("log", prune(a).toString()).apply();
             if (ok != null) Watch.touch(c);
+            try { Push.stateRefresh(c); } catch (Throwable e) {}
             if (ok == null || !ok.booleanValue()) Sms.alert(c, time, idx);
         } catch (Exception e) {}
     }

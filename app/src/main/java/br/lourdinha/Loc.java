@@ -59,4 +59,29 @@ public class Loc {
             return lv < 0 ? "" : " Bateria: " + Math.round(100f * lv / sc) + "%.";
         } catch (Throwable e) { return ""; }
     }
+    /** Ultima posicao conhecida: {lat, lon, place} ou null (sem espera, sem exigir o interruptor). */
+    public static JSONObject last(Context c){
+        try {
+            if (!allowed(c)) return null;
+            LocationManager lm = (LocationManager) c.getSystemService(Context.LOCATION_SERVICE);
+            Location best = null;
+            for (String p : lm.getProviders(true)) { Location l = lm.getLastKnownLocation(p); if (l != null && (best == null || l.getTime() > best.getTime())) best = l; }
+            if (best == null) return null;
+            String place = "";
+            try {
+                if (android.location.Geocoder.isPresent()) {
+                    java.util.List<android.location.Address> ad = new android.location.Geocoder(c, new java.util.Locale("pt", "BR")).getFromLocation(best.getLatitude(), best.getLongitude(), 1);
+                    if (ad != null && !ad.isEmpty()) {
+                        android.location.Address a = ad.get(0); StringBuilder sb = new StringBuilder();
+                        if (a.getThoroughfare() != null) sb.append(a.getThoroughfare()).append(a.getSubThoroughfare() != null ? ", " + a.getSubThoroughfare() : "");
+                        if (a.getSubLocality() != null) sb.append(sb.length() > 0 ? " - " : "").append(a.getSubLocality());
+                        String cid = a.getLocality() != null ? a.getLocality() : a.getSubAdminArea();
+                        if (cid != null) sb.append(sb.length() > 0 ? ", " : "").append(cid);
+                        place = sb.toString();
+                    }
+                }
+            } catch (Throwable e) {}
+            return new JSONObject().put("lat", best.getLatitude()).put("lon", best.getLongitude()).put("place", place);
+        } catch (Throwable e) { return null; }
+    }
 }

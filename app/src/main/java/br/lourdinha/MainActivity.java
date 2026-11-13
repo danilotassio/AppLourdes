@@ -48,6 +48,24 @@ public class MainActivity extends Activity {
     }
     @Override protected void onCreate(Bundle s){
         super.onCreate(s);
+        final android.content.SharedPreferences cp = getSharedPreferences("crash", MODE_PRIVATE);
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> { cp.edit().putString("e", android.util.Log.getStackTraceString(e)).commit(); android.os.Process.killProcess(android.os.Process.myPid()); });
+        String old = cp.getString("e", null);
+        if (old != null) {
+            cp.edit().remove("e").commit();
+            android.widget.ScrollView sv = new android.widget.ScrollView(this);
+            android.widget.TextView tv = new android.widget.TextView(this); tv.setTextSize(12); tv.setPadding(20,40,20,20); tv.setTextIsSelectable(true);
+            tv.setText("ERRO ANTERIOR (mande print ao Danilo/Claude):\n\n" + old);
+            sv.addView(tv); setContentView(sv); return;
+        }
+        try { onCreate2(); } catch (Throwable e) {
+            android.widget.ScrollView sv = new android.widget.ScrollView(this);
+            android.widget.TextView tv = new android.widget.TextView(this); tv.setTextSize(12); tv.setPadding(20,40,20,20);
+            tv.setText("ERRO:\n\n" + android.util.Log.getStackTraceString(e));
+            sv.addView(tv); setContentView(sv);
+        }
+    }
+    void onCreate2(){
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         web = new WebView(this);
         WebSettings ws = web.getSettings();

@@ -2,6 +2,14 @@ plugins { id 'com.android.application' }
 android {
     namespace 'br.lourdinha'
     compileSdk 34
+    signingConfigs {
+        debug {
+            storeFile file('lourdinha.jks')
+            storePassword 'lourdinha'
+            keyAlias 'lourdinha'
+            keyPassword 'lourdinha'
+        }
+    }
     defaultConfig {
         applicationId 'br.lourdinha.remedios'
         minSdk 24

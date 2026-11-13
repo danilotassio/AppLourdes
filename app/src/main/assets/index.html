@@ -7,8 +7,16 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f4f4;color:#111;min-height:100vh}
-#top{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;background:#1F3864;color:#fff;font-size:18px}
-#clock{font-size:26px;font-weight:bold}
+#top{padding:10px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:6px;min-height:78px;align-items:center;background:#F8D7E3;color:#5b2340;font-size:19px;font-weight:bold}
+#top{position:relative;overflow:hidden}
+#top .deco{position:absolute;inset:0;display:flex;flex-wrap:wrap;justify-content:space-around;align-content:space-around;font-size:14px;opacity:.5;pointer-events:none;z-index:0;line-height:1;overflow:hidden}
+#top .tt,#top .rt,#top .lf{position:relative;z-index:1}
+#top .rt{background:rgba(255,255,255,.65);border-radius:14px;padding:2px 6px}
+#fe{background:linear-gradient(135deg,#fff8d6,#f5c542);color:#6a4a00;border:2px solid #fff;box-shadow:0 0 8px #f5c542;font-size:18px;font-weight:bold;padding:8px 12px;border-radius:20px;flex:none}
+#top .tt{text-align:center;font-weight:bold;font-size:25px;line-height:1.1;justify-self:center;background:#F8D7E3;border-radius:14px;padding:3px 12px}
+#top .rt{justify-self:end;display:flex;align-items:center}
+#gear{background:transparent;color:#5b2340;font-size:26px;padding:0 10px;flex:none}
+#clock{white-space:nowrap;font-size:20px;font-weight:bold;text-align:center;line-height:1.1}#clock small{display:block;font-size:13px}
 #main{padding:12px}
 .card{border-radius:18px;padding:18px;margin-bottom:12px;border:4px solid rgba(0,0,0,.25)}
 .big{font-size:44px;font-weight:bold;text-align:center;margin:4px 0}
@@ -20,39 +28,172 @@ button{border:0;border-radius:16px;font-size:30px;font-weight:bold;padding:22px 
 .small{font-size:18px;padding:12px;background:#ddd;color:#111;border-radius:12px;font-weight:normal}
 .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 label{font-size:20px;display:flex;align-items:center;gap:10px}
-input[type=checkbox]{width:28px;height:28px}
+input[type=checkbox]{width:28px;height:28px;accent-color:#1e8e3e}
 table{width:100%;border-collapse:collapse;font-size:18px;background:#fff}
 td,th{border:1px solid #999;padding:6px;text-align:center}
 .pill{display:inline-block;padding:2px 10px;border-radius:10px;font-weight:bold}
 #alarmbar{display:none}
+#callbtn{background:#e0489e;color:#fff;flex:1;display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:bold;padding:12px;border-radius:12px;text-align:center}
+#callbtn{line-height:21px}#callbtn .spk{margin:0;flex:none;font-size:16px;line-height:21px;padding:0 8px;border-radius:8px}#copy{line-height:21px}
+#outm,#estm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;align-items:center;justify-content:center;padding:14px}
+#outm .box{background:#fff;border-radius:20px;padding:20px;width:100%;max-height:92vh;overflow:auto;border:4px solid #c5221f}
+#outm .it{font-size:26px;font-weight:bold;color:#c5221f;margin:6px 0}
+#adm{position:fixed;inset:0;background:#f4f4f4;z-index:90;overflow:auto;padding:0 14px 40px}
+#adm .admh{position:sticky;top:0;z-index:2;background:#F8D7E3;color:#5b2340;margin:0 -14px 12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;font-size:24px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+#admx{background:#5b2340;color:#fff;font-size:18px;padding:10px 14px;flex:none;border-radius:12px}
+#adm .row{margin-top:10px}
+.rx{border:2px solid #e0d0d8;border-radius:12px;padding:6px 8px;margin-top:8px;background:#fffafc}
+.rxn{font-size:19px;font-weight:bold}
+.rxd{display:flex;gap:8px;margin-top:6px}.rxd label{flex:1;font-size:14px;color:#555;display:block}
+.rxd input{width:100%;font-size:20px;padding:4px;min-width:0}
+.wa{width:22px;height:22px;flex:none;margin-right:6px}
+.rxoff{font-size:15px;color:#c5221f;font-weight:bold;margin:4px 0 0}
+.rxp{font-size:15px;color:#5b2340;margin-top:6px;font-weight:bold}
+.rxd select,.rxd input[type=text]{width:100%;font-size:20px;padding:4px;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{background:#e8e8e8!important;color:#333!important;font-size:15px!important;min-height:0!important;padding:6px 8px!important;flex:none;border-radius:10px;font-weight:normal}
+.chip.on{background:#5b2340!important;color:#fff!important;font-weight:bold}
+@keyframes pisca{0%,100%{box-shadow:0 0 0 0 var(--g);opacity:1}50%{box-shadow:0 0 16px 6px var(--g);opacity:.62}}
+#outcard,#estbox,#sintcard{animation:pisca 1.3s ease-in-out infinite}
+#outcard.quieto,#estbox.quieto,#sintcard.quieto{animation:none}
+#outcard,#estbox{--g:rgba(197,34,31,.85)}
+#sintcard{--g:rgba(67,160,71,.85)}
+@media (prefers-reduced-motion:reduce){#outcard,#estbox,#sintcard{animation:none}}
+.grp{background:#fff;border:2px solid #d9c3cf;border-radius:16px;padding:10px 12px 14px;margin-bottom:14px}
+.gt{font-weight:bold;font-size:21px;color:#5b2340;margin-bottom:2px}
+.ob{width:150px;height:56px;font-size:16px;padding:6px;flex:none;line-height:1.15}
+#estbox{display:none;background:#ffe5e5;border:4px solid #c5221f}
+#estbox .l{font-size:21px;font-weight:bold;color:#b71c1c;margin-top:4px}
+#stm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;align-items:center;justify-content:center;padding:14px}
+#stm .box{background:#fff;border:4px solid #00838f;border-radius:20px;padding:16px;width:100%;max-height:94vh;display:flex;flex-direction:column}
+#stl{overflow:auto;flex:1;margin:10px 0}
+.sr{border:2px solid #80cbc4;border-radius:14px;padding:8px 10px;margin-bottom:8px;background:#f1fbfa}
+.sr .n{font-size:21px;font-weight:bold;color:#00595f}
+.sr .c{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 46px;gap:6px;margin-top:6px;text-align:center}
+.sr .c button.rd{background:#1F3864;color:#fff;border:0;border-radius:10px;font-size:22px;padding:0;min-height:0!important;height:auto}
+.sr .c div{background:#fff;border-radius:10px;padding:4px 2px;font-size:13px;color:#555}
+.sr .c b{display:block;font-size:22px;color:#111}
+.sr .c input{width:100%;font-size:22px;font-weight:bold;text-align:center;border:2px solid #00838f;border-radius:8px;padding:2px;min-width:0}
+#gpop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:100;align-items:center;justify-content:center;padding:18px}
+#gpop .box{background:#fff;border-radius:22px;padding:20px;width:100%;border:5px solid var(--gc,#c5221f);text-align:center}
+#gpop .gt2{font-size:28px;font-weight:bold;color:var(--gc,#c5221f)}
+#gpop .gm{font-size:22px;margin:12px 0 4px;line-height:1.3}
+#sgm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;align-items:center;justify-content:center;padding:14px}
+#sgm .box{background:#fff;border-radius:20px;padding:18px;width:100%;max-height:92vh;display:flex;flex-direction:column}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.sgrid button{font-size:20px;white-space:nowrap;padding:18px 4px;display:flex;align-items:center;justify-content:center;gap:6px}
+.sgrid .spk{font-size:18px;padding:3px 8px;margin:0;background:rgba(255,255,255,.28)}
+.sch{display:inline-block;background:#fff;border:2px solid #aaa;border-radius:14px;padding:3px 10px;margin:3px 4px 0 0;font-size:17px}
+.sec{margin-top:14px;padding-top:10px;border-top:2px solid #ccc;font-weight:bold;font-size:18px}
+#fem{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;align-items:center;justify-content:center;padding:14px}
+#fem .box{background:#fffbea;border:4px solid #f5c542;border-radius:20px;padding:18px;width:100%;max-height:92vh;display:flex;flex-direction:column}
+#pgm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;align-items:center;justify-content:center;padding:14px}
+#pgm .box{background:#fff;border-radius:20px;padding:18px;width:100%;max-height:92vh;display:flex;flex-direction:column}
+#pgl{overflow:auto;flex:1;margin:10px 0}
+.pq{border:2px solid #b39ddb;border-radius:14px;padding:10px;margin-bottom:10px;background:#f3eefc}
+.pq .dt{font-size:15px;color:#5b2d91;font-weight:bold}
+.pq .tx{font-size:22px;margin:4px 0 8px}
+#confirm,#warn{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;align-items:center;justify-content:center;padding:20px}
+#confirm .box,#warn .box{background:#fff;border-radius:20px;padding:24px;width:100%;text-align:center}
+#confirm .q,#warn .q{font-size:34px;font-weight:bold;margin-bottom:6px}
 #gear{background:none;color:#fff;font-size:26px;padding:0 8px;flex:none}
 .ov{position:fixed;left:0;top:0;right:0;bottom:0;overflow:auto;padding:14px;z-index:50}
 .spk{background:#1F3864;color:#fff;font-size:26px;padding:6px 12px;border-radius:12px;flex:none;margin-right:8px}
 .medrow{display:flex;align-items:center;margin:12px 0}
+.mb{display:flex;flex-direction:column;gap:6px;flex:none;margin-left:8px}
+.tk,.ac{font-size:20px;padding:10px 12px;border-radius:12px;flex:none}
+.tk{background:#f5c400;color:#111}
+.tk.on{background:#1e8e3e;color:#fff}
+.medrow.out{background:#ffd6d6;border:3px solid #c5221f;border-radius:12px;padding:6px}
+.ac{background:#e0e0e0;color:#111}
+.ac.on{background:#c5221f;color:#fff}
+#next{display:flex;gap:8px}
+.dg{flex:1;border:2px solid #999;border-radius:12px;padding:8px;background:#fafafa;min-width:0}
+.dg h4{margin:0 0 6px;font-size:16px;text-align:center;color:#1F3864}
+.ni{display:flex;align-items:center;justify-content:space-between;margin:5px 0;font-size:16px}
+.ni.past{opacity:.6}
+.ni{flex-wrap:nowrap;gap:4px}
+.ni .pill{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;padding:2px 6px}
+.ni input{flex:none}
+.dg{padding:6px}
+.ni .spk{font-size:18px;padding:3px 8px;margin:0;flex:none}
+.ni input{width:24px;height:24px;flex:none;margin-left:6px}
 #pw{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:none;z-index:99;align-items:center;justify-content:center}
 #pw div.b{background:#fff;border-radius:18px;padding:20px;width:85%}
 #pwi{font-size:34px;width:100%;padding:10px;text-align:center}
+/* padronização: altura única dos botões (fora da tela de alarme) */
+#main>.card button:not(.spk):not(.chip),#main>.row button:not(.spk),#adm button:not(.chip),#pgm button,#sgm button,#fem button,#outm button,#stm button,#gpop button,#callbtn{
+  min-height:52px!important;padding-top:6px!important;padding-bottom:6px!important;display:flex;align-items:center;justify-content:center;line-height:1.15}
+#callbtn{box-sizing:border-box}
+#adm .admh button{min-height:44px!important}
 </style>
 </head>
 <body>
-<div id="top"><div>Remédios da Lourdinha</div><div style="display:flex;align-items:center"><button id="gear">⚙</button><div id="clock">--:--</div></div></div>
+<div id="top"><div class="deco">🌸 💗 🌿 🦋 💕 🌷 🍃 💗 🌼 🌿 💕 🌸 🌻 💞 🍀 🐝 🌸 💗 🌿 🦋 💕 🌷 🍃 💗 🌼 🌿 💕 🌸 🌻 💞 🍀 🐝 🌸 💗 🌿 🦋 💕 🌷 🍃 💗 🌼 🌿 💕 🌸 🌻 💞 🍀 🐝</div><div class="lf"><button id="fe">✝ Fé</button></div><div class="tt">Medicações de Lourdinha</div><div class="rt"><button id="gear">⚙</button><div id="clock">--:--</div></div></div>
 <div id="pw"><div class="b"><div class="sub" id="pwt">Senha</div><input id="pwi" type="password" inputmode="numeric"><div class="btns"><button class="small" id="pwc" style="flex:1">Cancelar</button><button id="pwo" style="background:#1F3864;flex:1;font-size:24px">OK</button></div></div></div>
 <div id="main">
-  <div id="sound" class="card" style="background:#fff3cd"><div class="sub"><b>1) Toque aqui para ligar o som</b></div><button id="enable" style="background:#1F3864;width:100%">🔔 Ligar alarme</button><div style="font-size:16px;margin-top:8px">Deixe esta tela aberta e o volume alto. O alarme toca nos horários dos remédios.</div></div>
-  <div id="now"></div>
-  <div class="card" style="background:#fff">
-    <label><input type="checkbox" id="qt"> Dias pós-quimio (incluir remédios de enjoo)</label>
-    <div id="adm" style="display:none"><div class="row"><button class="small" id="test">Testar alarme</button><button class="small" id="stop">Parar música</button></div></div>
+  <div id="confirm"><div class="box"><div class="medrow" style="justify-content:center"><div class="q" style="margin:0">Ligar para Anne Filha?</div><button class="spk" id="spkc" style="margin:0 0 0 10px">🔊</button></div><div class="btns"><button id="callyes" style="background:#1e8e3e">✅ Sim</button><button id="callno" style="background:#c5221f">❌ Não</button></div></div></div>
+  <div id="outm"><div class="box"><b style="font-size:26px;color:#c5221f">⚠ Remédios que acabaram</b><div id="outml" style="margin:10px 0"></div><div style="font-size:19px;margin-bottom:12px">Para compartilhar a lista de remédios para comprar, aperte o botão verde. Ou aperte o OK azul para apenas sair.</div><div class="btns"><button id="outsh" style="background:#1e8e3e;font-size:20px;padding:16px 6px"><svg class="wa" viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.8 2 6.8L3.5 29l6.6-1.7c1.9 1 4 1.5 6 1.5 7.2 0 13-5.7 13-12.8S23.200 3 16 3z"/><path fill="#25D366" d="M16 5.200c-6 0-10.800 4.700-10.800 10.600 0 2.100.6 4 1.700 5.700l.3.5-1 3.700 3.800-1 .5.3c1.600 1 3.500 1.500 5.500 1.500 6 0 10.800-4.700 10.800-10.600S22 5.200 16 5.200z"/><path fill="#fff" d="M21.600 18.900c-.3-.2-1.800-.9-2.100-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.200-.2.2-.4.2-.7.1-1.800-.9-3-1.600-4.200-3.600-.3-.5.3-.5.9-1.600.1-.2 0-.4 0-.5-.1-.2-.7-1.700-1-2.300-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1.100 1.100-1.100 2.600s1.100 3 1.300 3.200c.2.2 2.200 3.400 5.300 4.700 2 .8 2.700.9 3.700.7.6-.1 1.800-.7 2.100-1.500.3-.7.3-1.300.2-1.500-.1-.1-.3-.2-.6-.4z"/></svg>Compartilhar lista (WhatsApp)</button><button id="outok" style="background:#1F3864;font-size:24px;padding:16px 6px;flex:.5">OK</button></div></div></div>
+<div id="stm"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b style="font-size:23px;color:#00595f">📦 Estoque de remédios</b><button class="small" id="stx" style="flex:none">✖ Fechar</button></div><div id="stsum" style="font-size:16px;color:#333;margin-top:6px"></div><div id="stl"></div><div class="btns" style="margin-top:0"><button id="stspk" style="background:#1F3864;font-size:20px;padding:14px 6px;flex:.45">🔊</button><button id="stok" style="background:#00838f;font-size:22px;padding:14px 6px">OK</button></div></div></div>
+<div id="gpop"><div class="box"><div class="gt2" id="gpt"></div><div class="gm" id="gpm"></div><div class="btns"><button id="gpspk" style="background:#1F3864;flex:.45;font-size:22px">🔊</button><button id="gpok" style="background:#1e8e3e;font-size:24px">OK</button></div></div></div>
+<div id="sgm"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between"><b style="font-size:24px;color:#1b5e20">💬 Diário de bem-estar</b><button class="small" id="sclose" style="flex:none">✖ Fechar</button></div><div id="sgl" style="overflow:auto;flex:1;margin:10px 0"></div></div></div>
+<div id="fem"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between"><b style="font-size:24px;color:#8a6200">✝ Mensagem do dia</b><button class="small" id="feclose" style="flex:none">✖ Fechar</button></div><div id="femn" style="margin-top:8px;font-size:17px;color:#8a6200;font-weight:bold"></div><div id="femt" style="font-size:28px;line-height:1.3;margin:14px 0;flex:1;overflow:auto"></div><button id="feread" style="background:#1F3864;font-size:22px;padding:14px 8px">🔊 Ler a mensagem</button></div></div>
+<div id="pgm"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between"><b style="font-size:24px;color:#5b2d91">🩺 Perguntas para a médica</b><button class="small" id="pclose" style="flex:none">✖ Fechar</button></div><div id="pgl"></div><button id="pread" style="background:#1F3864;font-size:22px;padding:14px 8px">🔊 Ler as perguntas</button></div></div>
+  <div id="warn"><div class="box"><div class="q" id="warnt">Faltam remédios!</div><div id="warnl" style="font-size:26px;margin:10px 0"></div><button id="warnok" style="background:#1F3864;width:100%">OK</button></div></div>
+  <div id="sintcard" class="card" style="background:#eaf6ee;border-color:#43a047"><div class="medrow" style="margin:0"><button class="spk" id="spksint" style="margin:0 10px 0 0">🔊</button><b style="font-size:22px;color:#1b5e20;flex:1">💬 Como você está agora?</b></div>
+    <div class="sgrid"><button data-k="bem" style="background:#1e8e3e"><span>😊 Bem</span><span class="spk sp" data-r="bem">🔊</span></button><button data-k="enjoo" style="background:#7a8b1f"><span>🤢 Enjoo</span><span class="spk sp" data-r="enjoo">🔊</span></button><button data-k="dor" style="background:#c5221f"><span>🤕 Dor</span><span class="spk sp" data-r="dor">🔊</span></button><button data-k="tontura" style="background:#f57c00"><span>😵 Tontura</span><span class="spk sp" data-r="tontura">🔊</span></button></div>
+    <div id="sintmsg" style="font-size:19px;font-weight:bold;margin-top:8px"></div><div id="sinthoje" style="margin-top:4px"></div>
+    <div class="row"><button class="small" id="sview" style="background:#1b5e20;color:#fff;font-weight:bold">📋 Ver diário</button></div>
   </div>
-  <div class="card" style="background:#fff"><b style="font-size:22px">Próximos horários</b><div id="next" style="font-size:20px;margin-top:6px"></div></div>
+  <div id="sound" style="display:none"></div>
+  <div id="now"></div>
+  <div id="outcard" class="card" style="display:none;background:#ffe5e5;border-color:#c5221f"><div class="medrow" style="margin:0 0 4px;gap:8px"><button class="spk" id="spkout" style="margin:0">🔊</button><b style="color:#c5221f;font-size:22px;flex:1;min-width:0">⚠ Remédios que acabaram</b><button class="small" id="shout" style="flex:none;background:#25D366;color:#fff;font-weight:bold"><svg class="wa" viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.8 2 6.8L3.5 29l6.6-1.7c1.9 1 4 1.5 6 1.5 7.2 0 13-5.7 13-12.8S23.200 3 16 3z"/><path fill="#25D366" d="M16 5.200c-6 0-10.800 4.700-10.800 10.600 0 2.100.6 4 1.700 5.700l.3.5-1 3.700 3.800-1 .5.3c1.600 1 3.500 1.500 5.500 1.500 6 0 10.800-4.700 10.800-10.600S22 5.200 16 5.200z"/><path fill="#fff" d="M21.600 18.900c-.3-.2-1.800-.9-2.100-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.200-.2.2-.4.2-.7.1-1.800-.9-3-1.600-4.200-3.600-.3-.5.3-.5.9-1.600.1-.2 0-.4 0-.5-.1-.2-.7-1.700-1-2.300-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1.100 1.100-1.100 2.600s1.100 3 1.300 3.200c.2.2 2.200 3.400 5.300 4.700 2 .8 2.700.9 3.700.7.6-.1 1.800-.7 2.100-1.500.3-.7.3-1.300.2-1.500-.1-.1-.3-.2-.6-.4z"/></svg>Enviar</button></div><div id="outl"></div></div>
+  <div id="estbox" class="card"><div class="medrow" style="margin:0 0 4px"><button class="spk" id="spkest" style="margin:0 10px 0 0">🔊</button><b style="color:#b71c1c;font-size:22px">⚠ Estoque baixo (menos de 10 doses)</b></div><div id="estl"></div></div>
+  <div class="card" style="background:#fff"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px"><b style="font-size:22px">Próximos horários</b><button class="small" id="nextbtn" style="flex:none;background:#f57c00;color:#fff;font-weight:bold">🔔 Qual o próximo?</button></div><div id="next" style="font-size:20px;margin-top:6px"></div></div>
+  <div id="appt" class="card" style="background:#fff8e1;border-color:#f57c00"><div class="medrow" style="margin:0"><button class="spk" id="spkappt" style="margin:0 10px 0 0">🔊</button><div style="flex:1"><div style="font-size:22px;font-weight:bold;color:#e65100">🩺 Próxima consulta</div><div id="apptl" style="font-size:19px;margin-top:4px"></div></div></div></div>
+  <div class="card" style="background:#fff8d6;border-color:#f5c542"><div class="medrow" style="margin:0"><button class="spk" id="spkstar" style="margin:0 10px 0 0">🔊</button><div style="flex:1"><b style="font-size:22px;color:#8a6200">⭐ Conquistas</b><div id="starl" style="font-size:19px;margin-top:4px"></div></div></div></div>
+  <div class="card" style="background:#f3eefc;border-color:#7e57c2"><b style="font-size:22px;color:#5b2d91">🩺 Perguntas para a médica</b>
+    <div class="row" style="flex-wrap:nowrap;align-items:stretch"><button id="pmic" style="background:#7e57c2;font-size:20px;padding:14px 8px">🎤 Falar uma pergunta</button><button class="spk" id="spkpmic" style="margin:0">🔊</button></div>
+    <div id="pnew" style="display:none;margin-top:10px"><textarea id="ptxt" rows="3" style="width:100%;font-size:22px;padding:8px;border-radius:12px;border:2px solid #7e57c2" placeholder="A pergunta aparece aqui. Pode corrigir."></textarea><div class="row"><button class="small" id="psave" style="background:#1e8e3e;color:#fff;font-weight:bold;flex:1">✔ Guardar pergunta</button><button class="small" id="pdisc" style="flex:1">Descartar</button></div></div>
+    <div class="row" style="flex-wrap:nowrap;align-items:stretch"><button class="small" id="pview" style="background:#5b2d91;color:#fff;font-weight:bold">📋 Ver perguntas (<span id="pcnt">0</span>)</button><button class="spk" id="spkpview" style="margin:0">🔊</button></div>
+  </div>
+  <div class="card" style="background:#fff">
+    <div class="medrow" style="margin:0"><label style="flex:1"><input type="checkbox" id="qt"><span>Dias pós-quimio. Incluir remédios de enjoo. <b id="qtd" style="color:#c5221f"></b></span></label><button class="spk" id="spkqt" style="margin:0 0 0 8px">🔊</button></div>
+    <div id="adm" style="display:none"><div class="admh"><b>⚙ Definições</b><button id="admx">✖ Fechar</button></div><div class="grp"><div class="gt">🔔 Alarme e relógio</div><div class="row"><button class="small" id="enable"></button></div><div class="row"><button class="small" id="test">Testar alarme</button><button class="small" id="stop">Parar música</button></div><div class="row"><button class="small" id="mealsw"></button></div><div class="row"><button class="small" id="tsrc"></button></div></div>
+<div class="grp"><div class="gt">🩺 Consulta</div><div class="row" style="align-items:center"><label style="font-size:18px;flex:1">🩺 Data da consulta <input type="date" id="cdate" style="font-size:20px"></label></div><div class="row"><label style="font-size:18px;flex:1">⏰ Hora da consulta <input type="time" id="ctime" style="font-size:20px"></label></div><div class="row" id="cex" style="font-size:16px;color:#555"></div><div class="row"><label style="font-size:18px;flex:1">🕘 Data da última consulta <input type="date" id="udate" style="font-size:20px"></label></div></div>
+<div class="grp"><div class="gt">📝 Receita da última consulta</div><div id="rxhead" style="font-size:15px;color:#555;margin:2px 0 6px"></div><div id="rxl"></div><div class="row"><button class="small" id="rxaddb" style="background:#5b2340;color:#fff;font-weight:bold">➕ Adicionar medicação</button></div>
+<div id="rxadd" style="display:none;border:2px dashed #5b2340;border-radius:12px;padding:8px;margin-top:8px">
+<div class="rxd"><label>Nome<input type="text" id="rxnome" placeholder="ex.: Paracetamol"></label><label>Dosagem<input type="text" id="rxdz" placeholder="ex.: 750 mg"></label></div>
+<div class="rxd"><label>Quantidade por dose<input type="text" id="rxpd" placeholder="ex.: 1 comprimido"></label><label>Para que serve<input type="text" id="rxpq" placeholder="ex.: dor"></label></div>
+<div class="rxd"><label>Quantidade receitada<input type="number" min="0" inputmode="numeric" id="rxq" placeholder="doses"></label><label>Período (dias)<input type="number" min="0" inputmode="numeric" id="rxp" placeholder="contínuo"></label></div>
+<div class="rxd"><label>Intervalo (horas)<input type="number" min="1" max="24" inputmode="numeric" id="rxi" placeholder="ex.: 8"></label><label>Primeiro horário<select id="rxf"></select></label></div>
+<div class="row"><button class="small" id="rxsave" style="background:#1e8e3e;color:#fff;font-weight:bold;flex:1">✔ Salvar</button><button class="small" id="rxcancel" style="flex:1">Cancelar</button></div></div></div>
+<div class="grp"><div class="gt">🍽️ Refeições</div><div class="row" style="align-items:center"><label style="font-size:18px;flex:1">☀️ Café da manhã <input type="time" id="mt0" style="font-size:20px"></label></div><div class="row"><label style="font-size:18px;flex:1">🍽️ Almoço <input type="time" id="mt1" style="font-size:20px"></label></div><div class="row"><label style="font-size:18px;flex:1">🌙 Janta <input type="time" id="mt2" style="font-size:20px"></label></div><div class="row"><button class="small" id="tm0">Testar café</button><button class="small" id="tm1">Testar almoço</button><button class="small" id="tm2">Testar janta</button></div><div class="row"><button class="small" id="mtdef">↺ Restaurar horários padrão (6:15 · 13:00 · 19:00)</button></div>
+</div>
+<div class="grp"><div class="gt">📩 Aviso à família por SMS</div><div class="row"><button class="small" id="smsw"></button></div><div class="row" style="font-size:16px;color:#555">Fixos: (81) 99673-9556 · (81) 98957-4545</div><div id="smsl"></div><div class="row"><input type="tel" id="smsn" placeholder="DDD + número" style="font-size:20px;flex:1;padding:8px;min-width:0"><button class="small" id="smsa">+ Adicionar</button></div><div class="row"><button class="small" id="smst">Testar SMS</button></div>
+</div>
+<div class="grp"><div class="gt">💓 Sinal de vida</div><div class="row"><label style="font-size:18px;flex:1">Horas sem uso do celular para avisar (0 = desligado) <input type="number" id="lifeh" min="0" max="72" inputmode="numeric" style="font-size:20px;width:80px"></label></div>
+</div>
+<div class="grp"><div class="gt">💊 Estoque de remédios (doses)</div><div id="estcfg"></div>
+</div>
+<div class="grp"><div class="gt">🚶 Alarmes de atividade</div><div class="row"><button class="small" id="actw"></button></div><div class="row"><label style="font-size:18px;flex:1">🧘 Alongamento <input type="time" id="act0" style="font-size:20px"></label></div><div class="row"><label style="font-size:18px;flex:1">🚶 Caminhada leve <input type="time" id="act1" style="font-size:20px"></label></div>
+</div>
+<div class="grp"><div class="gt">🩺 Relatório e backup</div><div class="row"><button class="small" id="rep" style="background:#5b2d91;color:#fff;font-weight:bold">🩺 Relatório para a médica (30 dias)</button></div><div class="row"><button class="small" id="bkx">💾 Exportar backup</button><button class="small" id="bki">📥 Importar backup</button></div><input type="file" id="bkf" accept=".json,application/json" style="display:none"></div>
+<div class="grp"><div class="gt">🛠 Outros</div><div class="row"><button class="small" id="voz">🗣️ Trocar voz</button></div><div class="row"><button class="small" id="clear">Limpar registro</button></div></div></div>
+  </div>
+  <div class="row" style="margin:0 0 12px"><button id="stbtn" style="background:#00838f;font-size:22px;padding:16px 8px">📦 Conferir estoque de remédios</button></div>
   <div class="card" style="background:#fff"><b style="font-size:22px">Registro da semana</b>
     <div id="log" style="margin-top:8px"></div>
-    <div class="row"><button class="small" id="copy">Copiar resumo (WhatsApp)</button><button class="small" id="clear">Limpar registro</button></div>
+    <div class="row"><button class="small" id="copy" style="background:#FFD600;color:#3b2f00;font-weight:bold"><svg class="wa" viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.8 2 6.8L3.5 29l6.6-1.7c1.9 1 4 1.5 6 1.5 7.2 0 13-5.7 13-12.8S23.200 3 16 3z"/><path fill="#25D366" d="M16 5.200c-6 0-10.800 4.700-10.800 10.600 0 2.100.6 4 1.700 5.700l.3.5-1 3.700 3.800-1 .5.3c1.600 1 3.500 1.500 5.500 1.500 6 0 10.800-4.700 10.800-10.600S22 5.200 16 5.200z"/><path fill="#fff" d="M21.600 18.900c-.3-.2-1.800-.9-2.100-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.200-.2.2-.4.2-.7.1-1.800-.9-3-1.600-4.200-3.600-.3-.5.3-.5.9-1.600.1-.2 0-.4 0-.5-.1-.2-.7-1.700-1-2.300-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1.100 1.100-1.100 2.600s1.100 3 1.300 3.200c.2.2 2.200 3.400 5.300 4.700 2 .8 2.700.9 3.700.7.6-.1 1.800-.7 2.100-1.500.3-.7.3-1.300.2-1.500-.1-.1-.3-.2-.6-.4z"/></svg>Enviar Resumo (WhatsApp)</button></div>
     <pre id="sum" style="white-space:pre-wrap;font-size:16px"></pre>
   </div>
+  <div class="row" style="margin:12px 0"><div id="callbtn" role="button"><span>📞 Ligar para Anne Filha!</span><span class="spk" id="spkcall">🔊</span></div></div>
+  <div id="foot" style="text-align:center;font-size:12px;color:#666;margin:14px 0 24px">Desenvolvido por Danilo Tássio 2026</div>
 </div>
 <script>
 var NATIVE=(typeof Android!=="undefined");
+var timeOff=0;
+function nowD(){return new Date(Date.now()+timeOff)}
 var POTS=[
  {t:"06:00",n:"AMARELO",c:"#FFF2A8",m:["Omeprazol 20 mg — 2 comprimidos (em jejum) — protege o estômago","Morfina 10 mg — 1 comprimido — dor","Lactulona — 15 ml — intestino (laxante)","Dipirona 500 mg — 2 comprimidos — dor e febre","Simeticona — 40 gotas — gases","Dexametasona 4 mg — 1 comprimido (com o café) — apetite e dor"],q:1},
  {t:"10:00",n:"VERDE",c:"#BFE3BF",m:["Morfina 10 mg — 1 comprimido — dor"]},
@@ -64,32 +205,42 @@ var POTS=[
  {t:"02:00",n:"VERMELHO",c:"#F8B4B4",m:["Morfina 10 mg — 1 comprimido — dor"]}
 ];
 var QT=["Ondansetrona 8 mg — 1 comprimido — enjoo","Metoclopramida — 40 gotas — enjoo"];
+var SLOTS=POTS.map(function(p){return p.t});
 function $(i){return document.getElementById(i)}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
 var passCb=null,passWant="";
-function askPass(want,title,cb){passWant=want;passCb=cb;$("pwt").textContent=title;$("pwi").value="";$("pw").style.display="flex";setTimeout(function(){$("pwi").focus()},100)}
-function passDone(){var v=$("pwi").value;$("pw").style.display="none";if(v===passWant){passCb&&passCb()}else{alert("Senha incorreta")}}
+function askPass(want,title,cb){passWant=want;passCb=cb;$("pwt").textContent=title;$("pwt").style.color="";$("pwi").value="";$("pw").style.display="flex";setTimeout(function(){$("pwi").focus()},100)}
+function passDone(){var v=$("pwi").value;if(v===passWant){$("pw").style.display="none";passCb&&passCb()}else{$("pwt").textContent="Senha incorreta";$("pwt").style.color="#c5221f";$("pwi").value="";$("pwi").focus()}}
+function aviso(t){$("warnt").textContent=t;$("warnl").innerHTML="";$("warn").style.display="flex"}
 var mem={log:[],qt:false};
 try{mem.log=JSON.parse(ls("log")||"[]");mem.qt=ls("qt")==="1"}catch(e){}
 $("qt").checked=mem.qt;
-$("qt").onchange=function(){mem.qt=this.checked;ls("qt",this.checked?"1":"0");render()};
+$("qt").onclick=function(e){e.preventDefault();var cb=this;askPass("1989","Senha para pós-quimio",function(){cb.checked=!cb.checked;mem.qt=cb.checked;ls("qt",cb.checked?"1":"0");ls("qtS",cb.checked?isoToday():"");render();qtCheck()})};
+$("spkqt").onclick=function(){dizer(mem.qt?"Dias pós-quimio, incluir remédios de enjoo. Hoje é o "+["","primeiro","segundo","terceiro"][qtDay()]+" dia após a quimio, Lourdinha.":"Dias pós-quimio, incluir remédios de enjoo. Desligado, Lourdinha.")};
+function isoToday(){var d=nowD();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function qtDay(){var s=ls("qtS");if(!s)return 0;var a=s.split("-"),st=new Date(+a[0],+a[1]-1,+a[2]),n=nowD(),t=new Date(n.getFullYear(),n.getMonth(),n.getDate());return Math.round((t-st)/864e5)+1}
+function qtCheck(){
+  if(mem.qt){var d=qtDay();if(d===0){ls("qtS",isoToday());d=1}
+    if(d>3){mem.qt=false;ls("qt","0");ls("qtS","");$("qt").checked=false;render()}}
+  $("qtd").textContent=mem.qt?qtDay()+"º dia após quimio":"";
+}
 var spk=null;
 function falar(p){
-  if(NATIVE)return;
+  if(NATIVE||!sndOn())return;
+  if(Date.now()-lastDz<20000)return;
   try{
-    var u=new SpeechSynthesisUtterance("Bora, Lourdinha! Tomar o remédio da bolsa "+p.n.toLowerCase()+"!");
-    u.lang="pt-BR";u.volume=1;u.rate=.9;
+    var u=mkU("Bora, Lourdinha! Tomar o remédio da bolsa "+p.n.toLowerCase()+"!");u.volume=1;
     speechSynthesis.cancel();speechSynthesis.speak(u);
   }catch(e){}
 }
-var ac=null,playing=null,pending=null,fired={};
+var ac=null,playing=null,pending=null,fired={},musicVol=1,lastDz=0,mealPending=null;
 function pad(n){return (n<10?"0":"")+n}
 function hhmm(d){return pad(d.getHours())+":"+pad(d.getMinutes())}
 function dstr(d){return pad(d.getDate())+"/"+pad(d.getMonth()+1)}
 // melodia suave original (loop)
 var NOTES=[523,659,784,659,587,698,880,698,523,659,784,1047,784,659,587,523];
 function startMusic(){
-  if(NATIVE)return;
+  if(NATIVE||!sndOn())return;
   stopMusic();
   try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){return}
   var i=0;
@@ -98,7 +249,7 @@ function startMusic(){
       var o=ac.createOscillator(),g=ac.createGain();
       o.type="square";o.frequency.value=NOTES[i%NOTES.length];
       g.gain.setValueAtTime(0,ac.currentTime);
-      g.gain.linearRampToValueAtTime(.9,ac.currentTime+.05);
+      g.gain.linearRampToValueAtTime(.9*musicVol,ac.currentTime+.05);
       g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.7);
       o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.75);
     }catch(e){}
@@ -109,19 +260,70 @@ function startMusic(){
 }
 function stopMusic(){if(playing){clearInterval(playing);playing=null}}
 $("stop").onclick=function(){if(NATIVE)Android.stop();stopMusic();clearInterval(spk);try{speechSynthesis.cancel()}catch(e){}};
+function sndOn(){return NATIVE?Android.getSound():ls("snd")!=="0"}
+function paintSnd(){$("enable").textContent=sndOn()?"🔔 Som do alarme: LIGADO (tocar para desligar)":"🔕 Som do alarme: DESLIGADO (tocar para ligar)"}
 $("enable").onclick=function(){
-  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}
-  try{if(navigator.wakeLock)navigator.wakeLock.request("screen").catch(function(){})}catch(e){}
-  $("sound").style.display="none";startMusic();setTimeout(stopMusic,1200);
+  var on=!sndOn();
+  if(NATIVE)Android.setSound(on);else ls("snd",on?"1":"0");
+  if(on){
+    try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}
+    try{if(navigator.wakeLock)navigator.wakeLock.request("screen").catch(function(){})}catch(e){}
+    paintSnd();startMusic();setTimeout(stopMusic,1200);
+  }else{stopMusic();clearInterval(spk);try{speechSynthesis.cancel()}catch(e){}paintSnd()}
+};
+paintSnd();
+function mealsOn(){return NATIVE?Android.getMeals():ls("meals")!=="0"}
+function paintMealsSw(){$("mealsw").textContent=mealsOn()?"🍽️ Despertadores de refeições: LIGADOS (tocar para desligar)":"🍽️ Despertadores de refeições: DESLIGADOS (tocar para ligar)"}
+$("mealsw").onclick=function(){var on=!mealsOn();if(NATIVE)Android.setMeals(on);else ls("meals",on?"1":"0");paintMealsSw()};
+paintMealsSw();
+// horários das refeições
+function initMealTimes(){
+  var saved=NATIVE?(Android.getMealTimes?String(Android.getMealTimes()).split(","):[]):[];
+  MEALS.forEach(function(M,i){
+    var v=NATIVE?saved[i]:ls("mt"+i);if(v&&/^\d\d:\d\d$/.test(v))M.t=v;
+    var el=$("mt"+i);el.value=M.t;
+    el.onchange=function(){if(!/^\d\d:\d\d$/.test(el.value)){el.value=M.t;return}M.t=el.value;ls("mt"+i,M.t);if(NATIVE)Android.setMealTime(i,M.t);aviso("Horário do "+M.n.toLowerCase()+" salvo: "+M.t)}
+  });
+}
+// fonte da hora: telefone ou internet
+function paintTsrc(){$("tsrc").textContent=ls("tsrc")==="net"?"🌐 Hora: INTERNET (tocar para usar a do telefone)":"📱 Hora: TELEFONE (tocar para usar a da internet)"}
+function syncNet(){
+  if(ls("tsrc")!=="net"){timeOff=0;return Promise.resolve(true)}
+  var urls=["https://worldtimeapi.org/api/timezone/America/Recife","https://timeapi.io/api/Time/current/zone?timeZone=America/Recife"];
+  function go(i){
+    if(i>=urls.length||typeof fetch==="undefined")return Promise.resolve(false);
+    var t0=Date.now();
+    return fetch(urls[i]).then(function(r){return r.json()}).then(function(j){
+      var ms=j.unixtime?j.unixtime*1000:(j.dateTime?Date.parse(j.dateTime+"Z")-(-3*36e5):NaN);
+      if(isNaN(ms))throw 0;timeOff=ms+(Date.now()-t0)/2-Date.now();return true
+    }).catch(function(){return go(i+1)});
+  }
+  return go(0);
+}
+$("tsrc").onclick=function(){
+  var net=ls("tsrc")!=="net";ls("tsrc",net?"net":"tel");paintTsrc();
+  syncNet().then(function(ok){if(net&&!ok){ls("tsrc","tel");timeOff=0;paintTsrc();aviso("Sem internet. Usando a hora do telefone.")}});
+};
+paintTsrc();syncNet();setInterval(syncNet,1800000);
+$("voz").onclick=function(){
+  var n=0;
+  if(NATIVE){n=Android.nextVoice()}
+  else{try{var vs=pvoices();if(vs.length){var k=+ls("voice")||0;k=(k+1)%vs.length;ls("voice",String(k));n=k+1}}catch(e){}}
+  if(!n){aviso("Nenhuma voz em português encontrada neste aparelho.");return}
+  dizer("Oi Lourdinha, esta é a voz número "+n+". Tudo bem com você?");
 };
 $("pwo").onclick=passDone;$("pwc").onclick=function(){$("pw").style.display="none"};
-$("gear").onclick=function(){askPass("1989","Senha para opções",function(){var a=$("adm");a.style.display=a.style.display==="none"?"block":"none"})};
+$("gear").onclick=function(){askPass("1989","Senha para opções",function(){var a=$("adm");a.style.display="block";a.scrollTop=0})};
+$("admx").onclick=function(){$("adm").style.display="none";silenciar()};
 $("test").onclick=function(){if(NATIVE){Android.test();fire(POTS[0],true)}else fire(POTS[0],true)};
-function dizer(t){if(NATIVE){try{Android.hush()}catch(e){}Android.speak(t)}else{try{var u=new SpeechSynthesisUtterance(t);u.lang="pt-BR";u.pitch=.6;u.rate=.9;var vs=speechSynthesis.getVoices().filter(function(v){return /pt/i.test(v.lang)&&/male|masc|daniel|felipe|ricardo/i.test(v.name)&&!/female|fem/i.test(v.name)});if(vs.length)u.voice=vs[0];speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}}
-function medSay(m){var a=m.split(" — ");var n=a[0].replace(/\s+\d+([.,]\d+)?\s*mg$/i,"");var q=(a[1]||"").replace(/\(.*?\)/g,"");return n+", "+q}
-function medsOf(p){var a=p.m.slice();if(mem.qt&&p.q)a=a.concat(QT);return a}
+function pvoices(){var a=speechSynthesis.getVoices().filter(function(v){return /pt[-_]BR/i.test(v.lang)});a.sort(function(x,y){return (y.localService?1:0)-(x.localService?1:0)||(/natural|neural|google|luciana|francisca/i.test(y.name)?1:0)-(/natural|neural|google|luciana|francisca/i.test(x.name)?1:0)});return a}
+function mkU(t){var u=new SpeechSynthesisUtterance(t);u.lang="pt-BR";u.pitch=1;u.rate=.9;try{var vs=pvoices();if(vs.length)u.voice=vs[(+ls("voice")||0)%vs.length]}catch(e){}return u}
+function dizer(t){if(NATIVE){Android.speak(t)}else{try{musicVol=.1;lastDz=Date.now();var u=mkU(t);u.onend=u.onerror=function(){musicVol=1;lastDz=Date.now()};speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}}
+function medSay(m){var a=m.split(" — ");var n=a[0].replace(/\s+\d+([.,]\d+)?\s*mg$/i,"");var q=(a[1]||"").replace(/\(.*?\)/g,"");if(/lactulona/i.test(n))q+=", um copinho e meio, Lourdinha";return n+", "+q}
+function shortName(m){return m.split(" — ")[0].replace(/\s+\d+([.,]\d+)?\s*mg$/i,"")}
+function medsOf(p){return slotMeds(p)}
 function fire(p,test){
-  pending={p:p,test:!!test,day:dstr(new Date()),time:p.t};
+  pending={p:p,test:!!test,day:dstr(nowD()),time:p.t};
   startMusic();falar(p);
   clearInterval(spk);spk=setInterval(function(){if(pending)falar(pending.p)},9000);
   render();
@@ -132,13 +334,108 @@ function showMsg(p,r){
   $("mok").onclick=function(){render()};
   dizer(t);
 }
+function medsResult(){
+  var ms=medsOf(pending.p),tk=pending.tk||{};
+  return ms.map(function(m,k){var n=m.split(" — ")[0];return tk[k]==="a"?{n:n,ok:false,a:true}:{n:n,ok:true}});
+}
+function missingMeds(){var tk=pending.tk||{};return medsOf(pending.p).filter(function(m,k){return !tk[k]})}
+function getOut(){try{return JSON.parse(ls("out")||"{}")}catch(e){return {}}}
+function renderOut(){
+  var o=getOut(),ks=Object.keys(o);
+  if(ks.length&&$("outcard").style.display!=="block")$("outcard").classList.remove("quieto");
+  $("outcard").style.display=ks.length?"block":"none";
+  $("outl").innerHTML=ks.map(function(n,i){return '<div class="medrow" style="margin:8px 0"><div class="med" style="margin:0;flex:1;min-width:0;font-weight:bold;color:#c5221f;font-size:24px">'+n+'</div><button class="small" data-n="'+i+'" style="flex:none;font-weight:bold">✔ Comprei</button></div>'}).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("#outl button"),function(b){b.onclick=function(){var x=getOut();delete x[ks[+b.dataset.n]];ls("out",JSON.stringify(x));renderOut()}});
+}
+$("shout").onclick=function(){
+  var ks=Object.keys(getOut());if(!ks.length)return;
+  var t="*Remédios para comprar — Lourdinha*\n\n"+ks.map(function(n){return "• "+n}).join("\n");
+  if(NATIVE){Android.share(t);return}
+  try{navigator.clipboard.writeText(t)}catch(e){}
+  try{window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}catch(e){}
+};
+$("spkout").onclick=function(){var ks=Object.keys(getOut()).map(shortName);dizer("Remédios que acabaram: "+ks.join(", ")+".")};
+function paintMeds(){
+  var tk=pending.tk||{};
+  Array.prototype.forEach.call(document.querySelectorAll(".tk"),function(b){var on=tk[+b.dataset.k]==="t";b.className="tk"+(on?" on":"");b.textContent=on?"✅ Tomei":"Tomei"});
+  Array.prototype.forEach.call(document.querySelectorAll(".ac"),function(b){var on=tk[+b.dataset.k]==="a";b.className="ac"+(on?" on":"");b.parentNode.parentNode.className="medrow"+(on?" out":"");b.textContent=on?"❌ Acabou":"Acabou"});
+  if($("ok"))$("ok").style.opacity=missingMeds().length?".45":"1";
+}
+function nextInfo(){
+  var now=nowD(),best=null;
+  for(var o=0;o<=1;o++)POTS.forEach(function(p){var t=p.t.split(":"),d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+o,+t[0],+t[1],0);if(d>now&&(!best||d<best.d))best={p:p,d:d}});
+  return best;
+}
+function slotSpeech(p,d,pre){
+  var n=nowD(),dd=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5),h=d.getHours();
+  var q=(dd===1?"amanhã, ":dd>1?DIAS[d.getDay()]+", ":"")+(h===0?"à meia-noite":"às "+h+" horas");
+  return pre+q+", bolsa "+p.n.toLowerCase().replace(/o$/,"a")+". Remédios: "+medsOf(p).map(shortName).join(", ")+".";
+}
+function showSlot(p,d,pre){
+  var names=medsOf(p).map(shortName);
+  $("warnt").textContent="Próximo: "+p.t;
+  $("warnl").innerHTML=DIAS[d.getDay()]+", "+dstr(d)+"<br><span class='pill' style='background:"+p.c+"'>BOLSA "+p.n+"</span><br><b>"+names.join("<br>")+"</b>";
+  $("warn").style.display="flex";
+  dizer(slotSpeech(p,d,pre));
+}
+function showNext(){var b=nextInfo();if(b)showSlot(b.p,b.d,"Lourdinha, o próximo horário é ")}
+function silenciar(){
+  if(NATIVE){try{Android.silence()}catch(e){}}
+  else{seqTok++;try{speechSynthesis.cancel()}catch(e){}musicVol=1;lastDz=Date.now()}
+}
+function warnMeds(mi){
+  $("warnt").textContent="Faltam remédios!";
+  var names=mi.map(shortName);
+  $("warnl").innerHTML="Não foram marcados:<br><b>"+names.join("<br>")+"</b><br><span style='font-size:20px'>Marque \"Tomei\" ou \"Acabou\" em cada um.</span>";
+  $("warn").style.display="flex";
+  dizer("Lourdinha, faltam estes remédios: "+names.join(", ")+". Marque tomei ou acabou em cada um.");
+}
+var VERSES=[
+ {h:"Fé que cura",t:"Filha, a tua fé te salvou; vai em paz e fica curada desse teu mal.",b:"Marcos",c:5,v:34},
+ {h:"Pedir, buscar, bater",t:"Pedi, e dar-se-vos-á; buscai, e encontrareis; batei, e abrir-se-vos-á.",b:"Mateus",c:7,v:7},
+ {h:"Nada é impossível",t:"Para os homens isso é impossível, mas para Deus tudo é possível.",b:"Mateus",c:19,v:26},
+ {h:"Coragem diante das aflições",t:"No mundo tereis aflições; mas tende bom ânimo, eu venci o mundo.",b:"João",c:16,v:33},
+ {h:"Descanso para os cansados",t:"Vinde a mim, todos os que estais cansados e sobrecarregados, e eu vos aliviarei.",b:"Mateus",c:11,v:28},
+ {h:"Cura pela fé",t:"Levanta-te, toma o teu leito e anda.",b:"João",c:5,v:8},
+ {h:"Tudo é possível ao que crê",t:"Se podes crer, tudo é possível ao que crê.",b:"Marcos",c:9,v:23},
+ {h:"Paz que acalma o coração",t:"Deixo-vos a paz, a minha paz vos dou; não vo-la dou como o mundo a dá. Não se turbe o vosso coração, nem se atemorize.",b:"João",c:14,v:27}
+];
+var INTRO="Parabéns Lourdinha! Você é incrível, uma pessoa especial! Lourdinha, vou ler uma passagem de Cristo para você.";
+var seqTok=0;
+function dizerSeq(parts){
+  if(NATIVE){try{Android.speakSeq(JSON.stringify(parts))}catch(e){}return}
+  try{
+    var tok=++seqTok,i=0;musicVol=.1;lastDz=Date.now();speechSynthesis.cancel();
+    (function next(){
+      if(tok!==seqTok)return;
+      if(i>=parts.length){musicVol=1;lastDz=Date.now();return}
+      var x=parts[i++];
+      if(x.p){setTimeout(next,x.p)}
+      else{var u=mkU(x.t);u.onend=u.onerror=next;speechSynthesis.speak(u)}
+    })();
+  }catch(e){}
+}
+function showCongrats(p){
+  var i=POTS.indexOf(p);if(i<0)return;var v=VERSES[i];
+  var parts=[{t:INTRO},{p:2000},{t:v.h+". "+v.t},{p:2000},{t:v.b+", capítulo "+v.c+", versículo "+v.v+"."}];
+  var stN=starJustEarned();if(stN){parts.push({p:1800},{t:"Lourdinha, e tem mais! Você completou o dia inteiro e ganhou uma estrela! Agora são "+stN+(stN>1?" estrelas!":" estrela!")});paintStars()}
+  $("now").innerHTML='<div class="ov" style="background:'+p.c+'"><div class="big" style="font-size:30px">🎉 Parabéns Lourdinha!<br>Você é incrível, uma pessoa especial!<br><span style="font-size:24px">Lourdinha, vou ler uma passagem de Cristo para você.</span></div><div class="sub" style="margin-top:14px"><b>'+v.h+'</b></div><div class="med" style="text-align:center;font-size:30px;margin:10px 0">“'+v.t+'”</div><div class="sub">('+v.b+' '+v.c+':'+v.v+')</div><div class="medrow" style="justify-content:center"><button class="spk" id="cspk" style="margin:0">🔊</button></div><div class="btns"><button id="cok" style="background:#1F3864">OK</button></div></div>';
+  if(stN)$("now").firstChild.insertAdjacentHTML("afterbegin",'<div class="big" style="font-size:34px;color:#8a6200">⭐ Você ganhou uma estrela!<br><span style="font-size:22px">Dia completo · '+stN+(stN>1?" estrelas":" estrela")+'</span></div>');
+  $("cspk").onclick=function(){dizerSeq(parts)};
+  $("cok").onclick=function(){silenciar();render()};
+  dizerSeq(parts);
+}
 function answer(ok){
+  var pp=pending?pending.p:null;
+  var meds=(ok&&pending&&!pending.test)?medsResult():null;
+  if(meds)estTake(meds);
+  if(meds){var ox=getOut();meds.forEach(function(m){if(m.a)ox[m.n]=1;else delete ox[m.n]});ls("out",JSON.stringify(ox));renderOut()}
   if(NATIVE){
     if(pending&&!pending.test){
-      var r=Android.answer(ok,pending.time);
+      var r=ok?Android.answer2(true,pending.time,JSON.stringify(meds)):Android.answer(false,pending.time);
       if(!ok&&(r==="retry"||r==="final")){showMsg(pending.p,r);pending=null;renderLog();return}
     }else Android.stop();
-    pending=null;render();renderLog();return;
+    pending=null;render();renderLog();if(ok&&pp)showCongrats(pp);return;
   }
   stopMusic();clearInterval(spk);try{speechSynthesis.cancel()}catch(e){}
   if(!pending)return;
@@ -146,56 +443,586 @@ function answer(ok){
     var at=(pending.att||0)+1;
     if(at<3){var pp=pending.p;showMsg(pp,"retry");var dd=pending;pending=null;setTimeout(function(){fire(dd.p,false);pending.att=at},600000);renderLog();return}
   }
-  if(!pending.test){mem.log.push({d:pending.day,t:pending.time,ok:ok,n:pending.p.n});ls("log",JSON.stringify(mem.log))}
-  pending=null;render();renderLog();
+  if(!pending.test){var e={d:pending.day,t:pending.time,ok:ok,n:pending.p.n,ts:Date.now()};if(meds)e.m=meds;mem.log.push(e);mem.log=pruneLog(mem.log);ls("log",JSON.stringify(mem.log))}
+  pending=null;render();renderLog();if(ok&&pp)showCongrats(pp);
 }
+var MEALS=[
+ {n:"CAFÉ DA MANHÃ",t:"06:15",ic:"☀️",e:"🍞🧀🍌🍎🍊🥣🥛",x:"Pão, frutas, iogurte e café com leite",img:"cafe.jpg",wake:"Bom dia, Lourdinha! Hora do café da manhã!",q:"Lourdinha, você tomou o café da manhã mesmo?",qs:"Tomou o café da manhã mesmo?",no:"Mas Lourdinha, não tomou café ainda. Força Lourdinha, bora tomar um café.",fim:"Registrado: não tomou o café da manhã."},
+ {n:"ALMOÇO",t:"13:00",ic:"🍽️",e:"🍚🍛🍗🥗🥦🍊",x:"Arroz, feijão, carne ou frango, salada e legumes",img:"almoco.jpg",wake:"Boa tarde, Lourdinha! Hora do almoço!",q:"Lourdinha, você almoçou mesmo?",qs:"Almoçou mesmo?",no:"Mas Lourdinha, não almoçou ainda. Força Lourdinha, bora almoçar.",fim:"Registrado: não almoçou."},
+ {n:"JANTA",t:"19:00",ic:"🌙",e:"🍲🥗🍞🍎🥛",x:"Sopa, pão, frutas e iogurte",img:"janta.jpg",wake:"Boa noite, Lourdinha! Hora da janta!",q:"Lourdinha, você jantou mesmo?",qs:"Jantou mesmo?",no:"Mas Lourdinha, não jantou ainda. Força Lourdinha, bora jantar.",fim:"Registrado: não jantou."}
+];
+function mealHtml(){
+  var M=MEALS[mealPending.m],st=mealPending.stage;
+  var h='<div class="ov" style="background:#fff3e0"><div class="big">'+M.ic+' '+M.n+'</div><div class="sub">'+M.t+(mealPending.test?" (teste)":"")+'</div>';
+  h+='<div style="text-align:center"><img src="img/'+M.img+'" style="max-width:100%;max-height:34vh;border-radius:16px" onerror="this.style.display=\'none\'"></div>';
+  h+='<div style="font-size:60px;text-align:center;margin:8px 0;line-height:1.2">'+M.e+'</div><div class="sub">'+M.x+'</div>';
+  h+='<div class="medrow" style="justify-content:center"><button class="spk" id="mspk" style="margin:0">🔊</button></div>';
+  if(st===0)h+='<div class="btns"><button id="mok" style="background:#1F3864">OK</button></div>';
+  else h+='<div class="big" style="font-size:34px">'+M.qs+'</div><div class="btns"><button id="msim" style="background:#1e8e3e">✅ Sim</button><button id="mnao" style="background:#c5221f">❌ Não</button></div>';
+  return h+'</div>';
+}
+function wireMeal(){
+  var M=MEALS[mealPending.m];
+  if($("mspk"))$("mspk").onclick=function(){dizer(mealPending.stage===0?M.wake+" "+M.x+".":M.q)};
+  if($("mok"))$("mok").onclick=mealOk;
+  if($("msim"))$("msim").onclick=function(){mealAns(true)};
+  if($("mnao"))$("mnao").onclick=function(){mealAns(false)};
+}
+function mealOpen(m,stage,att,test){mealPending={m:m,stage:stage,att:att,test:!!test};render()}
+function mealTimer(m,att,test){setTimeout(function(){mealOpen(m,1,att,test);if(!NATIVE){startMusic();dizer(MEALS[m].q)}},test?5000:1500000)}
+function mealStart(m,test){mealOpen(m,0,1,test);if(!NATIVE){startMusic();dizer(MEALS[m].wake);mealTimer(m,1,test)}}
+function mealOk(){if(NATIVE)Android.stop();else{stopMusic();silenciar()}mealPending=null;render()}
+function showMealMsg(t,say){
+  $("now").innerHTML='<div class="ov" style="background:#fff3e0"><div class="med" style="text-align:center;font-size:38px;margin-top:60px">'+t+'</div><div class="btns"><button id="mok2" style="background:#1F3864">OK</button></div></div>';
+  $("mok2").onclick=function(){silenciar();render()};
+  if(say)dizer(t);
+}
+function mealAns(ok){
+  var mp=mealPending,M=MEALS[mp.m];
+  if(NATIVE){Android.mealAnswer(mp.m,ok,mp.att,mp.test)}
+  else{
+    stopMusic();
+    if(!mp.test&&(ok||mp.att>=2)){mem.log.push({d:dstr(nowD()),t:M.t,ok:ok,n:M.n,meal:1,ts:Date.now()});mem.log=pruneLog(mem.log);ls("log",JSON.stringify(mem.log))}
+    if(!ok&&mp.att<2)mealTimer(mp.m,mp.att+1,mp.test);
+  }
+  mealPending=null;
+  if(ok)render();
+  else if(mp.att<2)showMealMsg(M.no,true);
+  else showMealMsg(M.fim,false);
+  renderLog();
+}
+var IDLE="Nenhum remédio agora. Quando chegar a hora, a música toca e mostra a cor da bolsa.";
+var IDLE_NOW=IDLE,IDLE_SAY=IDLE+" Beleza, Lourdinha!";
 function render(){
   var h="";
-  if(pending){
+  if(mealPending){h+=mealHtml()}else if(pending){
     var p=pending.p;
     h+='<div class="ov" style="background:'+p.c+'"><div class="big">BOLSA '+p.n+'</div><div class="sub">'+p.t+(pending.test?" (teste)":"")+'</div>';
-    medsOf(p).forEach(function(m,k){h+='<div class="medrow"><button class="spk" data-k="'+k+'">🔊</button><div class="med" style="margin:0">'+m+'</div></div>'});
+    medsOf(p).forEach(function(m,k){h+='<div class="medrow"><button class="spk" data-k="'+k+'">🔊</button><div class="med" style="margin:0;flex:1">'+m+'</div><div class="mb"><button class="tk" data-k="'+k+'">Tomei</button><button class="ac" data-k="'+k+'">Acabou</button></div></div>'});
     h+='<div class="btns"><button id="ok">✅ Tomei tudo</button><button id="no">❌ Não consegui</button></div></div>';
   }else{
-    h+='<div class="card" style="background:#fff"><div class="sub">Nenhum remédio agora. Quando chegar a hora, a música toca e mostra a cor da bolsa.</div></div>';
+    h+='<div class="card" style="background:#fff"><div class="medrow" style="margin:0"><button class="spk" id="spkidle">🔊</button><div class="sub" id="idletxt" style="flex:1;margin:0;font-weight:bold">'+IDLE_NOW+'</div></div></div>';
   }
   $("now").innerHTML=h;
-  if(pending){var ms=medsOf(pending.p);Array.prototype.forEach.call(document.querySelectorAll(".spk"),function(b){b.onclick=function(){dizer(medSay(ms[+b.dataset.k]))}})}
-  if($("ok")){$("ok").onclick=function(){answer(true)};$("no").onclick=function(){answer(false)}}
+  if(mealPending)wireMeal();
+  if($("spkidle"))$("spkidle").onclick=function(){dizer(IDLE_SAY)};
+  if(pending){var ms=medsOf(pending.p);Array.prototype.forEach.call(document.querySelectorAll("#now .spk[data-k]"),function(b){b.onclick=function(){dizer(medSay(ms[+b.dataset.k]))}})}
+  if(pending){
+    Array.prototype.forEach.call(document.querySelectorAll(".tk,.ac"),function(b){b.onclick=function(){
+      pending.tk=pending.tk||{};var k=+b.dataset.k,v=b.classList.contains("tk")?"t":"a";
+      if(pending.tk[k]===v)delete pending.tk[k];else pending.tk[k]=v;paintMeds()}});
+    paintMeds();
+  }
+  if($("ok")){$("ok").onclick=function(){var mi=missingMeds();if(mi.length)warnMeds(mi);else answer(true)};$("no").onclick=function(){answer(false)}}
+  renderNext();
 }
+var MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+var CONSULTA,EXAMES,ULTIMA=null,CONSH="07:00";
+function pIso(v){var a=v.split("-");return new Date(+a[0],+a[1]-1,+a[2])}
+function loadAppt(){
+  var v=ls("consulta")||"2026-12-02";CONSH=ls("consultaH")||"07:00";
+  var d=pIso(v),h=CONSH.split(":");CONSULTA=new Date(d.getFullYear(),d.getMonth(),d.getDate(),+h[0],+h[1]);
+  EXAMES=new Date(d.getFullYear(),d.getMonth(),d.getDate()-3);
+  var u=ls("ultima");ULTIMA=u?pIso(u):null;
+  REMS=[{d:isoOf(new Date(d.getFullYear(),d.getMonth(),d.getDate()-4)),t:"20:00",m:"Lourdinha, amanhã é o dia dos exames. Não esqueça!"},{d:isoOf(CONSULTA),t:hhmm(new Date(CONSULTA.getTime()-90*6e4)),m:"Bom dia, Lourdinha! Hoje é o dia da sua consulta, às "+horaFalada()+"!"}];
+}
+function isoOf(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function horaFalada(){var h=CONSH.split(":");return (+h[1]===0)?(+h[0])+" horas":(+h[0])+" e "+(+h[1])}
+function dbr(d){return pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear()}
+var REMS=[];
+function dnome(d){var g=d.getDay();return DIAS[g]+(g===0||g===6?"":"-feira")}
+function dlong(d){var g=d.getDay();return (g===0||g===6?"no ":"na ")+dnome(d).toLowerCase()+", "+d.getDate()+" de "+MESES[d.getMonth()]}
+function dias(d){var n=nowD(),a=new Date(d.getFullYear(),d.getMonth(),d.getDate()),b=new Date(n.getFullYear(),n.getMonth(),n.getDate());return Math.round((a-b)/864e5)}
+function rel(n){return n<0?"":n===0?" — HOJE":n===1?" — amanhã":" — em "+n+" dias"}
+function apptSay(){
+  var t="Lourdinha, ";if(dias(EXAMES)>=0)t+="os exames devem ser feitos "+dlong(EXAMES)+". ";
+  return t+(dias(CONSULTA)>=0?"A próxima consulta é "+dlong(CONSULTA)+", às "+horaFalada()+".":"")+(ULTIMA?" A última consulta foi em "+dlong(ULTIMA).replace(/^n[ao] /,"")+".":"")
+}
+function renderAppt(){
+  var fut=dias(CONSULTA)>=0,show=fut||!!ULTIMA;$("appt").style.display=show?"block":"none";if(!show)return;
+  var h="";
+  if(fut&&dias(EXAMES)>=0)h+="🧪 <b>Exames:</b> "+dnome(EXAMES)+", "+dbr(EXAMES)+rel(dias(EXAMES))+"<br>";
+  if(fut)h+="🩺 <b>Consulta:</b> "+dnome(CONSULTA)+", "+dbr(CONSULTA)+" às "+CONSH+rel(dias(CONSULTA));
+  if(ULTIMA)h+=(fut?"<br>":"")+"🕘 <b>Última consulta:</b> "+dnome(ULTIMA)+", "+dbr(ULTIMA);
+  $("apptl").innerHTML=h;
+}
+$("spkappt").onclick=function(){dizer(apptSay())};
+function remCheck(d){var iso=d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());REMS.forEach(function(r){if(r.d===iso&&r.t===hhmm(d)&&!fired["rem"+r.d]){fired["rem"+r.d]=1;aviso(r.m);dizer(r.m)}})}
+var DIAS=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 function renderNext(){
-  var now=new Date(),cur=now.getHours()*60+now.getMinutes(),arr=POTS.map(function(p){var s=p.t.split(":");var m=+s[0]*60+ +s[1];return {p:p,d:(m-cur+1440)%1440}}).sort(function(a,b){return a.d-b.d}).slice(0,3);
-  $("next").innerHTML=arr.map(function(x){return '<div style="margin:4px 0"><span class="pill" style="background:'+x.p.c+'">'+x.p.t+' — '+x.p.n+'</span></div>'}).join("");
+  var now=nowD(),occ=[];
+  for(var o=-1;o<=2;o++)POTS.forEach(function(p){var s=p.t.split(":"),d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+o,+s[0],+s[1],0);occ.push({p:p,d:d})});
+  occ.sort(function(a,b){return a.d-b.d});
+  var f=0;while(f<occ.length&&occ[f].d<=now)f++;
+  var sel=occ.slice(Math.max(0,f-3),f+4),data=getLogData(),groups=[];
+  sel.forEach(function(x){
+    var ds=dstr(x.d),g=groups.length&&groups[groups.length-1].ds===ds?groups[groups.length-1]:null;
+    if(!g){g={ds:ds,wd:DIAS[x.d.getDay()],items:[]};groups.push(g)}
+    var st=0;data.forEach(function(l){if(l.d===ds&&l.t===x.p.t&&l.ok===true){st=(l.m&&l.m.some(function(m){return !m.ok&&!m.a}))?2:1}});
+    g.items.push({p:x.p,past:x.d<=now,st:st,ts:x.d.getTime()});
+  });
+  $("next").innerHTML=groups.map(function(g){
+    return '<div class="dg"><h4>'+g.wd+'<br>'+g.ds+'</h4>'+g.items.map(function(it){
+      return '<div class="ni'+(it.past?' past':'')+'"><span class="pill" style="background:'+it.p.c+'">'+it.p.t+' '+it.p.n+'</span>'+(it.past?'<input type="checkbox" onclick="return false" data-st="'+it.st+'"'+(it.st===1?' checked':'')+'>':'<button class="spk sl" data-t="'+it.p.t+'" data-ts="'+it.ts+'">🔊</button>')+'</div>'
+    }).join("")+'</div>'
+  }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("#next input"),function(c){if(c.dataset.st==="2")c.indeterminate=true});
+  Array.prototype.forEach.call(document.querySelectorAll("#next .sl"),function(b){b.onclick=function(){var pp=POTS.filter(function(x){return x.t===b.dataset.t})[0];showSlot(pp,new Date(+b.dataset.ts),"Lourdinha, ")}});
+  var pend=groups.some(function(g){return g.items.some(function(it){return it.past&&it.st!==1})});
+  var pl=[],lastPast=null;groups.forEach(function(g){g.items.forEach(function(it){if(it.past)lastPast=it})});if(lastPast&&lastPast.st!==1)pl.push(lastPast.p);
+  if(pl.length){
+    IDLE_NOW="⚠ Remédio pendente de tomar:<br>"+pl.map(function(p){return p.t+" "+p.n}).join("<br>");
+    IDLE_SAY="Lourdinha, remédio pendente de tomar: "+pl.map(function(p){return "bolsa "+p.n.toLowerCase().replace(/o$/,"a")+", "+(+p.t.split(":")[0])+" horas"}).join("; ")+".";
+  }else{IDLE_NOW=IDLE;IDLE_SAY=IDLE+" Beleza, Lourdinha!"}
+  if($("idletxt")){$("idletxt").innerHTML=IDLE_NOW;$("idletxt").style.color=pl.length?"#c5221f":"#1e8e3e"}
 }
 function getLogData(){
   if(NATIVE){try{return JSON.parse(Android.getLog())}catch(e){return []}}
   return mem.log;
 }
-function renderLog(){
-  var data=getLogData();var rows=data.slice(-40).reverse().map(function(l){return "<tr><td>"+l.d+"</td><td>"+l.t+" "+l.n+"</td><td>"+(l.ok===true?"✅ tomou tudo":(l.ok===false?"❌ não conseguiu":"⏰ sem resposta"))+"</td></tr>"}).join("");
-  $("log").innerHTML=rows?"<table><tr><th>Dia</th><th>Bolsa</th><th>Resultado</th></tr>"+rows+"</table>":"Sem registros ainda.";
-  var by={};data.forEach(function(l){by[l.d]=by[l.d]||{ok:0,no:0,fails:[]};if(l.ok===true)by[l.d].ok++;else{by[l.d].no++;by[l.d].fails.push(l.t)}});
-  var s="Resumo remédios da Lourdinha:\n";Object.keys(by).forEach(function(d){s+=d+": "+by[d].ok+" ok, "+by[d].no+" não"+(by[d].no?" ("+by[d].fails.join(", ")+")":"")+"\n"});
-  $("sum").textContent=data.length?s:"";
+function nm(a,f){return a.filter(f).map(function(m){return m.n}).join(", ")}
+function resTxt(l){
+  if(l.meal)return l.ok===true?"✅ comeu":(l.ok===false?"❌ não comeu":"⏰ sem resposta");
+  if(l.ok===false)return "❌ não conseguiu";
+  if(l.ok!==true)return "⏰ sem resposta";
+  if(!l.m)return "✅ tomou tudo";
+  var yes=nm(l.m,function(m){return m.ok}),ac=nm(l.m,function(m){return m.a}),no=nm(l.m,function(m){return !m.ok&&!m.a});
+  return (no?"⚠ parcial":"✅ tomou tudo")+'<div style="font-size:14px;text-align:left">'+(yes?"✅ "+yes:"")+(ac?"<br>🟥 Acabou: "+ac:"")+(no?"<br>❌ "+no:"")+"</div>";
 }
-$("copy").onclick=function(){try{navigator.clipboard.writeText($("sum").textContent)}catch(e){}};
+function plainRes(l){
+  if(l.meal)return l.ok===true?"✅ comeu":(l.ok===false?"❌ não comeu":"⏰ sem resposta");
+  if(l.ok===false)return "❌ não conseguiu";
+  if(l.ok!==true)return "⏰ sem resposta";
+  if(!l.m)return "✅ tomou tudo";
+  var yes=nm(l.m,function(m){return m.ok}),ac=nm(l.m,function(m){return m.a}),no=nm(l.m,function(m){return !m.ok&&!m.a});
+  return (no?"⚠ parcial":"✅ tomou tudo")+(yes?"\n✅ "+yes:"")+(ac?"\n🟥 Acabou: "+ac:"")+(no?"\n❌ "+no:"");
+}
+function pruneLog(a){var c=Date.now()-366*864e5;return a.filter(function(l){return !l.ts||l.ts>=c}).slice(-8000)}
+function recentLog(a,days){var c=Date.now()-days*864e5;return a.filter(function(l){return !l.ts||l.ts>=c})}
+function logText(data){
+  var rows=data.slice(-40).reverse();if(!rows.length)return "";
+  return "*Registro da semana — Remédios da Lourdinha*\n\n"+rows.map(function(l){return "*"+l.d+" · "+l.t+" "+l.n+"*\n"+plainRes(l)}).join("\n\n");
+}
+function renderLog(){try{paintStars()}catch(e){}
+  
+  var data=getLogData();var rows=data.slice(-40).reverse().map(function(l){return "<tr><td>"+l.d+"</td><td>"+l.t+" "+l.n+"</td><td>"+resTxt(l)+"</td></tr>"}).join("");
+  $("log").innerHTML=rows?"<table><tr><th>Dia</th><th>Bolsa</th><th>Resultado</th></tr>"+rows+"</table>":"Sem registros ainda.";
+  var by={};recentLog(data,7).forEach(function(l){by[l.d]=by[l.d]||{ok:0,no:0,fails:[],miss:[],ac:[],ml:[]};if(l.meal){by[l.d].ml.push(l.n.toLowerCase()+(l.ok===true?" ✅":l.ok===false?" ❌":" ⏰"));return}if(l.ok===true){by[l.d].ok++;if(l.m)l.m.forEach(function(m){if(m.a)by[l.d].ac.push(m.n);else if(!m.ok)by[l.d].miss.push(m.n+" "+l.t)})}else{by[l.d].no++;by[l.d].fails.push(l.t)}});
+  var s="Resumo remédios da Lourdinha:\n";Object.keys(by).forEach(function(d){s+=d+": "+by[d].ok+" ok, "+by[d].no+" não"+(by[d].no?" ("+by[d].fails.join(", ")+")":"")+(by[d].miss.length?" | não tomou: "+by[d].miss.join(", "):"")+(by[d].ac.length?" | acabou: "+by[d].ac.join(", "):"")+(by[d].ml.length?" | refeições: "+by[d].ml.join(", "):"")+"\n"});
+  $("sum").textContent=Object.keys(by).length?s:"";
+}
+var ANNE_TEL="81996739556";
+$("callbtn").onclick=function(){$("confirm").style.display="flex"};
+$("spkcall").onclick=function(e){e.stopPropagation();dizer("Ligar para Anne Filha")};
+$("nextbtn").onclick=showNext;
+[0,1,2].forEach(function(i){$("tm"+i).onclick=function(){if(NATIVE)Android.testMeal(i);else mealStart(i,true)}});
+$("warnok").onclick=function(){$("warn").style.display="none";silenciar()};
+$("spkc").onclick=function(){dizer("Ligar para Anne Filha. Sim, toque no botão verde. Não, toque no botão vermelho.")};
+$("callno").onclick=function(){$("confirm").style.display="none"};
+$("callyes").onclick=function(){$("confirm").style.display="none";if(window.Android&&Android.ligar){Android.ligar(ANNE_TEL)}else{alert("Protótipo: ligaria para "+ANNE_TEL)}};
+$("copy").onclick=function(){
+  var t=logText(getLogData());if(!t){aviso("Sem registros para enviar.");return}
+  if(NATIVE){Android.share(t);return}
+  try{navigator.clipboard.writeText(t)}catch(e){}
+  try{window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}catch(e){}
+};
 $("clear").onclick=function(){askPass("1988","Senha para limpar",function(){mem.log=[];ls("log","[]");if(NATIVE)Android.clearLog();renderLog()})};
 setInterval(function(){
-  var d=new Date();$("clock").textContent=hhmm(d);renderNext();
+  var d=nowD();$("clock").innerHTML="<small>"+["dom","seg","ter","qua","qui","sex","sáb"][d.getDay()]+" "+pad(d.getDate())+"/"+pad(d.getMonth()+1)+"</small>"+hhmm(d);renderNext();qtCheck();renderAppt();if(!NATIVE){remCheck(d);actCheck(d);MEALS.forEach(function(M,i){var k="meal"+i+dstr(d);if(mealsOn()&&M.t===hhmm(d)&&!fired[k]){fired[k]=1;mealStart(i,false)}})}
   var k=dstr(d)+hhmm(d);
   if(!NATIVE)POTS.forEach(function(p){if(p.t===hhmm(d)&&!fired[k+p.t]){fired[k+p.t]=1;fire(p)}});
 },1000);
-render();renderLog();renderNext();
+
+// Perguntas para a médica
+function getPerg(){try{return JSON.parse(ls("perg")||"[]")}catch(e){return[]}}
+function setPerg(a){ls("perg",JSON.stringify(a));paintPerg()}
+function dtFull(ts){var d=new Date(ts);return ["dom","seg","ter","qua","qui","sex","sáb"][d.getDay()]+" "+pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear()+" às "+hhmm(d)}
+function paintPerg(){
+  var a=getPerg();$("pcnt").textContent=a.length;
+  $("pgl").innerHTML=a.length?a.map(function(q,i){return '<div class="pq"><div class="dt">'+(i+1)+'ª · '+dtFull(q.ts)+'</div><div class="tx"></div><button class="small" data-i="'+i+'" style="background:#c5221f;color:#fff">🗑 Excluir</button></div>'}).join(""):'<div style="font-size:22px;text-align:center;margin:20px 0">Nenhuma pergunta guardada.</div>';
+  Array.prototype.forEach.call(document.querySelectorAll("#pgl .tx"),function(el,i){el.textContent=a[i].t});
+  Array.prototype.forEach.call(document.querySelectorAll("#pgl button"),function(b){b.onclick=function(){
+    if(b.dataset.c!=="1"){b.dataset.c="1";b.textContent="Confirmar exclusão?";setTimeout(function(){if(b.isConnected){b.dataset.c="";b.textContent="🗑 Excluir"}},3500);return}
+    var x=getPerg();x.splice(+b.dataset.i,1);setPerg(x)}});
+}
+function pergShow(t){$("pnew").style.display="block";$("ptxt").value=t||"";$("ptxt").focus()}
+window.onVoz=function(t){$("pmic").disabled=false;$("pmic").textContent="🎤 Falar uma pergunta";if(t)pergShow(t);else aviso("Não entendi. Toque no microfone e fale de novo.")};
+window.onVozErr=function(){$("pmic").disabled=false;$("pmic").textContent="🎤 Falar uma pergunta";pergShow("");aviso("Não consegui usar o microfone. Pode digitar a pergunta.")};
+$("pmic").onclick=function(){
+  if(NATIVE&&Android.listen){$("pmic").disabled=true;$("pmic").textContent="🎤 Ouvindo...";Android.listen();return}
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){pergShow("");return}
+  try{var r=new SR();r.lang="pt-BR";r.onresult=function(e){onVoz(e.results[0][0].transcript)};r.onerror=function(){onVozErr()};r.onend=function(){$("pmic").disabled=false;$("pmic").textContent="🎤 Falar uma pergunta"};$("pmic").disabled=true;$("pmic").textContent="🎤 Ouvindo...";r.start()}catch(e){onVozErr()}
+};
+$("psave").onclick=function(){var t=$("ptxt").value.trim();if(!t)return;var a=getPerg();a.push({ts:nowD().getTime(),t:t});setPerg(a);$("ptxt").value="";$("pnew").style.display="none"};
+$("pdisc").onclick=function(){$("ptxt").value="";$("pnew").style.display="none"};
+$("pview").onclick=function(){paintPerg();$("pgm").style.display="flex"};
+$("pclose").onclick=function(){$("pgm").style.display="none";silenciar()};
+$("pread").onclick=function(){
+  var a=getPerg();if(!a.length){dizer("Lourdinha, não há perguntas guardadas.");return}
+  var parts=[{t:"Lourdinha, você guardou "+a.length+(a.length>1?" perguntas":" pergunta")+" para a médica."},{p:800}];
+  a.forEach(function(q,i){parts.push({t:"Pergunta "+(i+1)+". "+q.t});parts.push({p:900})});
+  dizerSeq(parts);
+};
+$("spkpmic").onclick=function(){dizer("Falar uma pergunta. Toque no botão roxo, e fale a pergunta que você quer fazer para a médica, Lourdinha. Depois toque em guardar.")};
+$("spkpview").onclick=function(){var n=getPerg().length;dizer("Ver perguntas. Toque neste botão para ver as perguntas guardadas para a médica. Você tem "+(n?n+(n>1?" perguntas guardadas":" pergunta guardada"):"nenhuma pergunta guardada")+", Lourdinha.")};
+paintPerg();
+
+// Fé: 1 mensagem por dia
+var FE=["A fé não elimina as dificuldades, mas te dá força para atravessá-las de cabeça erguida.", "Hoje, escolha agir com integridade, mesmo quando ninguém estiver olhando.", "Amar é decidir, todos os dias, cuidar de quem está ao seu lado.", "Antes de julgar, tente enxergar o mundo pelos olhos do outro. Empatia muda tudo.", "Quem vence não é quem nunca cai, mas quem sempre se levanta mais uma vez.", "Confie no processo: Deus trabalha no tempo certo, mesmo quando você não entende o caminho.", "Honestidade custa caro hoje, mas garante paz de consciência para sempre.", "Uma palavra gentil pode ser a única luz no dia de alguém. Seja essa luz.", "Sua conduta fala mais alto que seu discurso. Viva aquilo em que acredita.", "Não desista: os maiores resultados costumam vir logo depois do momento em que você pensou em parar.", "A fé é dar o primeiro passo mesmo sem ver a escada inteira.", "Diga a verdade com respeito. A sinceridade bem-feita constrói confiança.", "Ame sem cobrar, ajude sem esperar retorno e perdoe sem guardar mágoa.", "Escute mais do que fale. Quem se sente ouvido se sente amado.", "Seus sonhos não pedem perfeição, pedem persistência. Continue.", "Quando a fé fraquejar, lembre-se de quantas vezes você já superou o que parecia impossível.", "Fazer o certo, mesmo sendo difícil, é o que forma o seu caráter.", "A família é o primeiro lugar onde o amor se aprende e se ensina. Cuide dela com presença.", "Não critique o que não viveu. Acolha antes de opinar.", "A vontade de vencer nasce da disciplina de hoje, não da motivação de ontem.", "Agradeça pelo que já tem; a gratidão fortalece a fé e abre portas para o que vem.", "Um nome limpo vale mais do que qualquer ganho conseguido de forma errada.", "O amor se prova nos gestos pequenos: um abraço, um \"como foi seu dia?\", um tempo dedicado.", "Seja paciente com as pessoas: todos estão lutando batalhas que você não vê.", "Cada obstáculo é um treino. Quem enfrenta com coragem, sai mais forte.", "Ore, confie e trabalhe. A fé sem ação é incompleta, e a ação sem fé é cansativa.", "Cumpra sua palavra. Ser alguém em quem se pode confiar é uma riqueza rara.", "Perdoar liberta quem perdoa. Não carregue peso que não é seu.", "Você é exemplo para quem te observa, especialmente para seus filhos. Eduque pelo que você faz.", "Termine o dia com a consciência tranquila, o coração grato e a certeza de que amanhã é mais uma chance de vencer."];
+function feIdx(){return Math.min(nowD().getDate(),30)-1}
+$("fe").onclick=function(){var i=feIdx();$("femn").textContent="Mensagem "+(i+1)+" de 30";$("femt").textContent=FE[i];$("fem").style.display="flex"};
+$("feclose").onclick=function(){$("fem").style.display="none";silenciar()};
+$("feread").onclick=function(){dizer("Lourdinha, mensagem de fé de hoje. "+FE[feIdx()])};
+
+function paintCfgAppt(){$("cdate").value=ls("consulta")||"2026-12-02";$("ctime").value=ls("consultaH")||"07:00";$("udate").value=ls("ultima")||"";$("cex").textContent="Exames: sempre 3 dias antes da consulta ("+dbr(EXAMES)+").";}
+function saveAppt(){
+  if($("cdate").value)ls("consulta",$("cdate").value);if($("ctime").value)ls("consultaH",$("ctime").value);
+  loadAppt();paintCfgAppt();renderAppt();
+  if(NATIVE&&Android.setAppt)Android.setAppt(ls("consulta")||"2026-12-02",ls("consultaH")||"07:00");
+}
+$("cdate").onchange=$("ctime").onchange=saveAppt;
+$("udate").onchange=function(){if($("udate").value)ls("ultima",$("udate").value);else localStorage.removeItem("ultima");loadAppt();renderAppt()};
+loadAppt();paintCfgAppt();
+if(NATIVE&&Android.setAppt)Android.setAppt(ls("consulta")||"2026-12-02",ls("consultaH")||"07:00");
+
+// ---- Restaurar horários padrão
+$("mtdef").onclick=function(){var d=["06:15","13:00","19:00"];MEALS.forEach(function(M,i){M.t=d[i];ls("mt"+i,d[i]);$("mt"+i).value=d[i];if(NATIVE)Android.setMealTime(i,d[i])});aviso("Horários padrão restaurados: café 6:15, almoço 13:00, janta 19:00.")};
+// ---- Diário de bem-estar
+var SINT={bem:["😊","Bem"],enjoo:["🤢","Enjoo"],dor:["🤕","Dor"],tontura:["😵","Tontura"]};
+function getSint(){try{return JSON.parse(ls("sint")||"[]")}catch(e){return[]}}
+function setSint(a){ls("sint",JSON.stringify(a.slice(-3000)));paintSint()}
+function sameDay(a,b){return isoOf(new Date(a))===isoOf(new Date(b))}
+function paintSint(){
+  var a=getSint(),n=nowD().getTime();
+  $("sinthoje").innerHTML=a.filter(function(x){return sameDay(x.ts,n)}).map(function(x){return '<span class="sch">'+SINT[x.k][0]+" "+hhmm(new Date(x.ts))+"</span>"}).join("");
+  var days={},order=[];a.forEach(function(x,i){var k=isoOf(new Date(x.ts));if(!days[k]){days[k]=[];order.push(k)}days[k].push(i)});
+  $("sgl").innerHTML=order.length?order.reverse().map(function(k){var d=pIso(k);return '<div class="pq" style="background:#eaf6ee;border-color:#81c784"><div class="dt" style="color:#1b5e20">'+dnome(d)+", "+dbr(d)+'</div>'+days[k].map(function(i){var x=a[i];return '<div style="display:flex;align-items:center;gap:8px;margin-top:6px"><span style="font-size:22px;flex:1">'+SINT[x.k][0]+" "+SINT[x.k][1]+" · "+hhmm(new Date(x.ts))+'</span><button class="small" data-i="'+i+'" style="background:#c5221f;color:#fff;flex:none">🗑</button></div>'}).join("")+"</div>"}).join(""):'<div style="font-size:22px;text-align:center;margin:20px 0">Nenhum registro ainda.</div>';
+  Array.prototype.forEach.call(document.querySelectorAll("#sgl button"),function(b){b.onclick=function(){
+    if(b.dataset.c!=="1"){b.dataset.c="1";b.textContent="Excluir?";setTimeout(function(){if(b.isConnected){b.dataset.c="";b.textContent="🗑"}},3500);return}
+    var x=getSint();x.splice(+b.dataset.i,1);setSint(x)}});
+}
+Array.prototype.forEach.call(document.querySelectorAll(".sgrid button"),function(b){b.onclick=function(){
+  var a=getSint();a.push({ts:nowD().getTime(),k:b.dataset.k});setSint(a);
+  if(NATIVE&&Android.symptom)Android.symptom(b.dataset.k);else if(b.dataset.k!=="bem")smsApp("AppLourdinha: a Lourdinha registrou "+SINT[b.dataset.k][1].toUpperCase()+" agora ("+hhmm(nowD())+"). Por favor, entre em contato.");
+  $("sintmsg").textContent="Anotado: "+SINT[b.dataset.k][0]+" "+SINT[b.dataset.k][1]+" às "+hhmm(nowD());
+  dizer(b.dataset.k==="bem"?"Que bom, Lourdinha! Anotei que você está bem.":"Anotado, Lourdinha.");
+}});
+var SINTSAY={bem:"Bem. Toque neste botão se você está bem, Lourdinha.",enjoo:"Enjoo. Toque neste botão se você está com enjoo.",dor:"Dor. Toque neste botão se você está com dor.",tontura:"Tontura. Toque neste botão se você está com tontura."};
+Array.prototype.forEach.call(document.querySelectorAll(".sgrid .sp"),function(sp){sp.onclick=function(e){e.stopPropagation();dizer(SINTSAY[sp.dataset.r])}});
+$("spksint").onclick=function(){$("sintcard").classList.add("quieto");dizer("Como você está agora, Lourdinha? Toque em bem, enjoo, dor ou tontura.")};
+$("sview").onclick=function(){paintSint();$("sgm").style.display="flex"};
+$("sclose").onclick=function(){$("sgm").style.display="none"};
+paintSint();
+// ---- Relatório para a médica
+function buildReport(){
+  var n=nowD(),from=new Date(n.getTime()-30*864e5),data=recentLog(getLogData(),30),by={},ord=[];
+  function day(k){if(!by[k]){by[k]={ok:0,no:0,ac:[],ml:[],sy:[]};ord.push(k)}return by[k]}
+  var tot={ok:0,no:0,mealOk:0,mealNo:0},ac={};
+  data.forEach(function(l){var k=l.ts?dstr(new Date(l.ts)):l.d,d=day(k);
+    if(l.meal){if(l.ok===true){tot.mealOk++}else{tot.mealNo++}d.ml.push(l.n.toLowerCase()+(l.ok===true?" ok":" não"));return}
+    if(l.ok===true){d.ok++;tot.ok++;if(l.m)l.m.forEach(function(m){if(m.a){d.ac.push(m.n);ac[shortName(m.n)]=1}})}else{d.no++;tot.no++}});
+  var sy=getSint().filter(function(x){return x.ts>=from.getTime()}),cnt={};
+  sy.forEach(function(x){var d=day(dstr(new Date(x.ts)));d.sy.push(SINT[x.k][1].toLowerCase()+" "+hhmm(new Date(x.ts)));cnt[x.k]=(cnt[x.k]||0)+1});
+  var t="*Relatório para a médica — Lourdinha*\nPeríodo: "+dbr(from)+" a "+dbr(n)+" (30 dias)\n\n";
+  t+="*Remédios:* "+tot.ok+" horários confirmados, "+tot.no+" não confirmados/sem resposta";
+  if(tot.ok+tot.no)t+=" ("+Math.round(100*tot.ok/(tot.ok+tot.no))+"% de adesão)";
+  t+="\n";if(Object.keys(ac).length)t+="Acabaram: "+Object.keys(ac).join(", ")+"\n";
+  t+="*Refeições:* "+tot.mealOk+" feitas, "+tot.mealNo+" não confirmadas\n";
+  t+="*Bem-estar:* "+(sy.length?Object.keys(cnt).map(function(k){return SINT[k][1].toLowerCase()+" "+cnt[k]+"x"}).join(", "):"sem registros")+"\n";
+  t+="\n*Dia a dia*\n"+(ord.length?ord.map(function(k){var d=by[k];return k+": remédios "+d.ok+" ok, "+d.no+" não"+(d.ac.length?" | acabou: "+d.ac.join(", "):"")+(d.ml.length?" | "+d.ml.join(", "):"")+(d.sy.length?" | sintomas: "+d.sy.join(", "):"")}).join("\n"):"Sem registros.")+"\n";
+  var q=getPerg();t+="\n*Perguntas para a médica*\n"+(q.length?q.map(function(x,i){return (i+1)+". "+x.t+" ("+dtFull(x.ts)+")"}).join("\n"):"Nenhuma pergunta guardada.");
+  if(ULTIMA)t+="\n\nÚltima consulta: "+dbr(ULTIMA);
+  return t;
+}
+$("rep").onclick=function(){
+  var t=buildReport();
+  if(NATIVE){Android.share(t);return}
+  try{navigator.clipboard.writeText(t)}catch(e){}
+  try{window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}catch(e){}
+};
+// ---- Alarmes de atividade
+function actOn(){return ls("act")==="1"}
+function paintAct(){$("actw").textContent=actOn()?"🚶 Alarmes de atividade: LIGADOS (tocar para desligar)":"🚶 Alarmes de atividade: DESLIGADOS (liberar só se a médica permitir)";$("act0").value=ls("act0")||"09:00";$("act1").value=ls("act1")||"16:00"}
+function pushAct(){if(NATIVE&&Android.setAct)Android.setAct(actOn(),ls("act0")||"09:00",ls("act1")||"16:00")}
+$("actw").onclick=function(){ls("act",actOn()?"0":"1");paintAct();pushAct()};
+$("act0").onchange=function(){if($("act0").value){ls("act0",$("act0").value);pushAct()}};
+$("act1").onchange=function(){if($("act1").value){ls("act1",$("act1").value);pushAct()}};
+var ACTMSG=["Lourdinha, hora do alongamento! Faça com calma, sem forçar.","Lourdinha, hora da caminhada leve! Vá no seu ritmo."];
+function actCheck(d){if(!actOn())return;[0,1].forEach(function(k){var f="act"+k+isoOf(d);if((ls("act"+k)||(k?"16:00":"09:00"))===hhmm(d)&&!fired[f]){fired[f]=1;aviso(ACTMSG[k]);dizer(ACTMSG[k])}})}
+paintAct();pushAct();
+// ---- SMS para a família
+var SMS_FIXOS=["81996739556","81989574545"];
+function smsOn(){return ls("smsOn")!=="0"}
+function smsX(){try{return JSON.parse(ls("smsX")||"[]")}catch(e){return[]}}
+function normTel(v){var n=String(v).replace(/\D/g,"");if(n.length===9&&n[0]==="9")n="81"+n;if(n.length===8)n="81"+"9"+n;return(n.length>=10&&n.length<=13)?n:""}
+function fmtTel(n){return n.length>=10?"("+n.slice(0,2)+") "+n.slice(2,n.length-4)+"-"+n.slice(-4):n}
+function pushSms(){if(NATIVE&&Android.setSms)Android.setSms(smsOn(),smsX().join(","))}
+function paintSms(){
+  $("smsw").textContent=smsOn()?"📩 Aviso por SMS: LIGADO (tocar para desligar)":"📩 Aviso por SMS: DESLIGADO (tocar para ligar)";
+  var x=smsX();$("smsl").innerHTML=x.map(function(n,i){return '<div class="row" style="align-items:center"><span style="font-size:19px;flex:1">'+fmtTel(n)+'</span><button class="small" data-i="'+i+'" style="flex:none">✖ Remover</button></div>'}).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("#smsl button"),function(b){b.onclick=function(){var a=smsX();a.splice(+b.dataset.i,1);ls("smsX",JSON.stringify(a));paintSms();pushSms()}});
+}
+$("smsw").onclick=function(){ls("smsOn",smsOn()?"0":"1");paintSms();pushSms()};
+$("smsa").onclick=function(){var n=normTel($("smsn").value);if(!n){aviso("Número inválido. Digite DDD + número.");return}
+  if(SMS_FIXOS.indexOf(n)>=0||smsX().indexOf(n)>=0){aviso("Esse número já está na lista.");return}
+  var a=smsX();a.push(n);ls("smsX",JSON.stringify(a));$("smsn").value="";paintSms();pushSms()};
+$("smst").onclick=function(){
+  if(NATIVE&&Android.testSms){var r=Android.testSms();aviso(r==="perm"?"Permita o envio de SMS e toque em Testar de novo.":"SMS de teste enviado para "+r.split(":")[1]+" número(s).")}
+  else aviso("Protótipo: enviaria SMS para "+SMS_FIXOS.concat(smsX()).map(fmtTel).join(", ")+".");
+};
+paintSms();pushSms();
+// ---- Backup
+function backupObj(){var w={};try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);w[k]=localStorage.getItem(k)}}catch(e){}
+  var n={};if(NATIVE){try{n=JSON.parse(Android.getPrefs())}catch(e){}}
+  return {app:"lourdinha",v:1,at:Date.now(),web:w,native:n}}
+$("bkx").onclick=function(){
+  var t=JSON.stringify(backupObj()),nm="backup-lourdinha-"+isoOf(nowD())+".json";
+  if(NATIVE){Android.exportBackup(nm,t);return}
+  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"application/json"}));a.download=nm;document.body.appendChild(a);a.click();a.remove();aviso("Backup exportado.")
+};
+window.onBackupSaved=function(ok){aviso(ok?"Backup salvo com sucesso.":"Não foi possível salvar o backup.")};
+window.onBackup=function(txt){
+  var o;try{o=JSON.parse(txt)}catch(e){}
+  if(!o||o.app!=="lourdinha"||!o.web){aviso("Arquivo de backup inválido.");return}
+  try{localStorage.clear();Object.keys(o.web).forEach(function(k){localStorage.setItem(k,o.web[k])})}catch(e){}
+  if(NATIVE&&Android.restorePrefs)Android.restorePrefs(JSON.stringify(o.native||{}));
+  location.reload();
+};
+$("bki").onclick=function(){
+  var b=$("bki");if(b.dataset.c!=="1"){b.dataset.c="1";b.textContent="⚠ Substitui tudo. Tocar de novo";setTimeout(function(){b.dataset.c="";b.textContent="📥 Importar backup"},4000);return}
+  b.dataset.c="";b.textContent="📥 Importar backup";
+  if(NATIVE){Android.pickBackup();return}
+  $("bkf").click();
+};
+$("bkf").onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){onBackup(String(r.result))};r.readAsText(f)};
+
+// ---- Sinal de vida
+function paintLife(){$("lifeh").value=ls("lifeH")===null?12:+ls("lifeH")}
+function pushLife(){if(NATIVE&&Android.setLife)Android.setLife(ls("lifeH")===null?12:+ls("lifeH"))}
+$("lifeh").onchange=function(){var v=Math.max(0,Math.min(72,parseInt($("lifeh").value)||0));ls("lifeH",String(v));$("lifeh").value=v;pushLife()};
+paintLife();pushLife();
+// ---- Estoque de remédios
+function medKeys(){var o=[],seen={};POTS.forEach(function(p){p.m.concat(p.q?QT:[]).forEach(function(m){var k=shortName(m);if(!seen[k]){seen[k]=1;o.push(k)}})});customs().forEach(function(c){var k=shortName(c.txt);if(!seen[k]){seen[k]=1;o.push(k)}});return o}
+function dosesDia(k){var n=0;POTS.forEach(function(p){if(slotMeds(p).some(function(m){return shortName(m)===k}))n++});return n}
+function getEstq(){try{return JSON.parse(ls("estq")||"{}")}catch(e){return{}}}
+function getEstqSms(){try{return JSON.parse(ls("estqSms")||"{}")}catch(e){return{}}}
+function smsApp(t){if(NATIVE&&Android.notifySms)Android.notifySms(t);else if(window.console)console.log("[SMS] "+t)}
+function estDias(k,v){var d=dosesDia(k);return d?Math.floor(v/d):0}
+function estCheck(k){
+  var e=getEstq(),sm=getEstqSms(),v=e[k];
+  if(v===undefined||v===""||!rxActive(k)){return}
+  if(v<10){if(!sm[k]){sm[k]=1;ls("estqSms",JSON.stringify(sm));smsApp("AppLourdinha: estoque baixo de "+k+": restam "+v+(v===1?" dose":" doses")+" (cerca de "+estDias(k,v)+(estDias(k,v)===1?" dia":" dias")+"). Providenciar a compra.")}}
+  else if(sm[k]){delete sm[k];ls("estqSms",JSON.stringify(sm))}
+}
+function estLow(){var e=getEstq();return Object.keys(e).filter(function(k){return rxActive(k)&&e[k]!==""&&e[k]!==undefined&&e[k]<10}).map(function(k){return {k:k,v:e[k],d:estDias(k,e[k])}})}
+function estSay(){var l=estLow();return "Atenção Lourdinha, estoque baixo. "+l.map(function(x){return x.k+", "+x.v+(x.v===1?" dose":" doses")+", cerca de "+x.d+(x.d===1?" dia":" dias")}).join(". ")+"."}
+function paintEst(){
+  var l=estLow();if(l.length&&$("estbox").style.display!=="block")$("estbox").classList.remove("quieto");$("estbox").style.display=l.length?"block":"none";
+  $("estl").innerHTML=l.map(function(x){return '<div class="l">'+x.k+": "+x.v+(x.v===1?" dose":" doses")+" · ~"+x.d+(x.d===1?" dia":" dias")+"</div>"}).join("");
+}
+function paintEstCfg(){
+  var e=getEstq();
+  $("estcfg").innerHTML=medKeys().filter(function(k){return rxActive(k)}).map(function(k){return '<div class="row" style="align-items:center"><span style="font-size:18px;flex:1">'+k+' <small style="color:#666">('+dosesDia(k)+'/dia)</small></span><input type="number" min="0" inputmode="numeric" data-k="'+k+'" value="'+(e[k]===undefined?"":e[k])+'" placeholder="doses" style="font-size:20px;width:90px;padding:6px"></div>'}).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("#estcfg input"),function(i){i.onchange=function(){var x=getEstq();if(i.value==="")delete x[i.dataset.k];else x[i.dataset.k]=Math.max(0,parseInt(i.value)||0);ls("estq",JSON.stringify(x));estCheck(i.dataset.k);paintEst()}});
+}
+function estTake(meds){
+  if(!meds)return;var e=getEstq(),ch=false;
+  meds.forEach(function(m){if(!m.ok||m.a)return;var k=shortName(m.n);if(e[k]===undefined||e[k]==="")return;e[k]=Math.max(0,e[k]-1);ch=true});
+  if(ch){ls("estq",JSON.stringify(e));Object.keys(e).forEach(estCheck);paintEst();paintEstCfg()}
+}
+$("spkest").onclick=function(){$("estbox").classList.add("quieto");dizer(estSay())};
+paintEstCfg();paintEst();
+// ---- Remédios que acabaram: modal com leitura e compartilhamento
+function outList(){return Object.keys(getOut())}
+function shareOut(){
+  var ks=outList();if(!ks.length)return;
+  var t="*Remédios para comprar — Lourdinha*\n\n"+ks.map(function(n){return "• "+n}).join("\n");
+  if(NATIVE){Android.share(t);return}
+  try{navigator.clipboard.writeText(t)}catch(e){}
+  try{window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}catch(e){}
+}
+$("shout").onclick=shareOut;
+$("outsh").onclick=function(){shareOut();$("outm").style.display="none";silenciar()};
+$("outok").onclick=function(){$("outm").style.display="none";silenciar()};
+$("spkout").onclick=function(){
+  var ks=outList().map(shortName);if(!ks.length)return;$("outcard").classList.add("quieto");
+  $("outml").innerHTML=ks.map(function(n){return '<div class="it">• '+n+"</div>"}).join("");
+  $("outm").style.display="flex";
+  dizer("Remédios que acabaram: "+ks.join(", ")+". Para compartilhar a lista de remédios para comprar, aperte o botão verde. Ou aperte o OK azul para apenas sair.");
+};
+// ---- Estrelas
+function starDays(){
+  var by={};getLogData().forEach(function(l){if(l.meal||l.ok!==true||!l.ts)return;var k=isoOf(new Date(l.ts));(by[k]=by[k]||{})[l.t]=1});
+  var done=[],part={};Object.keys(by).forEach(function(k){var n=POTS.filter(function(p){return by[k][p.t]}).length;part[k]=n;if(n===POTS.length)done.push(k)});
+  return {done:done,part:part};
+}
+function starInfo(){
+  var sd=starDays(),today=isoOf(nowD()),set={};sd.done.forEach(function(k){set[k]=1});
+  var d=nowD();if(!set[isoOf(d)])d=new Date(d.getTime()-864e5);
+  var streak=0;while(set[isoOf(d)]){streak++;d=new Date(d.getTime()-864e5)}
+  return {total:sd.done.length,streak:streak,today:sd.part[today]||0,todayDone:!!set[today]};
+}
+function starJustEarned(){var t=isoOf(nowD());if(ls("starDay")===t)return 0;var i=starInfo();if(i.todayDone){ls("starDay",t);return i.total}return 0}
+function paintStars(){
+  var i=starInfo();
+  $("starl").innerHTML=(i.todayDone?"⭐ <b>Hoje você ganhou a estrela!</b>":"Hoje: <b>"+i.today+" de "+POTS.length+"</b> horários de remédio")+"<br>Estrelas: <b>"+i.total+"</b> · Sequência: <b>"+i.streak+(i.streak===1?" dia":" dias")+"</b>";
+}
+$("spkstar").onclick=function(){var i=starInfo();dizer("Lourdinha, "+(i.todayDone?"hoje você ganhou a estrela! ":"hoje você tomou "+i.today+" de "+POTS.length+" horários. Complete todos para ganhar a estrela. ")+"Você tem "+i.total+(i.total===1?" estrela":" estrelas")+", e uma sequência de "+i.streak+(i.streak===1?" dia.":" dias."))};
+paintStars();
+
+// ---- Conferir estoque até a consulta
+
+// ---- Receita da última consulta
+function isQT(k){return QT.some(function(m){return shortName(m)===k})}
+function customs(){try{return JSON.parse(ls("rxCustom")||"[]")}catch(e){return[]}}
+function getRx(){try{return JSON.parse(ls("rx")||"{}")}catch(e){return{}}}
+function tmin(t){var a=t.split(":");return (+a[0])*60+(+a[1])}
+function genSlots(N,first){var out=[],f=tmin(first);for(var k=0;k*N*60<1440;k++){var m=(f+k*N*60)%1440,t=pad(Math.floor(m/60))+":"+pad(m%60);if(SLOTS.indexOf(t)>=0&&out.indexOf(t)<0)out.push(t)}return out.sort(function(a,b){return SLOTS.indexOf(a)-SLOTS.indexOf(b)})}
+function sameSet(a,b){return a.length===b.length&&a.every(function(x){return b.indexOf(x)>=0})}
+function inferInt(slots){var Ns=[24,12,8,6,4,3,2],r=null;Ns.some(function(N){return SLOTS.some(function(f){if(sameSet(genSlots(N,f),slots)){r={int:N,first:f};return true}return false})});return r}
+function defSlots(k){if(customs().some(function(c){return shortName(c.txt)===k}))return [];return POTS.filter(function(p){return p.m.some(function(m){return shortName(m)===k})||(isQT(k)&&p.q)}).map(function(p){return p.t})}
+function rxOf(k){
+  var r=getRx()[k]||{},slots=r.slots||defSlots(k),it=r.int,fi=r.first;
+  if(it===undefined){var inf=inferInt(slots);it=inf?inf.int:"";fi=inf?inf.first:(slots[0]||"06:00")}
+  return {on:r.on!==false,qtd:r.qtd===undefined?"":r.qtd,dias:r.dias===undefined?"":r.dias,ini:r.ini||"",slots:slots,int:it,first:fi||"06:00",offC:r.offC||"",offAt:r.offAt||""};
+}
+function rxEnd(k){var r=rxOf(k);if(r.dias===""||!+r.dias)return null;var st=ULTIMA?isoOf(ULTIMA):r.ini;if(!st)return null;var a=pIso(st);return new Date(a.getFullYear(),a.getMonth(),a.getDate()+(+r.dias))}
+function rxActiveAt(k,at){var r=rxOf(k);if(!r.on)return false;var e=rxEnd(k);return !(e&&at>=e)}
+function rxActive(k){return rxActiveAt(k,nowD())}
+function setRx(k,patch,quiet){
+  var a=getRx(),r=rxOf(k);
+  if(patch.on===false){patch.offC=ULTIMA?isoOf(ULTIMA):"";patch.offAt=isoOf(nowD())}
+  if(patch.on===true){patch.offC="";patch.offAt=""}
+  Object.keys(patch).forEach(function(f){r[f]=patch[f]});
+  if(patch.int!==undefined||patch.first!==undefined){if(+r.int>0)r.slots=genSlots(+r.int,r.first)}
+  if(r.dias!==""&&!r.ini)r.ini=isoOf(nowD());
+  a[k]=r;ls("rx",JSON.stringify(a));if(!quiet)rxRefresh();
+}
+function medText(k,p){
+  var c=customs().filter(function(x){return shortName(x.txt)===k})[0];if(c)return c.txt;
+  var m=p.m.filter(function(x){return shortName(x)===k})[0];if(m)return m;
+  m=QT.filter(function(x){return shortName(x)===k})[0];if(m)return m;
+  POTS.some(function(q){m=q.m.filter(function(x){return shortName(x)===k})[0];return !!m});return m||k;
+}
+function slotMeds(p,at){
+  at=at||nowD();var out=[],seen={};
+  function add(k){if(seen[k])return;var r=rxOf(k);if(!rxActiveAt(k,at)||r.slots.indexOf(p.t)<0)return;if(isQT(k)&&!mem.qt)return;seen[k]=1;out.push(medText(k,p))}
+  p.m.forEach(function(m){add(shortName(m))});
+  QT.forEach(function(m){add(shortName(m))});
+  medKeys().forEach(add);
+  return out;
+}
+function rxRefresh(){try{paintRx();paintEstCfg();paintEst();render();renderNext();if($("stm").style.display==="flex")paintSt()}catch(e){}}
+function dbrIso(v){return dbr(pIso(v))}
+function intFields(k,r){
+  return '<div class="rxd"><label>Quantidade receitada<input type="number" min="0" inputmode="numeric" data-k="'+k+'" data-f="qtd" value="'+r.qtd+'" placeholder="doses"></label><label>Período (dias)<input type="number" min="0" inputmode="numeric" data-k="'+k+'" data-f="dias" value="'+r.dias+'" placeholder="contínuo"></label></div>'+
+  '<div class="rxd"><label>Intervalo (horas)<input type="number" min="1" max="24" inputmode="numeric" data-k="'+k+'" data-f="int" value="'+r.int+'" placeholder="ex.: 8"></label><label>Primeiro horário<select data-k="'+k+'" data-f="first">'+SLOTS.map(function(t){return '<option'+(t===r.first?" selected":"")+'>'+t+'</option>'}).join("")+'</select></label></div>'+
+  '<div class="rxp">'+(r.slots.length?(+r.int>0?"A cada "+r.int+"h: ":"Horários: ")+r.slots.join(" · "):"Nenhum horário de bolsa coincide com esse intervalo")+'</div>';
+}
+function paintRx(){
+  var u=ULTIMA?dbr(ULTIMA):"não informada",cu=customs().map(function(c){return shortName(c.txt)});
+  $("rxhead").textContent="Última consulta: "+u+". Desmarque o que NÃO foi receitado: esses remédios somem dos horários. O período conta a partir da última consulta.";
+  $("rxl").innerHTML=medKeys().map(function(k){var r=rxOf(k),e=rxEnd(k),ended=r.on&&e&&nowD()>=e;
+    var off=!r.on?'<div class="rxoff">⛔ Desativada'+(r.offC?" na consulta de "+dbrIso(r.offC):(r.offAt?" em "+dbrIso(r.offAt):""))+'</div>':'';
+    return '<div class="rx"><label class="rxn"><input type="checkbox" data-k="'+k+'" data-f="on"'+(r.on?" checked":"")+'><span>'+k+(ended?' <small style="color:#c5221f">(período encerrado)</small>':'')+'</span></label>'+off+
+    (r.on?intFields(k,r):'')+(cu.indexOf(k)>=0?'<button class="small rxdel" data-k="'+k+'" style="background:#c5221f;color:#fff;margin-top:8px">🗑 Remover medicação</button>':'')+'</div>'}).join("");
+  var Q=function(sel,fn){Array.prototype.forEach.call(document.querySelectorAll(sel),fn)};
+  Q("#rxl input[data-f=on]",function(i){i.onchange=function(){setRx(i.dataset.k,{on:i.checked})}});
+  Q("#rxl input[data-f=qtd]",function(i){i.onchange=function(){setRx(i.dataset.k,{qtd:i.value===""?"":Math.max(0,parseInt(i.value)||0)})}});
+  Q("#rxl input[data-f=dias]",function(i){i.onchange=function(){setRx(i.dataset.k,{dias:i.value===""?"":Math.max(0,parseInt(i.value)||0)})}});
+  Q("#rxl input[data-f=int]",function(i){i.onchange=function(){var v=Math.max(1,Math.min(24,parseInt(i.value)||0));if(!parseInt(i.value)){paintRx();return}setRx(i.dataset.k,{int:v})}});
+  Q("#rxl select[data-f=first]",function(i){i.onchange=function(){var r=rxOf(i.dataset.k);setRx(i.dataset.k,{first:i.value,int:+r.int>0?+r.int:8})}});
+  Q("#rxl .rxdel",function(b){b.onclick=function(){
+    if(b.dataset.c!=="1"){b.dataset.c="1";b.textContent="Confirmar remoção?";setTimeout(function(){if(b.isConnected){b.dataset.c="";b.textContent="🗑 Remover medicação"}},3500);return}
+    var k=b.dataset.k;ls("rxCustom",JSON.stringify(customs().filter(function(c){return shortName(c.txt)!==k})));var a=getRx();delete a[k];ls("rx",JSON.stringify(a));var e=getEstq();delete e[k];ls("estq",JSON.stringify(e));rxRefresh()}});
+}
+// adicionar medicação
+$("rxaddb").onclick=function(){$("rxadd").style.display=$("rxadd").style.display==="block"?"none":"block";if($("rxf").options.length===0)SLOTS.forEach(function(t){var o=document.createElement("option");o.textContent=t;$("rxf").appendChild(o)})};
+$("rxcancel").onclick=function(){$("rxadd").style.display="none"};
+$("rxsave").onclick=function(){
+  var nome=$("rxnome").value.trim();if(!nome){aviso("Digite o nome da medicação.");return}
+  var dz=$("rxdz").value.trim(),pd=$("rxpd").value.trim()||"1 dose",pq=$("rxpq").value.trim();
+  var txt=nome+(dz?" "+dz:"")+" — "+pd+(pq?" — "+pq:""),k=shortName(txt);
+  if(medKeys().indexOf(k)>=0){aviso("Já existe uma medicação com esse nome.");return}
+  var it=parseInt($("rxi").value)||0;if(it<1||it>24){aviso("Informe o intervalo em horas (1 a 24). Ex.: 8.");return}
+  var c=customs();c.push({txt:txt});ls("rxCustom",JSON.stringify(c));
+  setRx(k,{on:true,qtd:$("rxq").value===""?"":Math.max(0,parseInt($("rxq").value)||0),dias:$("rxp").value===""?"":Math.max(0,parseInt($("rxp").value)||0),int:it,first:$("rxf").value||"06:00"});
+  ["rxnome","rxdz","rxpd","rxpq","rxq","rxp","rxi"].forEach(function(i){$(i).value=""});$("rxadd").style.display="none";
+};
+function dosesAteConsulta(){
+  var r={},now=nowD(),end=CONSULTA,qs=ls("qtS")?pIso(ls("qtS")):null;
+  var d=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  for(;d<=end;d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1)){
+    POTS.forEach(function(p){
+      var h=p.t.split(":"),at=new Date(d.getFullYear(),d.getMonth(),d.getDate(),+h[0],+h[1]);
+      if(at<=now||at>end)return;
+      slotMeds(p,at).forEach(function(m){var k=shortName(m);
+        if(isQT(k)){var di=qs?Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-qs)/864e5):-1;if(di<0||di>=3)return}
+        r[k]=(r[k]||0)+1});
+    });
+  }
+  return r;
+}
+function stRows(){
+  var need=dosesAteConsulta(),e=getEstq();
+  return medKeys().filter(function(k){return rxActive(k)}).map(function(k){var rc=rxOf(k).qtd,has=(e[k]===undefined||e[k]==="")?null:+e[k],n=need[k]||0;return {k:k,rec:(rc===""||rc===undefined)?null:+rc,has:has,need:n,falta:has===null?null:Math.max(0,n-has)}})
+    .sort(function(a,b){return (b.falta===null?-1:b.falta)-(a.falta===null?-1:a.falta)});
+}
+function stSay(rows){
+  if(dias(CONSULTA)<0)return "Lourdinha, defina a data da próxima consulta nas definições.";
+  var t="Lourdinha, conferência do estoque até a consulta. ";
+  rows.forEach(function(x){
+    if(x.has===null)t+=x.k+": quantidade não informada. ";
+    else t+=x.k+": "+(x.rec!==null?"receitado "+x.rec+", ":"")+"você tem "+x.has+", precisa de "+x.need+(x.falta?", faltam "+x.falta+". ":", está tudo certo. ");
+  });
+  return t;
+}
+function paintSt(){
+  var fut=dias(CONSULTA)>=0;
+  $("stsum").textContent=fut?"Até a consulta: "+dnome(CONSULTA)+", "+dbr(CONSULTA)+" às "+CONSH+rel(dias(CONSULTA))+". Contagem em doses (1 dose por horário).":"A consulta já passou. Defina a nova data em Definições.";
+  var rows=fut?stRows():[];
+  $("stl").innerHTML=rows.map(function(x,i){return '<div class="sr"><div class="n">'+x.k+'</div><div class="c"><div>Receitado<b>'+(x.rec===null?"—":x.rec)+'</b></div><div>Atual<input type="number" min="0" inputmode="numeric" data-k="'+x.k+'" value="'+(x.has===null?"":x.has)+'" placeholder="?"></div><div>Precisa<b>'+x.need+'</b></div><div>Faltam<b style="color:'+(x.falta===null?"#777":x.falta?"#c5221f":"#1e8e3e")+'">'+(x.falta===null?"—":x.falta?x.falta:"✔")+'</b></div><button class="rd" data-i="'+i+'">🔊</button></div></div>'}).join("");
+  Array.prototype.forEach.call($("stl").querySelectorAll("button.rd"),function(b){b.onclick=function(){var r=rows[+b.dataset.i];dizer(stSay([r]).replace("conferência do estoque até a consulta. ",""))}});
+  Array.prototype.forEach.call(document.querySelectorAll("#stl input"),function(i){i.onchange=function(){var x=getEstq();if(i.value==="")delete x[i.dataset.k];else x[i.dataset.k]=Math.max(0,parseInt(i.value)||0);ls("estq",JSON.stringify(x));estCheck(i.dataset.k);paintEst();paintEstCfg();paintSt()}});
+  return rows;
+}
+$("stbtn").onclick=function(){paintSt();$("stm").style.display="flex"};
+$("stx").onclick=$("stok").onclick=function(){$("stm").style.display="none";silenciar()};
+$("stspk").onclick=function(){dizer(stSay(dias(CONSULTA)>=0?stRows():[]))};
+
+// ---- Popups de aviso dos grupos que piscam (a cada abertura do app)
+var gpQ=[],gpI=0;
+function gpItems(){
+  var it=[],ks=outList().map(shortName);
+  if(ks.length)it.push({id:"outcard",c:"#c5221f",t:"⚠ Remédios que acabaram",m:"Atenção, Lourdinha! Acabaram estes remédios: "+ks.join(", ")+". Veja o quadro vermelho na tela."});
+  if(estLow().length)it.push({id:"estbox",c:"#c5221f",t:"⚠ Estoque baixo",m:estSay()});
+  it.push({id:"sintcard",c:"#2e7d32",t:"💬 Como você está agora?",m:"Lourdinha, como você está agora? Toque no botão que mostra como você se sente: bem, enjoo, dor ou tontura."});
+  return it;
+}
+function gpShow(){
+  var x=gpQ[gpI];if(!x){$("gpop").style.display="none";return}
+  $("gpop").style.setProperty("--gc",x.c);$("gpt").textContent=x.t;$("gpm").textContent=x.m;$("gpop").style.display="flex";
+  $("gpspk").onclick=function(){$(x.id).classList.add("quieto");dizer(x.m)};
+}
+$("gpok").onclick=function(){silenciar();gpI++;gpShow()};
+setTimeout(function(){
+  if(/[?&](p|meal)=/.test(location.search)||pending)return;
+  gpQ=gpItems();gpI=0;gpShow();
+},1200);
+paintRx();initMealTimes();render();renderLog();renderNext();renderOut();qtCheck();renderAppt();
 (function(){
   if(NATIVE){
     $("sound").style.display="none";
-    var pc=document.createElement("div");pc.className="card";pc.style.background="#fff";
+    var pc=document.createElement("div");pc.style.cssText="margin-top:10px;padding-top:10px;border-top:2px solid #ccc";
     pc.innerHTML='<b style="font-size:22px">Permissões (fazer uma vez)</b><div style="font-size:17px;margin:6px 0">Toque em cada botão e permita:</div><div class="row"><button class="small" id="pn">1) Notificações</button><button class="small" id="pt">2) Tela cheia</button><button class="small" id="pb">3) Bateria sem restrição</button></div>';
-    $("main").insertBefore(pc,$("now"));
+    $("adm").appendChild(pc);
     $("pn").onclick=function(){Android.openSetting("notif")};
     $("pt").onclick=function(){Android.openSetting("tela")};
     $("pb").onclick=function(){Android.openSetting("bateria")};
   }
+  var mm=/[?&]meal=(\d)&stage=(\d)&att=(\d)/.exec(location.search);
+  if(mm)mealOpen(+mm[1],+mm[2],+mm[3],/[?&]test=1/.test(location.search));
   var m=/[?&]p=([0-9:]+)/.exec(location.search);
   var isTest=/[?&]test=1/.test(location.search);
   if(m){POTS.forEach(function(p){if(p.t===m[1]){setTimeout(function(){fire(p,isTest)},300)}})}

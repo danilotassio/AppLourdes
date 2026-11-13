@@ -23,6 +23,7 @@ public class Watch {
             SharedPreferences sp = LogStore.sp(c);
             long now = System.currentTimeMillis();
             if (!sp.contains("seen")) touch(c);
+            try { Push.cfgFetch(c, null); } catch (Throwable e) {}
             // 1) bateria
             try {
                 Intent b = c.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));

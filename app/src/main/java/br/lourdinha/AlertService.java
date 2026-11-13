@@ -13,6 +13,8 @@ public class AlertService extends FirebaseMessagingService {
             if (!"cuidador".equals(Push.mode(this))) return;
             Map<String, String> d = m.getData();
             String title = d.get("title") == null ? "AppLourdinha" : d.get("title"), body = d.get("body") == null ? "" : d.get("body");
+            String lb = body.toLowerCase(), kind = (lb.contains("nao confirmou") || lb.contains("nao tomou")) ? "remedio" : lb.contains("esta bem") ? "bem" : lb.matches(".*registrou (dor|enjoo|tontura).*") ? "sintoma" : lb.contains("bateria") ? "bateria" : lb.contains("sinal de vida") ? "vida" : lb.contains("para comprar") ? "compra" : lb.contains("lembrete") ? "consulta" : lb.contains("resumo da semana") ? "resumo" : "outro";
+            if (LogStore.sp(this).getString("cflt", "[]").contains("\"" + kind + "\"")) return;
             JSONArray a = new JSONArray(LogStore.sp(this).getString("alerts", "[]"));
             JSONObject o = new JSONObject().put("ts", System.currentTimeMillis()).put("title", title).put("body", body);
             JSONArray b = new JSONArray(); b.put(o);

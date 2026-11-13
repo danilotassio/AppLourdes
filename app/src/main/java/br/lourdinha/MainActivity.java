@@ -169,6 +169,18 @@ public class MainActivity extends Activity {
             if (!n.isEmpty()) LogStore.sp(MainActivity.this).edit().remove("alertNew").apply();
             return n;
         }
+        @JavascriptInterface public void openUrl(String u){
+            try { if (u != null && u.startsWith("https://maps.google.com/")) startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(u)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); } catch (Throwable e) {}
+        }
+        @JavascriptInterface public void notifyCare(String msg){ try { Push.send(MainActivity.this, msg); } catch (Throwable e) {} }
+        @JavascriptInterface public String getCfg(){ return LogStore.sp(MainActivity.this).getString("cfg", "{}"); }
+        @JavascriptInterface public void setCfg(String json){
+            try { new org.json.JSONObject(json); LogStore.sp(MainActivity.this).edit().putString("cfg", json).apply(); Push.cfgSet(MainActivity.this, json); } catch (Throwable e) {}
+        }
+        @JavascriptInterface public void pushState(String json){ Push.state(MainActivity.this, json); }
+        @JavascriptInterface public String getState(){ return LogStore.sp(MainActivity.this).getString("state", "{}"); }
+        @JavascriptInterface public void refreshState(){ Push.fetch(MainActivity.this, () -> runOnUiThread(() -> web.evaluateJavascript("window.onState&&onState()", null))); }
+        @JavascriptInterface public void setFilter(String json){ try { new org.json.JSONArray(json); LogStore.sp(MainActivity.this).edit().putString("cflt", json).apply(); } catch (Throwable e) {} }
         @JavascriptInterface public void clearAlerts(){ LogStore.sp(MainActivity.this).edit().remove("alerts").remove("alertNew").apply(); }
         @JavascriptInterface public void notifyFixed(String msg){
             try { if (msg != null && msg.length() > 0) Sms.sendFixed(MainActivity.this, msg); } catch (Throwable e) {}
@@ -184,9 +196,16 @@ public class MainActivity extends Activity {
                 org.json.JSONArray b = new org.json.JSONArray();
                 for (int i = Math.max(0, a.length() - 500); i < a.length(); i++) b.put(a.get(i));
                 LogStore.sp(MainActivity.this).edit().putString("sintn", b.toString()).apply();
-                if (k.equals("bem") && Sms.on(MainActivity.this)) Sms.send(MainActivity.this, "AppLourdinha: a Lourdinha registrou que esta BEM agora (" + new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(new java.util.Date()) + ").");
-                String nome = k.equals("enjoo") ? "ENJOO" : k.equals("dor") ? "DOR" : k.equals("tontura") ? "TONTURA" : "";
-                if (!nome.isEmpty() && Sms.on(MainActivity.this)) Sms.send(MainActivity.this, "AppLourdinha: a Lourdinha registrou " + nome + " agora (" + new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(new java.util.Date()) + "). Por favor, entre em contato.");
+                final String kk = k;
+                new Thread(() -> {
+                    try {
+                        String hora = new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(new java.util.Date());
+                        String nome = kk.equals("enjoo") ? "ENJOO" : kk.equals("dor") ? "DOR" : kk.equals("tontura") ? "TONTURA" : "";
+                        String loc = Loc.battery(MainActivity.this) + Loc.link(MainActivity.this);
+                        if (kk.equals("bem") && Sms.on(MainActivity.this)) Sms.send(MainActivity.this, "AppLourdinha: a Lourdinha registrou que esta BEM agora (" + hora + ")." + loc);
+                        if (!nome.isEmpty() && Sms.on(MainActivity.this)) Sms.send(MainActivity.this, "AppLourdinha: a Lourdinha registrou " + nome + " agora (" + hora + "). Por favor, entre em contato." + loc);
+                    } catch (Throwable e) {}
+                }).start();
             } catch (Throwable e) {}
         }
         @JavascriptInterface public void setLife(int h){ LogStore.sp(MainActivity.this).edit().putInt("lifeH", Math.max(0, Math.min(72, h))).apply(); Watch.touch(MainActivity.this); }
@@ -303,6 +322,7 @@ public class MainActivity extends Activity {
                 });
                 ttsOk = true; } } catch (Throwable e) {} }); } catch (Throwable e) {}
         Scheduler.scheduleAll(this);
+        Push.cfgFetch(this, () -> runOnUiThread(() -> { if (Loc.on(MainActivity.this) && !Loc.allowed(MainActivity.this)) requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 6); }));
         load(getIntent());
         web.postDelayed(() -> nextPerm(), 800);
     }

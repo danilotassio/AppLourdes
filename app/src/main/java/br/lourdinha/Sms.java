@@ -31,7 +31,6 @@ public class Sms {
     }
     /** Envia apenas para os dois números fixos (alertas de segurança de senha). */
     public static int sendFixed(Context c, String msg){
-        Push.send(c, msg);
         if (c.checkSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) return -1;
         int ok = 0;
         try {

@@ -38,6 +38,19 @@ export default {
     if (url.pathname === "/unreg") {            // cuidador sai
       list = list.filter(x => x !== b.t); await env.KV.put(k, JSON.stringify(list)); return J({ ok: true });
     }
+    if (url.pathname === "/state") {            // celular da Lourdinha publica o resumo dos dados
+      if (typeof b.d !== "string" || b.d.length > 150000) return J({ erro: "tamanho" }, 400);
+      await env.KV.put("s:" + b.c, b.d, { expirationTtl: 60 * 86400 });
+      return J({ ok: true });
+    }
+    if (url.pathname === "/cfgset") {           // cuidador publica definicoes secretas
+      if (typeof b.d !== "string" || b.d.length > 2000) return J({ erro: "tamanho" }, 400);
+      await env.KV.put("g:" + b.c, b.d); return J({ ok: true });
+    }
+    if (url.pathname === "/cfgget") { return J({ d: (await env.KV.get("g:" + b.c)) || "" }); }
+    if (url.pathname === "/get") {              // cuidador le o resumo
+      return J({ d: (await env.KV.get("s:" + b.c)) || "" });
+    }
     if (url.pathname === "/send") {             // celular da Lourdinha envia um aviso
       const title = String(b.title || "AppLourdinha").slice(0, 80), body = String(b.body || "").slice(0, 400), kind = String(b.kind || "info").slice(0, 20);
       if (!list.length) return J({ ok: true, n: 0 });

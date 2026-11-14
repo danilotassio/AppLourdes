@@ -39,12 +39,22 @@ public class MainActivity extends Activity {
                 if (!pm.isIgnoringBatteryOptimizations(getPackageName())) {
                     permBusy = true; permT = System.currentTimeMillis();
                     startActivity(new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:" + getPackageName())));
+                    return;
+                }
+            }
+            if (permStep == 3) {
+                permStep = 4;
+                if (Build.VERSION.SDK_INT >= 23 && !Settings.canDrawOverlays(this)) {
+                    permBusy = true; permT = System.currentTimeMillis();
+                    startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())));
                 }
             }
         } catch (Throwable e) {}
     }
+    static volatile boolean vis = false;
+    @Override protected void onPause(){ vis = false; super.onPause(); }
     @Override protected void onResume(){
-        super.onResume();
+        super.onResume(); vis = true;
         if (permBusy && System.currentTimeMillis() - permT > 1000) { permBusy = false; nextPerm(); }
     }
     class Bridge {

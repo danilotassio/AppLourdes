@@ -3,6 +3,7 @@ import android.app.*;
 import android.content.*;
 import android.media.*;
 import android.os.*;
+import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
 import java.util.Locale;
 public class AlarmService extends Service {
@@ -19,6 +20,16 @@ public class AlarmService extends Service {
         if (!active) return;
         try { AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE); am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0); } catch (Exception e) {}
         h.postDelayed(this, 1500);
+    } };
+
+    final Runnable reopen = new Runnable(){ public void run(){
+        if (!active) return;
+        if (!MainActivity.vis) {
+            boolean ov = Build.VERSION.SDK_INT < 23 || Settings.canDrawOverlays(AlarmService.this);
+            try { startActivity(openIntent()); } catch (Exception e) {}
+            if (!ov) { try { ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(1, buildNotification()); } catch (Exception e) {} }
+        }
+        h.postDelayed(this, 2000);
     } };
 
     @Override public IBinder onBind(Intent i){ return null; }
@@ -64,6 +75,7 @@ public class AlarmService extends Service {
             }
         });
         h.postDelayed(timeout, 20 * 60 * 1000L);
+        h.postDelayed(reopen, 4000);
     }
 
     void say(){
@@ -139,12 +151,18 @@ public class AlarmService extends Service {
         return PendingIntent.getService(this, code, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
-    Notification buildNotification(){
+    Intent openIntent(){
         boolean r = rem >= 0, ml = meal >= 0;
         Intent open = new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         if (ml) open.putExtra("meal", meal).putExtra("stage", stage).putExtra("att", att).putExtra("test", test);
         else if (!r) open.putExtra("p", Scheduler.TIMES[idx]).putExtra("test", test);
         if (r || (ml && stage == 0)) open.putExtra("stopAlarm", true);
+        return open;
+    }
+
+    Notification buildNotification(){
+        boolean r = rem >= 0, ml = meal >= 0;
+        Intent open = openIntent();
         PendingIntent pi = PendingIntent.getActivity(this, ml ? 700 + meal * 10 + stage : (r ? 350 : 300 + idx), open, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         String title = ml ? (stage == 0 ? "Hora do " + Scheduler.MEAL_NAME[meal] : "Você já fez: " + Scheduler.MEAL_NAME[meal] + "?")
                 : (r ? Scheduler.remTitle(this, rem) : (Scheduler.remindOnly(this) ? "Lembrete: remédio da Lourdinha! Bolsa " : "Hora do remédio! Bolsa ") + Scheduler.NAMES[idx].toUpperCase());

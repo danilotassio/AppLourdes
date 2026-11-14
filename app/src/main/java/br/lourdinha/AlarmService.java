@@ -13,7 +13,7 @@ public class AlarmService extends Service {
     Handler h = new Handler(Looper.getMainLooper());
     PowerManager.WakeLock wl;
     final Runnable speak = new Runnable(){ public void run(){ if(!active) return; say(); h.postDelayed(this, 9000);} };
-    final Runnable timeout = new Runnable(){ public void run(){ if(active){ if(!test){ if(meal >= 0){ if(stage == 1) LogStore.addMeal(AlarmService.this, Scheduler.mealTime(AlarmService.this, meal), Scheduler.MEAL_LOG[meal], null); } else if(rem < 0) LogStore.add(AlarmService.this, Scheduler.TIMES[idx], idx, null); } finish(); } } };
+    final Runnable timeout = new Runnable(){ public void run(){ if(active){ if(!test && !Scheduler.remindOnly(AlarmService.this)){ if(meal >= 0){ if(stage == 1) LogStore.addMeal(AlarmService.this, Scheduler.mealTime(AlarmService.this, meal), Scheduler.MEAL_LOG[meal], null); } else if(rem < 0) LogStore.add(AlarmService.this, Scheduler.TIMES[idx], idx, null); } finish(); } } };
 
     final Runnable keepVol = new Runnable(){ public void run(){
         if (!active) return;
@@ -27,8 +27,8 @@ public class AlarmService extends Service {
         String act = in != null ? in.getAction() : null;
         if (in != null) { idx = in.getIntExtra("i", idx); test = in.getBooleanExtra("test", test); }
         if (in != null && act == null) { rem = in.getIntExtra("rem", -1); meal = in.getIntExtra("meal", -1); stage = in.getIntExtra("stage", 0); att = in.getIntExtra("att", 1); }
-        if ("OK".equals(act)) { if (active && !test) { LogStore.add(this, Scheduler.TIMES[idx], idx, true); Scheduler.resetAtt(this); } finish(); return START_NOT_STICKY; }
-        if ("NO".equals(act)) { if (active && !test) Scheduler.no(this, idx); finish(); return START_NOT_STICKY; }
+        if ("OK".equals(act)) { if (active && !test && !Scheduler.remindOnly(this)) { LogStore.add(this, Scheduler.TIMES[idx], idx, true); Scheduler.resetAtt(this); } finish(); return START_NOT_STICKY; }
+        if ("NO".equals(act)) { if (active && !test && !Scheduler.remindOnly(this)) Scheduler.no(this, idx); finish(); return START_NOT_STICKY; }
         if ("HUSH".equals(act)) { if (!active) { stopSelf(); return START_NOT_STICKY; } playing = false; h.removeCallbacks(speak); try { if (tts != null) tts.stop(); } catch (Exception e) {} return START_NOT_STICKY; }
         if ("DUCK".equals(act)) { if (!active) { stopSelf(); return START_NOT_STICKY; } vol = 0.1f; lastDuck = System.currentTimeMillis(); h.removeCallbacks(speak); try { if (tts != null) tts.stop(); } catch (Exception e) {} return START_NOT_STICKY; }
         if ("UNDUCK".equals(act)) { if (!active) { stopSelf(); return START_NOT_STICKY; } vol = 1f; h.removeCallbacks(speak); h.postDelayed(speak, Math.max(1000L, 20000L - (System.currentTimeMillis() - lastDuck))); return START_NOT_STICKY; }
@@ -71,7 +71,7 @@ public class AlarmService extends Service {
         try {
             Bundle b = new Bundle();
             b.putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_ALARM);
-            tts.speak(meal >= 0 ? (stage == 0 ? Scheduler.MEAL_WAKE[meal] : Scheduler.MEAL_Q[meal]) : rem >= 0 ? Scheduler.remMsg(this, rem) : "Bora, Lourdinha! Tomar o remédio da bolsa " + Scheduler.NAMES[idx] + "!", TextToSpeech.QUEUE_FLUSH, b, "lourdinha");
+            tts.speak(meal >= 0 ? (stage == 0 ? Scheduler.MEAL_WAKE[meal] : Scheduler.MEAL_Q[meal]) : rem >= 0 ? Scheduler.remMsg(this, rem) : Scheduler.remindOnly(this) ? "Lembrete: hora do remédio da Lourdinha, bolsa " + Scheduler.NAMES[idx] + "." : "Bora, Lourdinha! Tomar o remédio da bolsa " + Scheduler.NAMES[idx] + "!", TextToSpeech.QUEUE_FLUSH, b, "lourdinha");
         } catch (Exception e) {}
     }
 
@@ -147,7 +147,7 @@ public class AlarmService extends Service {
         if (r || (ml && stage == 0)) open.putExtra("stopAlarm", true);
         PendingIntent pi = PendingIntent.getActivity(this, ml ? 700 + meal * 10 + stage : (r ? 350 : 300 + idx), open, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         String title = ml ? (stage == 0 ? "Hora do " + Scheduler.MEAL_NAME[meal] : "Você já fez: " + Scheduler.MEAL_NAME[meal] + "?")
-                : (r ? Scheduler.remTitle(this, rem) : "Hora do remédio! Bolsa " + Scheduler.NAMES[idx].toUpperCase());
+                : (r ? Scheduler.remTitle(this, rem) : (Scheduler.remindOnly(this) ? "Lembrete: remédio da Lourdinha! Bolsa " : "Hora do remédio! Bolsa ") + Scheduler.NAMES[idx].toUpperCase());
         String text = ml ? (stage == 0 ? Scheduler.MEAL_WAKE[meal] : Scheduler.MEAL_Q[meal])
                 : (r ? Scheduler.remMsg(this, rem) : "Toque para ver os remédios");
         Notification.Builder b = Build.VERSION.SDK_INT >= 26 ? new Notification.Builder(this, CH) : new Notification.Builder(this);

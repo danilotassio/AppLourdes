@@ -110,6 +110,11 @@ public class MainActivity extends Activity {
             if (!ok && att < 2) Scheduler.mealQ(MainActivity.this, m, att + 1, testFlag ? 10000L : 25 * 60 * 1000L, testFlag);
             startService(new Intent(MainActivity.this, AlarmService.class).setAction("STOP"));
         }
+        @JavascriptInterface public void setRemind(boolean on){
+            LogStore.sp(MainActivity.this).edit().putBoolean("remind", on).apply();
+            if (on) Scheduler.scheduleAll(MainActivity.this);
+        }
+        @JavascriptInterface public boolean getRemind(){ return LogStore.sp(MainActivity.this).getBoolean("remind", false); }
         @JavascriptInterface public void setMeals(boolean on){
             LogStore.sp(MainActivity.this).edit().putBoolean("meals", on).apply();
             if (on) { for (int m = 0; m < Scheduler.MEAL_TIME.length; m++) { try { Scheduler.scheduleMeal(MainActivity.this, m); } catch (Throwable e) {} } }

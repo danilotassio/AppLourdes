@@ -114,8 +114,6 @@ body.mL #lnav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;backg
 @keyframes pisca{0%,100%{opacity:1}50%{opacity:.62}}
 #outcard,#estbox{animation:pisca 1.3s ease-in-out infinite;box-shadow:0 0 12px 4px var(--g)}
 #outcard.quieto,#estbox.quieto,#sintcard.quieto{animation:none;box-shadow:none}
-body.dim #main>.card:not(.bk),body.dim #main>.row,body.dim #main>#now,body.dim #main>#foot{opacity:.4}
-#main>.bk{position:relative;z-index:5}
 #outcard,#estbox{--g:rgba(197,34,31,.85)}
 #sintcard{--g:rgba(67,160,71,.85)}
 @media (prefers-reduced-motion:reduce){#outcard,#estbox,#sintcard{animation:none}}
@@ -238,7 +236,13 @@ body.dim #main>.card:not(.bk),body.dim #main>.row,body.dim #main>#now,body.dim #
 #confirm .box,#warn .box{background:#fff;border-radius:20px;padding:24px;width:100%;text-align:center}
 #confirm .q,#warn .q{font-size:34px;font-weight:bold;margin-bottom:6px}
 #gear{background:none;color:#fff;font-size:26px;padding:0 8px;flex:none}
-.ov{position:fixed;left:0;top:0;right:0;bottom:0;overflow:auto;padding:14px;z-index:50}
+.ov{position:fixed;left:0;top:0;right:0;bottom:0;overflow:auto;padding:14px;z-index:2147483000;box-sizing:border-box;visibility:visible!important;opacity:1!important;background-color:#fff}
+body.alarm #top,body.alarm #lnav,body.alarm #main>*:not(#now){visibility:hidden!important}
+body.alarm #lnav{display:none!important}
+.ov .medrow{display:flex;flex-wrap:wrap;align-items:center;background:#fff;color:#222;border:3px solid rgba(0,0,0,.28);border-radius:18px;padding:12px;margin:12px 0;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.ov .medrow .med{flex:1;min-width:0}
+.ov .medrow .mb{flex-direction:row;width:100%;margin:10px 0 0}
+.ov .medrow .mb button{flex:1}
 .spk{background:#1F3864;color:#fff;font-size:26px;padding:6px 12px;border-radius:12px;flex:none;margin-right:8px}
 .medrow{display:flex;align-items:center;margin:12px 0}
 .mb{display:flex;flex-direction:column;gap:6px;flex:none;margin-left:8px}
@@ -247,6 +251,7 @@ body.dim #main>.card:not(.bk),body.dim #main>.row,body.dim #main>#now,body.dim #
 .nt{background:#f9ab00;color:#3b2f00!important}
 .sel{outline:4px solid #1F3864;outline-offset:1px}
 .medrow.out{background:#ffd6d6;border:3px solid #c5221f;border-radius:12px;padding:6px}
+.ov .medrow.out{background:#ffd6d6;border-color:#c5221f;border-radius:18px;padding:12px}
 .ac{background:#c5221f}
 #next{display:flex;gap:8px}
 .dg{flex:1;border:2px solid #999;border-radius:12px;padding:8px;background:#fafafa;min-width:0}
@@ -719,6 +724,7 @@ function render(){
     h+='<div class="card" style="background:#fff"><div class="medrow" style="margin:0"><button class="spk" id="spkidle">🔊</button><div class="sub" id="idletxt" style="flex:1;margin:0;font-weight:bold">'+IDLE_NOW+'</div></div></div>';
   }
   $("now").innerHTML=h;
+  document.body.classList.toggle("alarm",!!(pending||mealPending));
   if(mealPending)wireMeal();
   if($("spkidle"))$("spkidle").onclick=function(){dizer(IDLE_SAY)};
   if(pending){var ms=medsOf(pending.p);Array.prototype.forEach.call(document.querySelectorAll("#now .spk[data-k]"),function(b){b.onclick=function(){openMed(+b.dataset.k)}})}
@@ -1247,7 +1253,7 @@ function gpShow(){
 }
 $("gpok").onclick=function(){silenciar();gpI++;gpShow()};
 var gpLast=0;
-function dimUpd(){var on=0;["outcard","estbox"].forEach(function(id){var e=$(id);if(!e)return;var b=e.style.display!=="none"&&!e.classList.contains("quieto")&&e.offsetParent!==null;e.classList.toggle("bk",b);if(b)on=1});document.body.classList.toggle("dim",!!on)}
+function dimUpd(){}
 setInterval(dimUpd,400);
 function buyText(){var a=outList().map(shortName).concat(estLow().map(function(x){return shortName(x.k)}));return a.filter(function(v,i){return a.indexOf(v)===i}).join(", ")}
 var lastSt="",lastPush=0;

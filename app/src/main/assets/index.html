@@ -79,7 +79,7 @@ body.mL #lnav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;backg
 
 #callbtn{background:#e0489e;color:#fff;flex:1;display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:bold;padding:12px;border-radius:12px;text-align:center}
 #callbtn{line-height:21px}#callbtn .spk{margin:0;flex:none;font-size:16px;line-height:21px;padding:0 8px;border-radius:8px}#copy{line-height:21px}
-#medm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:120;align-items:center;justify-content:center;padding:14px}
+#medm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:2147483100;align-items:center;justify-content:center;padding:14px}
 #medm .box{position:relative;background:#fff;border-radius:22px;padding:16px;width:100%;max-width:520px;max-height:94vh;overflow:auto;text-align:center}
 #medx{position:absolute;top:8px;right:8px;width:44px;height:44px;border:0;border-radius:50%;background:#eee;color:#222;font-size:24px;font-weight:800;line-height:1;padding:0;z-index:2}
 #medimg{cursor:zoom-in;display:block;width:100%;max-height:42vh;object-fit:contain;border-radius:16px;background:#f3f4f6;margin:34px 0 10px}
@@ -89,7 +89,7 @@ body.mL #lnav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;backg
 #medok{flex:none;border:0;border-radius:14px;padding:14px 18px;font-size:20px;font-weight:800;color:#fff;background:#1F3864}
 #medm .mb3{display:flex;gap:8px}#medm .mb3 button{flex:1;border:0;border-radius:14px;padding:16px 4px;font-size:18px;font-weight:800;color:#fff}
 .phrow{display:flex;align-items:center;gap:8px;margin-top:8px}.phrow img{width:56px;height:56px;object-fit:cover;border-radius:10px;border:1px solid #ccc}.phrow .ph0{width:56px;height:56px;border-radius:10px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:26px}
-#zoomv{display:none;position:fixed;inset:0;background:#000;z-index:130;overflow:hidden;touch-action:none}
+#zoomv{display:none;position:fixed;inset:0;background:#000;z-index:2147483200;overflow:hidden;touch-action:none}
 #zoomv img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:contain;transform-origin:center center;will-change:transform;user-select:none;-webkit-user-drag:none}
 #zoomx{position:absolute;top:12px;right:12px;width:48px;height:48px;border:0;border-radius:50%;background:rgba(255,255,255,.9);font-size:26px;font-weight:800;z-index:2;padding:0}
 #zoomh{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#fff;font-size:14px;opacity:.8;pointer-events:none}
@@ -237,7 +237,7 @@ body.mL #lnav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;backg
 #confirm .q,#warn .q{font-size:34px;font-weight:bold;margin-bottom:6px}
 #gear{background:none;color:#fff;font-size:26px;padding:0 8px;flex:none}
 .ov{position:fixed;left:0;top:0;right:0;bottom:0;overflow:auto;padding:14px;z-index:2147483000;box-sizing:border-box;visibility:visible!important;opacity:1!important;background-color:#fff}
-body.alarm #top,body.alarm #lnav,body.alarm #main>*:not(#now){visibility:hidden!important}
+body.alarm #top,body.alarm #lnav,body.alarm #main>*:not(#now):not(#medm):not(#zoomv){visibility:hidden!important}
 body.alarm #lnav{display:none!important}
 .ov .medrow{display:flex;flex-wrap:wrap;align-items:center;background:#fff;color:#222;border:3px solid rgba(0,0,0,.28);border-radius:18px;padding:12px;margin:12px 0;box-shadow:0 4px 12px rgba(0,0,0,.18)}
 .ov .medrow .med{flex:1;min-width:0}
@@ -1253,6 +1253,7 @@ function gpShow(){
 }
 $("gpok").onclick=function(){silenciar();gpI++;gpShow()};
 var gpLast=0;
+setInterval(function(){try{if(!(pending||mealPending))return;var n=$("now"),o=n&&n.querySelector(".ov");if(!o||o.offsetWidth<50||o.offsetHeight<50)render()}catch(e){}},2000);
 function dimUpd(){}
 setInterval(dimUpd,400);
 function buyText(){var a=outList().map(shortName).concat(estLow().map(function(x){return shortName(x.k)}));return a.filter(function(v,i){return a.indexOf(v)===i}).join(", ")}

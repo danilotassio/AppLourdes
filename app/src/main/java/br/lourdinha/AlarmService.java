@@ -30,7 +30,7 @@ public class AlarmService extends Service {
         if ("OK".equals(act)) { if (active && !test) { LogStore.add(this, Scheduler.TIMES[idx], idx, true); Scheduler.resetAtt(this); } finish(); return START_NOT_STICKY; }
         if ("NO".equals(act)) { if (active && !test) Scheduler.no(this, idx); finish(); return START_NOT_STICKY; }
         if ("HUSH".equals(act)) { if (!active) { stopSelf(); return START_NOT_STICKY; } playing = false; h.removeCallbacks(speak); try { if (tts != null) tts.stop(); } catch (Exception e) {} return START_NOT_STICKY; }
-        if ("DUCK".equals(act)) { if (!active) { stopSelf(); return START_NOT_STICKY; } vol = 0.2f; lastDuck = System.currentTimeMillis(); h.removeCallbacks(speak); try { if (tts != null) tts.stop(); } catch (Exception e) {} return START_NOT_STICKY; }
+        if ("DUCK".equals(act)) { if (!active) { stopSelf(); return START_NOT_STICKY; } vol = 0.1f; lastDuck = System.currentTimeMillis(); h.removeCallbacks(speak); try { if (tts != null) tts.stop(); } catch (Exception e) {} return START_NOT_STICKY; }
         if ("UNDUCK".equals(act)) { if (!active) { stopSelf(); return START_NOT_STICKY; } vol = 1f; h.removeCallbacks(speak); h.postDelayed(speak, Math.max(1000L, 20000L - (System.currentTimeMillis() - lastDuck))); return START_NOT_STICKY; }
         if ("STOP".equals(act)) { finish(); return START_NOT_STICKY; }
         if (active) return START_NOT_STICKY;

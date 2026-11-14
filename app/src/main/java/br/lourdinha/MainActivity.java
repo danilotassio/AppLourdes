@@ -8,6 +8,7 @@ import android.provider.Settings;
 import android.view.WindowManager;
 import android.webkit.*;
 public class MainActivity extends Activity {
+    ValueCallback<Uri[]> fcb;
     String pendingBackup = null;
     WebView web; android.speech.tts.TextToSpeech tts; boolean ttsOk = false;
     Uri pendingCall;
@@ -181,6 +182,8 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void askLoc(String id){ Push.locReq(MainActivity.this, id); }
         @JavascriptInterface public void careCall(String nome, String ref, String txt){ Push.care(MainActivity.this, nome, ref, txt); }
         @JavascriptInterface public void notifyCare(String msg){ try { Push.send(MainActivity.this, msg); } catch (Throwable e) {} }
+        @JavascriptInterface public void fetchCfg(){ new Thread(() -> Push.cfgFetchNow(MainActivity.this)).start(); }
+        @JavascriptInterface public String fetchCfgNow(){ Push.cfgFetchNow(MainActivity.this); return LogStore.sp(MainActivity.this).getString("cfg", "{}"); }
         @JavascriptInterface public String getCfg(){ return LogStore.sp(MainActivity.this).getString("cfg", "{}"); }
         @JavascriptInterface public void setCfg(String json){
             try { new org.json.JSONObject(json); LogStore.sp(MainActivity.this).edit().putString("cfg", json).apply(); Push.cfgSet(MainActivity.this, json); } catch (Throwable e) {}
@@ -320,7 +323,14 @@ public class MainActivity extends Activity {
         WebSettings ws = web.getSettings();
         ws.setJavaScriptEnabled(true); ws.setDomStorageEnabled(true);
         ws.setMediaPlaybackRequiresUserGesture(false);
-        web.setWebChromeClient(new WebChromeClient());
+        web.setWebChromeClient(new WebChromeClient(){
+            @Override public boolean onShowFileChooser(WebView w, ValueCallback<Uri[]> cb, FileChooserParams fp){
+                if (fcb != null) { try { fcb.onReceiveValue(null); } catch (Exception e) {} }
+                fcb = cb;
+                try { startActivityForResult(fp.createIntent(), 77); return true; }
+                catch (Exception e) { fcb = null; return false; }
+            }
+        });
         web.addJavascriptInterface(new Bridge(), "Android");
         setContentView(web);
         try { tts = new android.speech.tts.TextToSpeech(this, st -> { try { if (st == android.speech.tts.TextToSpeech.SUCCESS && tts != null) { Voice.apply(this, tts);
@@ -348,6 +358,7 @@ public class MainActivity extends Activity {
     }
     @Override protected void onActivityResult(int rc, int res, Intent data){
         super.onActivityResult(rc, res, data);
+        if (rc == 77) { if (fcb != null) { try { fcb.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(res, data)); } catch (Exception e) { try { fcb.onReceiveValue(null); } catch (Exception e2) {} } fcb = null; } return; }
         if (rc == 79) {
             boolean ok = false;
             try { if (res == RESULT_OK && data != null && data.getData() != null && pendingBackup != null) { java.io.OutputStream os = getContentResolver().openOutputStream(data.getData()); os.write(pendingBackup.getBytes("UTF-8")); os.close(); ok = true; } } catch (Throwable e) {}

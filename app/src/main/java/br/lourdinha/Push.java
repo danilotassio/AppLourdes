@@ -96,7 +96,7 @@ public class Push {
     /** Lourdinha: busca as definicoes secretas e guarda em "cfg" (bloqueia; usar fora da thread principal). */
     public static boolean cfgFetchNow(Context c){
         final String code = code(c);
-        if (!valid(code) || !"lourdinha".equals(mode(c))) return false;
+        if (!valid(code) || mode(c).isEmpty()) return false;
         try {
             HttpURLConnection h = (HttpURLConnection) new URL(BASE + "/cfgget").openConnection();
             h.setRequestMethod("POST"); h.setConnectTimeout(8000); h.setReadTimeout(8000); h.setDoOutput(true);

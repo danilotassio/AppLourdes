@@ -69,6 +69,7 @@ body.mL #next .dg{border:0}
 body.mL #next .pill{border-radius:12px;padding:6px 12px;font-size:17px}
 body.mL #stbtn,body.mL #callbtn{border-radius:20px;box-shadow:0 6px 14px rgba(0,0,0,.14)}
 body.mL #callbtn{background:linear-gradient(135deg,#ec4899,#db2777);padding:16px;font-size:18px}
+body.mL #nextbtn{display:none!important}
 #lnav{display:none}
 body.mL #lnav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-radius:26px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:8px 4px;z-index:6}
 #lnav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:800;color:#6b7280;padding:6px 0;border-radius:18px}
@@ -77,6 +78,20 @@ body.mL #lnav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;backg
 
 #callbtn{background:#e0489e;color:#fff;flex:1;display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:bold;padding:12px;border-radius:12px;text-align:center}
 #callbtn{line-height:21px}#callbtn .spk{margin:0;flex:none;font-size:16px;line-height:21px;padding:0 8px;border-radius:8px}#copy{line-height:21px}
+#medm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:120;align-items:center;justify-content:center;padding:14px}
+#medm .box{position:relative;background:#fff;border-radius:22px;padding:16px;width:100%;max-width:520px;max-height:94vh;overflow:auto;text-align:center}
+#medx{position:absolute;top:8px;right:8px;width:44px;height:44px;border:0;border-radius:50%;background:#eee;color:#222;font-size:24px;font-weight:800;line-height:1;padding:0;z-index:2}
+#medimg{cursor:zoom-in;display:block;width:100%;max-height:42vh;object-fit:contain;border-radius:16px;background:#f3f4f6;margin:34px 0 10px}
+#medph{display:none;font-size:90px;padding:20px 0}
+#medm .mtop{display:flex;align-items:center;gap:8px;margin:6px 0 12px;text-align:left}
+#medtxt{flex:1;font-size:21px;font-weight:700;color:#1f2937;line-height:1.25}
+#medok{flex:none;border:0;border-radius:14px;padding:14px 18px;font-size:20px;font-weight:800;color:#fff;background:#1F3864}
+#medm .mb3{display:flex;gap:8px}#medm .mb3 button{flex:1;border:0;border-radius:14px;padding:16px 4px;font-size:18px;font-weight:800;color:#fff}
+.phrow{display:flex;align-items:center;gap:8px;margin-top:8px}.phrow img{width:56px;height:56px;object-fit:cover;border-radius:10px;border:1px solid #ccc}.phrow .ph0{width:56px;height:56px;border-radius:10px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:26px}
+#zoomv{display:none;position:fixed;inset:0;background:#000;z-index:130;overflow:hidden;touch-action:none}
+#zoomv img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:contain;transform-origin:center center;will-change:transform;user-select:none;-webkit-user-drag:none}
+#zoomx{position:absolute;top:12px;right:12px;width:48px;height:48px;border:0;border-radius:50%;background:rgba(255,255,255,.9);font-size:26px;font-weight:800;z-index:2;padding:0}
+#zoomh{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#fff;font-size:14px;opacity:.8;pointer-events:none}
 #outm,#estm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;align-items:center;justify-content:center;padding:14px}
 #outm .box{background:#fff;border-radius:20px;padding:20px;width:100%;max-height:92vh;overflow:auto;border:4px solid #c5221f}
 #outm .it{font-size:26px;font-weight:bold;color:#c5221f;margin:6px 0}
@@ -98,6 +113,9 @@ body.mL #lnav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;backg
 @keyframes pisca{0%,100%{box-shadow:0 0 0 0 var(--g);opacity:1}50%{box-shadow:0 0 16px 6px var(--g);opacity:.62}}
 #outcard,#estbox,#sintcard{animation:pisca 1.3s ease-in-out infinite}
 #outcard.quieto,#estbox.quieto,#sintcard.quieto{animation:none}
+body.dim #main>*:not(.bk),body.dim #hero,body.dim #lnav{filter:blur(3px);opacity:.45;transition:filter .35s,opacity .35s}
+#main>*,#hero,#lnav{transition:filter .35s,opacity .35s}
+#main>.bk{position:relative;z-index:5}
 #outcard,#estbox{--g:rgba(197,34,31,.85)}
 #sintcard{--g:rgba(67,160,71,.85)}
 @media (prefers-reduced-motion:reduce){#outcard,#estbox,#sintcard{animation:none}}
@@ -134,9 +152,9 @@ body.mL #lnav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;backg
 #csyncov .scarw{position:absolute;left:0;top:-30px;width:96px;will-change:transform}
 #csyncov .scarw svg{display:block}
 #csyncov .whl{transform-box:fill-box;transform-origin:center;animation:giro .5s linear infinite}
-#csyncov .sman{position:absolute;left:34px;top:-34px;width:34px;height:34px;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;font-weight:800;font-size:17px;line-height:30px;text-align:center}
+#csyncov .sman{position:absolute;left:26px;top:-52px;width:52px;height:52px;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;font-weight:800;font-size:17px;line-height:48px;text-align:center}
 #csyncov .sman img{width:100%;height:100%;object-fit:cover;position:absolute;left:0;top:0}
-#csyncov .sbal{display:none;position:absolute;bottom:100%;left:50%;margin-bottom:46px;width:190px;transform:translateX(-50%);background:#fff;border:2.5px solid #1f2937;border-radius:16px;padding:8px 10px;font:700 13px/1.25 "Comic Sans MS","Segoe UI",sans-serif;color:#1f2937;text-align:center;z-index:3;box-shadow:3px 3px 0 #1f2937}
+#csyncov .sbal{display:none;position:absolute;bottom:100%;left:50%;margin-bottom:64px;width:250px;transform:translateX(-50%);background:#fff;border:2.5px solid #1f2937;border-radius:16px;padding:8px 10px;font:700 17px/1.25 "Comic Sans MS","Segoe UI",sans-serif;color:#1f2937;text-align:center;z-index:3;box-shadow:3px 3px 0 #1f2937}
 #csyncov .sbal:after{content:"";position:absolute;left:50%;bottom:-12px;margin-left:-8px;border:8px solid transparent;border-top:10px solid #1f2937;border-bottom:0}
 #csyncov.stop .whl{animation-play-state:paused}
 #csyncov .spc{margin-top:16px;font-size:15px;color:#6b7280;font-weight:700}
@@ -181,6 +199,10 @@ body.mL #lnav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;backg
 #csec .stabs{display:flex;gap:8px;margin:14px 0 6px}#csec .stabs button{flex:1;border:2px solid #ddd6fe;background:#faf5ff;color:#6d28d9;font-weight:700;font-size:15px;border-radius:14px;padding:11px 4px}#csec .stabs button.on{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border-color:transparent}
 #csec .pc{border:2px solid #ede9fe;border-radius:18px;padding:12px 14px;margin:10px 0;background:#fff}#csec .pc b{font-size:18px;color:#4c1d95}#csec .pc .ln{font-size:15px;color:#475569;margin-top:4px}
 #csec .pc button.lb{width:100%;margin-top:10px;border:0;border-radius:12px;padding:12px;font-size:15px;font-weight:700;color:#fff;background:linear-gradient(135deg,#7c3aed,#db2777)}
+#lset .lg{background:#fff;border-radius:16px;padding:12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.06)}#lset .lg>b{display:block;margin-bottom:6px;color:#4c1d95}
+#lset .lf2{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0;font-size:14px}#lset input[type=date],#lset input[type=time],#lset input[type=number],#lset input[type=tel],#lset select{font-size:15px;padding:6px;border:1px solid #cbd5e1;border-radius:10px;max-width:150px}
+#lset .lrow{display:flex;gap:6px;align-items:center;justify-content:space-between;margin:6px 0;font-size:14px}#lset .lrow button{border:0;border-radius:10px;padding:6px 10px;background:#ede9fe;color:#4c1d95;font-weight:700}
+#lset .lnote{font-size:12px;color:#64748b;margin:4px 0}#lset .lb2{border:0;border-radius:12px;padding:9px 12px;background:#ede9fe;color:#4c1d95;font-weight:700;margin:6px 0;width:100%}#lset .lrm{background:#c5221f;color:#fff}#lset .lmed{border-top:1px solid #f1eef9;padding:8px 0}#lset .lm2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}#lset .lm2 label{display:flex;flex-direction:column;font-size:12px;color:#64748b}#lset .lm2 input,#lset .lm2 select{max-width:none;width:100%}
 #cdraw{position:fixed;left:0;top:0;width:100%;height:100%;z-index:50;pointer-events:none}
 #gpop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:103;align-items:center;justify-content:center;padding:18px}
 #gpop .box{background:#fff;border-radius:22px;padding:20px;width:100%;border:5px solid var(--gc,#c5221f);text-align:center}
@@ -209,14 +231,18 @@ body.mL #lnav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;backg
 .spk{background:#1F3864;color:#fff;font-size:26px;padding:6px 12px;border-radius:12px;flex:none;margin-right:8px}
 .medrow{display:flex;align-items:center;margin:12px 0}
 .mb{display:flex;flex-direction:column;gap:6px;flex:none;margin-left:8px}
-.tk,.ac{font-size:20px;padding:10px 12px;border-radius:12px;flex:none}
-.tk{background:#f5c400;color:#111}
-.tk.on{background:#1e8e3e;color:#fff}
+.tk,.nt,.ac{font-size:16px;padding:11px 8px;border-radius:12px;flex:none;border:0;font-weight:800;color:#fff;white-space:nowrap}
+.tk{background:#1e8e3e}
+.nt{background:#f9ab00;color:#3b2f00!important}
+.sel{outline:4px solid #1F3864;outline-offset:1px}
 .medrow.out{background:#ffd6d6;border:3px solid #c5221f;border-radius:12px;padding:6px}
-.ac{background:#e0e0e0;color:#111}
-.ac.on{background:#c5221f;color:#fff}
+.ac{background:#c5221f}
 #next{display:flex;gap:8px}
 .dg{flex:1;border:2px solid #999;border-radius:12px;padding:8px;background:#fafafa;min-width:0}
+#next{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+#next .dg{flex:0 0 100%;scroll-snap-align:start;box-sizing:border-box}
+#next .swh{font-size:12px;font-weight:700;color:#7c3aed}
+#next::-webkit-scrollbar{height:6px}#next::-webkit-scrollbar-thumb{background:#c4b5fd;border-radius:6px}
 .dg h4{margin:0 0 6px;font-size:16px;text-align:center;color:#1F3864}
 .ni{display:flex;align-items:center;justify-content:space-between;margin:5px 0;font-size:16px}
 .ni.past{opacity:.6}
@@ -243,6 +269,8 @@ body.mL #lnav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;backg
 <div id="main">
   <div id="hero"></div>
   <div id="confirm"><div class="box"><div class="medrow" style="justify-content:center"><div class="q" style="margin:0">Ligar para Anne Filha?</div><button class="spk" id="spkc" style="margin:0 0 0 10px">🔊</button></div><div class="btns"><button id="callyes" style="background:#1e8e3e">✅ Sim</button><button id="callno" style="background:#c5221f">❌ Não</button></div></div></div>
+  <div id="medm"><div class="box"><button id="medx" aria-label="Fechar">✕</button><img id="medimg" alt=""><div id="medph">💊</div><div class="mtop"><button class="spk" id="medspk" style="margin:0">🔊</button><div id="medtxt"></div><button id="medok">OK</button></div><div class="mb3"><button id="medt" style="background:#1e8e3e">✅ Tomei</button><button id="medn" style="background:#f9ab00;color:#3b2f00">⏳ Não tomei</button><button id="meda" style="background:#c5221f">⚠ Acabou</button></div></div></div>
+  <div id="zoomv"><button id="zoomx" aria-label="Fechar">✕</button><img id="zoomi" alt=""><div id="zoomh">Pince para ampliar · toque duas vezes para aproximar</div></div>
   <div id="outm"><div class="box"><b style="font-size:26px;color:#c5221f">⚠ Remédios que acabaram</b><div id="outml" style="margin:10px 0"></div><div style="font-size:19px;margin-bottom:12px">Para compartilhar a lista de remédios para comprar, aperte o botão verde. Ou aperte o OK azul para apenas sair.</div><div class="btns"><button id="outsh" style="background:#1e8e3e;font-size:20px;padding:16px 6px"><svg class="wa" viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.8 2 6.8L3.5 29l6.6-1.7c1.9 1 4 1.5 6 1.5 7.2 0 13-5.7 13-12.8S23.200 3 16 3z"/><path fill="#25D366" d="M16 5.200c-6 0-10.800 4.700-10.800 10.600 0 2.100.6 4 1.700 5.700l.3.5-1 3.700 3.800-1 .5.3c1.600 1 3.500 1.500 5.500 1.500 6 0 10.800-4.700 10.800-10.600S22 5.200 16 5.200z"/><path fill="#fff" d="M21.600 18.900c-.3-.2-1.800-.9-2.100-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.200-.2.2-.4.2-.7.1-1.800-.9-3-1.600-4.200-3.600-.3-.5.3-.5.9-1.600.1-.2 0-.4 0-.5-.1-.2-.7-1.700-1-2.300-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1.100 1.100-1.100 2.600s1.100 3 1.300 3.200c.2.2 2.200 3.400 5.300 4.700 2 .8 2.700.9 3.700.7.6-.1 1.800-.7 2.100-1.500.3-.7.3-1.300.2-1.500-.1-.1-.3-.2-.6-.4z"/></svg>Compartilhar lista (WhatsApp)</button><button id="outok" style="background:#1F3864;font-size:24px;padding:16px 6px;flex:.5">OK</button></div></div></div>
 <div id="stm"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b style="font-size:23px;color:#00595f">📦 Estoque de remédios</b><button class="small" id="stx" style="flex:none">✖ Fechar</button></div><div id="stsum" style="font-size:16px;color:#333;margin-top:6px"></div><div id="stl"></div><div class="btns" style="margin-top:0"><button id="stspk" style="background:#1F3864;font-size:20px;padding:14px 6px;flex:.45">🔊</button><button id="stok" style="background:#00838f;font-size:22px;padding:14px 6px">OK</button></div></div></div>
 <div id="modem"><div style="text-align:center;font-size:28px;font-weight:bold;color:#c2185b;margin-top:30px">Como este celular será usado?</div><button class="mb" id="mdl" style="background:#e0489e">💊 Celular da Lourdinha</button><button class="mb" id="mdc" style="background:#1F3864">👀 Celular do cuidador</button></div>
@@ -256,9 +284,11 @@ body.mL #lnav{display:flex;position:fixed;left:10px;right:10px;bottom:10px;backg
 <div class="sec">Avisos que quero receber</div><div id="cflt"></div>
 <button id="ccl" class="sb gh">🗑 Limpar lista de avisos</button><button id="cmd" class="sb" style="display:none">🔁 Trocar modo</button></div></div>
 <div id="csec"><div class="box"><div style="display:flex;align-items:center;justify-content:space-between"><h2>🔒 Definições secretas</h2><button id="csecx" class="sb gh">✕</button></div>
-<div class="stabs"><button id="st_loc" class="on">📍 Localização</button><button id="st_cui">👥 Cuidadores</button></div>
+<div class="stabs"><button id="st_loc" class="on">📍 Localização</button><button id="st_cui">👥 Cuidadores</button><button id="st_set">⚙ Lourdinha</button><button id="st_mod">🔁 Modo</button></div>
 <div id="sp_loc"><label class="sw"><span>📍 Enviar localização junto com o status (bem, enjoo, dor e tontura)</span><input type="checkbox" id="slocal"></label>
 <div style="font-size:13px;color:#64748b;margin-top:8px">Vale para o celular da Lourdinha, que pedirá a permissão de localização na próxima vez que o app for aberto. Só envia a posição quando ela tocar em um status.</div></div>
+<div id="sp_set" style="display:none"><div id="lset"></div></div>
+<div id="sp_mod" style="display:none"><div style="font-size:14px;color:#475569;margin-bottom:10px">Escolha de novo se este celular é o da Lourdinha ou de um cuidador.</div><button id="smod" class="sb" style="width:100%;background:#7c3aed;color:#fff;padding:14px;font-size:17px">🔁 Trocar modo do celular</button></div>
 <div id="sp_cui" style="display:none"><div id="plist"></div><div style="font-size:12.5px;color:#64748b;margin-top:10px">A localização mostrada é a última conhecida de cada celular, com a hora da atualização. "Consultar" pede uma atualização ao aparelho.</div></div></div></div>
 <canvas id="cdraw"></canvas>
 <div id="gpop"><div class="box"><div class="gt2" id="gpt"></div><div class="gm" id="gpm"></div><div id="gpsg" style="display:none"><div class="sgrid"><button data-k="bem" style="background:#1e8e3e"><span>😊 Bem</span><span class="spk sp" data-r="bem">🔊</span></button><button data-k="enjoo" style="background:#7a8b1f"><span>🤢 Enjoo</span><span class="spk sp" data-r="enjoo">🔊</span></button><button data-k="dor" style="background:#c5221f"><span>🤕 Dor</span><span class="spk sp" data-r="dor">🔊</span></button><button data-k="tontura" style="background:#f57c00"><span>😵 Tontura</span><span class="spk sp" data-r="tontura">🔊</span></button></div></div><div class="btns"><button id="gpspk" style="background:#1F3864;flex:.45;font-size:22px">🔊</button><button id="gpok" style="background:#1e8e3e;font-size:24px">OK</button></div></div></div>
@@ -450,7 +480,7 @@ $("admx").onclick=function(){$("adm").style.display="none";silenciar()};
 $("test").onclick=function(){if(NATIVE){Android.test();fire(POTS[0],true)}else fire(POTS[0],true)};
 function pvoices(){var a=speechSynthesis.getVoices().filter(function(v){return /pt[-_]BR/i.test(v.lang)});a.sort(function(x,y){return (y.localService?1:0)-(x.localService?1:0)||(/natural|neural|google|luciana|francisca/i.test(y.name)?1:0)-(/natural|neural|google|luciana|francisca/i.test(x.name)?1:0)});return a}
 function mkU(t){var u=new SpeechSynthesisUtterance(t);u.lang="pt-BR";u.pitch=1;u.rate=.9;try{var vs=pvoices();if(vs.length)u.voice=vs[(+ls("voice")||0)%vs.length]}catch(e){}return u}
-function dizer(t){if(NATIVE){Android.speak(t)}else{try{musicVol=.2;lastDz=Date.now();var u=mkU(t);u.onend=u.onerror=function(){musicVol=1;lastDz=Date.now()};speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}}
+function dizer(t){if(NATIVE){Android.speak(t)}else{try{musicVol=.1;lastDz=Date.now();var u=mkU(t);u.onend=u.onerror=function(){musicVol=1;lastDz=Date.now()};speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}}
 function medSay(m){var a=m.split(" — ");var n=a[0].replace(/\s+\d+([.,]\d+)?\s*mg$/i,"");var q=(a[1]||"").replace(/\(.*?\)/g,"");if(/lactulona/i.test(n))q+=", um copinho e meio, Lourdinha";return n+", "+q}
 function shortName(m){return m.split(" — ")[0].replace(/\s+\d+([.,]\d+)?\s*mg$/i,"")}
 function medsOf(p){return slotMeds(p)}
@@ -489,10 +519,48 @@ $("shout").onclick=function(){
   try{window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}catch(e){}
 };
 $("spkout").onclick=function(){var ks=Object.keys(getOut()).map(shortName);dizer("Remédios que acabaram: "+ks.join(", ")+".")};
+function getImgs(){try{return JSON.parse(ls("rxImg")||"{}")}catch(e){return{}}}
+var medIdx=-1,medAdd=false;
+function openMed(k){
+  if(!pending)return;var ms=medsOf(pending.p),m=ms[k];if(!m)return;medIdx=k;medAdd=false;
+  var im=getImgs()[shortName(m)];
+  $("medimg").style.display=im?"block":"none";$("medph").style.display=im?"none":"block";if(im)$("medimg").src=im;
+  $("medtxt").textContent=m;$("medm").style.display="flex";
+}
+function closeMed(){$("medm").style.display="none";medIdx=-1;silenciar()}
+function medMark(v,k,list){
+  if(!pending||k<0)return;var ms=medsOf(pending.p),n=shortName(ms[k]);pending.tk=pending.tk||{};
+  var ox=getOut(),cur=pending.tk[k];
+  function sy(){ls("out",JSON.stringify(ox));renderOut();try{syncBuy();syncState(true)}catch(e){}}
+  if(list&&cur===v)v="n";
+  if(v==="n"){if(cur==="a"){delete ox[n];sy()}delete pending.tk[k]}
+  else if(v==="a"){pending.tk[k]="a";if(!ox[n]){ox[n]=1;sy()}}
+  else{if(cur==="a"){delete ox[n];sy()}pending.tk[k]="t"}
+  paintMeds();if(!list)closeMed();
+}
+(function(){
+  var v=$("zoomv"),im=$("zoomi"),S=1,X=0,Y=0,d0=0,s0=1,px=0,py=0,x0=0,y0=0,lt=0;
+  function ap(){if(S<=1){S=1;X=0;Y=0}else{var mx=(S-1)*v.clientWidth/2,my=(S-1)*v.clientHeight/2;X=Math.max(-mx,Math.min(mx,X));Y=Math.max(-my,Math.min(my,Y))}im.style.transform="translate("+X+"px,"+Y+"px) scale("+S+")"}
+  function dist(t){return Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)}
+  window.openZoom=function(src){im.src=src;S=1;X=0;Y=0;ap();v.style.display="block"};
+  function close(){v.style.display="none"}
+  $("zoomx").onclick=close;
+  v.addEventListener("touchstart",function(e){var t=e.touches;if(t.length===2){d0=dist(t);s0=S}else if(t.length===1){px=t[0].clientX;py=t[0].clientY;x0=X;y0=Y;var n=Date.now();if(n-lt<300){S=S>1?1:2.5;ap();lt=0}else lt=n}},{passive:false});
+  v.addEventListener("touchmove",function(e){e.preventDefault();var t=e.touches;if(t.length===2&&d0){S=Math.max(1,Math.min(6,s0*dist(t)/d0));ap()}else if(t.length===1&&S>1){X=x0+t[0].clientX-px;Y=y0+t[0].clientY-py;ap()}},{passive:false});
+  v.addEventListener("touchend",function(e){if(e.touches.length<2)d0=0;if(e.touches.length===1){px=e.touches[0].clientX;py=e.touches[0].clientY;x0=X;y0=Y}});
+  v.addEventListener("wheel",function(e){e.preventDefault();S=Math.max(1,Math.min(6,S*(e.deltaY<0?1.2:1/1.2)));ap()},{passive:false});
+  v.addEventListener("dblclick",function(){S=S>1?1:2.5;ap()});
+  $("medimg").onclick=function(){if($("medimg").src)openZoom($("medimg").src)};
+})();
+$("medx").onclick=closeMed;$("medok").onclick=closeMed;
+$("medspk").onclick=function(){if(pending&&medIdx>=0)dizer(medSay(medsOf(pending.p)[medIdx]))};
+$("medt").onclick=function(){medMark("t",medIdx)};$("medn").onclick=function(){medMark("n",medIdx)};$("meda").onclick=function(){medMark("a",medIdx)};
+function imgSave(k,file,cb){var rd=new FileReader();rd.onload=function(){var im=new Image();im.onload=function(){var mx=520,sc=Math.min(1,mx/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+  var o=getImgs();o[k]=c.toDataURL("image/jpeg",.72);ls("rxImg",JSON.stringify(o));if(!getImgs()[k])aviso("Não deu para guardar a foto (sem espaço).");cb()};im.onerror=function(){aviso("Não consegui abrir essa foto.")};im.src=rd.result};rd.readAsDataURL(file)}
 function paintMeds(){
   var tk=pending.tk||{};
-  Array.prototype.forEach.call(document.querySelectorAll(".tk"),function(b){var on=tk[+b.dataset.k]==="t";b.className="tk"+(on?" on":"");b.textContent=on?"✅ Tomei":"Tomei"});
-  Array.prototype.forEach.call(document.querySelectorAll(".ac"),function(b){var on=tk[+b.dataset.k]==="a";b.className="ac"+(on?" on":"");b.parentNode.parentNode.className="medrow"+(on?" out":"");b.textContent=on?"❌ Acabou":"Acabou"});
+  Array.prototype.forEach.call(document.querySelectorAll(".tk"),function(b){var on=tk[+b.dataset.k]==="t";b.className="tk"+(on?" sel":"")});
+  Array.prototype.forEach.call(document.querySelectorAll(".ac"),function(b){var on=tk[+b.dataset.k]==="a";b.className="ac"+(on?" sel":"");b.parentNode.parentNode.className="medrow"+(on?" out":"")});
   if($("ok"))$("ok").style.opacity=missingMeds().length?".45":"1";
 }
 function nextInfo(){
@@ -539,7 +607,7 @@ var seqTok=0;
 function dizerSeq(parts){
   if(NATIVE){try{Android.speakSeq(JSON.stringify(parts))}catch(e){}return}
   try{
-    var tok=++seqTok,i=0;musicVol=.2;lastDz=Date.now();speechSynthesis.cancel();
+    var tok=++seqTok,i=0;musicVol=.1;lastDz=Date.now();speechSynthesis.cancel();
     (function next(){
       if(tok!==seqTok)return;
       if(i>=parts.length){musicVol=1;lastDz=Date.now();return}
@@ -632,7 +700,7 @@ function render(){
   if(mealPending){h+=mealHtml()}else if(pending){
     var p=pending.p;
     h+='<div class="ov" style="background:'+p.c+'"><div class="big">BOLSA '+p.n+'</div><div class="sub">'+p.t+(pending.test?" (teste)":"")+'</div>';
-    medsOf(p).forEach(function(m,k){h+='<div class="medrow"><button class="spk" data-k="'+k+'">🔊</button><div class="med" style="margin:0;flex:1">'+m+'</div><div class="mb"><button class="tk" data-k="'+k+'">Tomei</button><button class="ac" data-k="'+k+'">Acabou</button></div></div>'});
+    medsOf(p).forEach(function(m,k){h+='<div class="medrow"><button class="spk" data-k="'+k+'">🔊</button><div class="med" style="margin:0;flex:1">'+m+'</div><div class="mb"><button class="tk" data-k="'+k+'">✅ Tomei</button><button class="nt" data-k="'+k+'">⏳ Não tomei</button><button class="ac" data-k="'+k+'">⚠ Acabou</button></div></div>'});
     h+='<div class="btns"><button id="ok">✅ Tomei tudo</button><button id="no">❌ Não consegui</button></div></div>';
   }else{
     h+='<div class="card" style="background:#fff"><div class="medrow" style="margin:0"><button class="spk" id="spkidle">🔊</button><div class="sub" id="idletxt" style="flex:1;margin:0;font-weight:bold">'+IDLE_NOW+'</div></div></div>';
@@ -640,11 +708,9 @@ function render(){
   $("now").innerHTML=h;
   if(mealPending)wireMeal();
   if($("spkidle"))$("spkidle").onclick=function(){dizer(IDLE_SAY)};
-  if(pending){var ms=medsOf(pending.p);Array.prototype.forEach.call(document.querySelectorAll("#now .spk[data-k]"),function(b){b.onclick=function(){dizer(medSay(ms[+b.dataset.k]))}})}
+  if(pending){var ms=medsOf(pending.p);Array.prototype.forEach.call(document.querySelectorAll("#now .spk[data-k]"),function(b){b.onclick=function(){openMed(+b.dataset.k)}})}
   if(pending){
-    Array.prototype.forEach.call(document.querySelectorAll(".tk,.ac"),function(b){b.onclick=function(){
-      pending.tk=pending.tk||{};var k=+b.dataset.k,v=b.classList.contains("tk")?"t":"a";
-      if(pending.tk[k]===v)delete pending.tk[k];else pending.tk[k]=v;paintMeds()}});
+    Array.prototype.forEach.call(document.querySelectorAll("#now .tk,#now .nt,#now .ac"),function(b){b.onclick=function(){medMark(b.classList.contains("tk")?"t":b.classList.contains("nt")?"n":"a",+b.dataset.k,true)}});
     paintMeds();
   }
   if($("ok")){$("ok").onclick=function(){var mi=missingMeds();if(mi.length)warnMeds(mi);else answer(true)};$("no").onclick=function(){answer(false)}}
@@ -695,11 +761,16 @@ function renderNext(){
     var st=0;data.forEach(function(l){if(l.d===ds&&l.t===x.p.t&&l.ok===true){st=(l.m&&l.m.some(function(m){return !m.ok&&!m.a}))?2:1}});
     g.items.push({p:x.p,past:x.d<=now,st:st,ts:x.d.getTime()});
   });
-  $("next").innerHTML=groups.map(function(g){
-    return '<div class="dg"><h4>'+g.wd+'<br>'+g.ds+'</h4>'+g.items.map(function(it){
+  // painel: hoje (padrão) e amanhã, deslizando na horizontal
+  var nx0=$("next"),sl0=nx0.scrollLeft,dg=[];
+  [0,1].forEach(function(o){var dd=new Date(now.getFullYear(),now.getMonth(),now.getDate()+o),ds=dstr(dd),g={ds:ds,wd:(o?"Amanhã · ":"Hoje · ")+DIAS[dd.getDay()],items:[]};
+    occ.forEach(function(x){if(dstr(x.d)!==ds)return;var st=0;data.forEach(function(l){if(l.d===ds&&l.t===x.p.t&&l.ok===true){st=(l.m&&l.m.some(function(m){return !m.ok&&!m.a}))?2:1}});g.items.push({p:x.p,past:x.d<=now,st:st,ts:x.d.getTime()})});dg.push(g)});
+  nx0.innerHTML=dg.map(function(g,i){
+    return '<div class="dg"><h4>'+g.wd+'<br>'+g.ds+(i?'':' <span class="swh">deslize ›</span>')+'</h4>'+g.items.map(function(it){
       return '<div class="ni'+(it.past?' past':'')+'"><span class="pill" style="background:'+it.p.c+'">'+it.p.t+' '+it.p.n+'</span>'+(it.past?'<input type="checkbox" onclick="return false" data-st="'+it.st+'"'+(it.st===1?' checked':'')+'>':'<button class="spk sl" data-t="'+it.p.t+'" data-ts="'+it.ts+'">🔊</button>')+'</div>'
     }).join("")+'</div>'
   }).join("");
+  nx0.scrollLeft=sl0;
   Array.prototype.forEach.call(document.querySelectorAll("#next input"),function(c){if(c.dataset.st==="2")c.indeterminate=true});
   Array.prototype.forEach.call(document.querySelectorAll("#next .sl"),function(b){b.onclick=function(){var pp=POTS.filter(function(x){return x.t===b.dataset.t})[0];showSlot(pp,new Date(+b.dataset.ts),"Lourdinha, ")}});
   var pend=groups.some(function(g){return g.items.some(function(it){return it.past&&it.st!==1})});
@@ -753,6 +824,11 @@ var ANNE_TEL="81996739556";
 $("callbtn").onclick=function(){$("confirm").style.display="flex"};
 $("spkcall").onclick=function(e){e.stopPropagation();dizer("Ligar para Anne Filha")};
 $("nextbtn").onclick=showNext;
+// amanhã volta sozinho para hoje após 10 segundos
+(function(){var el=$("next"),tm=null;el.addEventListener("scroll",function(){var pg=el.scrollLeft>el.clientWidth/2;
+  if(pg&&!tm)tm=setTimeout(function(){tm=null;el.scrollTo?el.scrollTo({left:0,behavior:"smooth"}):(el.scrollLeft=0)},10000);
+  if(!pg&&tm&&el.scrollLeft<4){clearTimeout(tm);tm=null}},{passive:true})})();
+
 [0,1,2].forEach(function(i){$("tm"+i).onclick=function(){if(NATIVE)Android.testMeal(i);else mealStart(i,true)}});
 $("warnok").onclick=function(){$("warn").style.display="none";silenciar()};
 $("spkc").onclick=function(){dizer("Ligar para Anne Filha. Sim, toque no botão verde. Não, toque no botão vermelho.")};
@@ -1059,22 +1135,27 @@ function intFields(k,r){
   '<div class="rxd"><label>Intervalo (horas)<input type="number" min="1" max="24" inputmode="numeric" data-k="'+k+'" data-f="int" value="'+r.int+'" placeholder="ex.: 8"></label><label>Primeiro horário<select data-k="'+k+'" data-f="first">'+SLOTS.map(function(t){return '<option'+(t===r.first?" selected":"")+'>'+t+'</option>'}).join("")+'</select></label></div>'+
   '<div class="rxp">'+(r.slots.length?(+r.int>0?"A cada "+r.int+"h: ":"Horários: ")+r.slots.join(" · "):"Nenhum horário de bolsa coincide com esse intervalo")+'</div>';
 }
+function photoRow(k){var im=getImgs()[k];
+  return '<div class="phrow">'+(im?'<img src="'+im+'" alt="">':'<div class="ph0">📷</div>')+'<button class="small phb" data-k="'+k+'" style="flex:1">'+(im?'📷 Trocar foto':'📷 Carregar foto')+'</button>'+(im?'<button class="small phd" data-k="'+k+'" style="flex:none;background:#fee2e2;color:#991b1b">🗑</button>':'')+'<input type="file" accept="image/*" class="phf" data-k="'+k+'" style="display:none"></div>'}
 function paintRx(){
   var u=ULTIMA?dbr(ULTIMA):"não informada",cu=customs().map(function(c){return shortName(c.txt)});
   $("rxhead").textContent="Última consulta: "+u+". Desmarque o que NÃO foi receitado: esses remédios somem dos horários. O período conta a partir da última consulta.";
   $("rxl").innerHTML=medKeys().map(function(k){var r=rxOf(k),e=rxEnd(k),ended=r.on&&e&&nowD()>=e;
     var off=!r.on?'<div class="rxoff">⛔ Desativada'+(r.offC?" na consulta de "+dbrIso(r.offC):(r.offAt?" em "+dbrIso(r.offAt):""))+'</div>':'';
     return '<div class="rx"><label class="rxn"><input type="checkbox" data-k="'+k+'" data-f="on"'+(r.on?" checked":"")+'><span>'+k+(ended?' <small style="color:#c5221f">(período encerrado)</small>':'')+'</span></label>'+off+
-    (r.on?intFields(k,r):'')+(cu.indexOf(k)>=0?'<button class="small rxdel" data-k="'+k+'" style="background:#c5221f;color:#fff;margin-top:8px">🗑 Remover medicação</button>':'')+'</div>'}).join("");
+    (r.on?intFields(k,r):'')+photoRow(k)+(cu.indexOf(k)>=0?'<button class="small rxdel" data-k="'+k+'" style="background:#c5221f;color:#fff;margin-top:8px">🗑 Remover medicação</button>':'')+'</div>'}).join("");
   var Q=function(sel,fn){Array.prototype.forEach.call(document.querySelectorAll(sel),fn)};
   Q("#rxl input[data-f=on]",function(i){i.onchange=function(){setRx(i.dataset.k,{on:i.checked})}});
   Q("#rxl input[data-f=qtd]",function(i){i.onchange=function(){setRx(i.dataset.k,{qtd:i.value===""?"":Math.max(0,parseInt(i.value)||0)})}});
   Q("#rxl input[data-f=dias]",function(i){i.onchange=function(){setRx(i.dataset.k,{dias:i.value===""?"":Math.max(0,parseInt(i.value)||0)})}});
   Q("#rxl input[data-f=int]",function(i){i.onchange=function(){var v=Math.max(1,Math.min(24,parseInt(i.value)||0));if(!parseInt(i.value)){paintRx();return}setRx(i.dataset.k,{int:v})}});
   Q("#rxl select[data-f=first]",function(i){i.onchange=function(){var r=rxOf(i.dataset.k);setRx(i.dataset.k,{first:i.value,int:+r.int>0?+r.int:8})}});
+  Q("#rxl .phb",function(b){b.onclick=function(){b.parentNode.querySelector(".phf").click()}});
+  Q("#rxl .phf",function(i){i.onchange=function(){if(i.files&&i.files[0])imgSave(i.dataset.k,i.files[0],paintRx)}});
+  Q("#rxl .phd",function(b){b.onclick=function(){var o=getImgs();delete o[b.dataset.k];ls("rxImg",JSON.stringify(o));paintRx()}});
   Q("#rxl .rxdel",function(b){b.onclick=function(){
     if(b.dataset.c!=="1"){b.dataset.c="1";b.textContent="Confirmar remoção?";setTimeout(function(){if(b.isConnected){b.dataset.c="";b.textContent="🗑 Remover medicação"}},3500);return}
-    var k=b.dataset.k;ls("rxCustom",JSON.stringify(customs().filter(function(c){return shortName(c.txt)!==k})));var a=getRx();delete a[k];ls("rx",JSON.stringify(a));var e=getEstq();delete e[k];ls("estq",JSON.stringify(e));rxRefresh()}});
+    var k=b.dataset.k;var oi=getImgs();delete oi[k];ls("rxImg",JSON.stringify(oi));ls("rxCustom",JSON.stringify(customs().filter(function(c){return shortName(c.txt)!==k})));var a=getRx();delete a[k];ls("rx",JSON.stringify(a));var e=getEstq();delete e[k];ls("estq",JSON.stringify(e));rxRefresh()}});
 }
 // adicionar medicação
 $("rxaddb").onclick=function(){$("rxadd").style.display=$("rxadd").style.display==="block"?"none":"block";if($("rxf").options.length===0)SLOTS.forEach(function(t){var o=document.createElement("option");o.textContent=t;$("rxf").appendChild(o)})};
@@ -1147,17 +1228,57 @@ function gpShow(){
 }
 $("gpok").onclick=function(){silenciar();gpI++;gpShow()};
 var gpLast=0;
+function dimUpd(){var on=0;["outcard","estbox","sintcard"].forEach(function(id){var e=$(id);if(!e)return;var b=e.style.display!=="none"&&!e.classList.contains("quieto")&&e.offsetParent!==null;e.classList.toggle("bk",b);if(b)on=1});document.body.classList.toggle("dim",!!on)}
+setInterval(dimUpd,400);
 function buyText(){var a=outList().map(shortName).concat(estLow().map(function(x){return shortName(x.k)}));return a.filter(function(v,i){return a.indexOf(v)===i}).join(", ")}
 var lastSt="",lastPush=0;
 function buildState(){
   var data=getLogData(),wk=recentLog(data,7).map(function(l){return {d:l.d,t:l.t,n:l.n,ok:l.ok===undefined?null:l.ok,meal:!!l.meal,f:(l.m||[]).filter(function(m){return !m.ok&&!m.a}).map(function(m){return m.n})}});
   var c=Date.now()-7*864e5;
-  return {out:outList().map(shortName),low:estLow(),stock:dias(CONSULTA)>=0?stRows():[],week:wk,sint:getSint().filter(function(x){return x.ts>=c}),appt:{c:ls("consulta")||"2026-12-02",h:CONSH,u:ls("ultima")||""}};
+  return {out:outList().map(shortName),low:estLow(),stock:dias(CONSULTA)>=0?stRows():[],week:wk,sint:getSint().filter(function(x){return x.ts>=c}),appt:{c:ls("consulta")||"2026-12-02",h:CONSH,u:ls("ultima")||""},set:getSettings()};
 }
 function syncState(force){
   if(MODE!=="lourdinha"||!NATIVE||!Android.pushState)return;
   try{var o=buildState(),k=JSON.stringify(o);if(k===lastSt||(!force&&Date.now()-lastPush<20000))return;lastSt=k;lastPush=Date.now();o.ts=Date.now();Android.pushState(JSON.stringify(o))}catch(e){}
 }
+
+// ---- Configurações da Lourdinha: enviadas ao cuidador (state.set) e ajustes do cuidador aplicados aqui (cfg.set)
+function getSettings(){
+  var rx={},es=getEstq();
+  medKeys().forEach(function(k){var r=rxOf(k);rx[k]={on:r.on,qtd:r.qtd,dias:r.dias,int:r.int,first:r.first,est:(es[k]===undefined?"":es[k])}});
+  return {consulta:ls("consulta")||"2026-12-02",consultaH:ls("consultaH")||"07:00",ultima:ls("ultima")||"",mt:MEALS.map(function(M){return M.t}),
+    meals:!!mealsOn(),snd:!!sndOn(),smsOn:smsOn(),smsX:smsX(),act:actOn(),act0:ls("act0")||"09:00",act1:ls("act1")||"16:00",
+    lifeH:ls("lifeH")===null?12:+ls("lifeH"),cust:customs().map(function(c){return c.txt}),rx:rx,ap:+ls("setAp")||0}
+}
+function applySettings(s){
+  try{
+    if(s.consulta||s.consultaH){if(s.consulta)ls("consulta",s.consulta);if(s.consultaH)ls("consultaH",s.consultaH);loadAppt();paintCfgAppt();renderAppt();if(NATIVE&&Android.setAppt)Android.setAppt(ls("consulta")||"2026-12-02",ls("consultaH")||"07:00")}
+    if("ultima" in s){if(s.ultima)ls("ultima",s.ultima);else localStorage.removeItem("ultima");loadAppt();paintCfgAppt();renderAppt()}
+    if(s.mt)MEALS.forEach(function(M,i){var v=s.mt[i];if(/^\d\d:\d\d$/.test(v)&&v!==M.t){M.t=v;ls("mt"+i,v);$("mt"+i).value=v;if(NATIVE)Android.setMealTime(i,v)}});
+    if("meals" in s&&!!s.meals!==!!mealsOn()){if(NATIVE)Android.setMeals(!!s.meals);else ls("meals",s.meals?"1":"0");paintMealsSw()}
+    if("snd" in s&&!!s.snd!==!!sndOn()){if(NATIVE)Android.setSound(!!s.snd);else ls("snd",s.snd?"1":"0");paintSnd()}
+    if("smsOn" in s)ls("smsOn",s.smsOn?"1":"0");if(s.smsX)ls("smsX",JSON.stringify(s.smsX));
+    if("smsOn" in s||s.smsX){paintSms();pushSms()}
+    if("act" in s)ls("act",s.act?"1":"0");if(s.act0)ls("act0",s.act0);if(s.act1)ls("act1",s.act1);
+    if("act" in s||s.act0||s.act1){paintAct();pushAct()}
+    if("lifeH" in s){ls("lifeH",String(Math.max(0,Math.min(72,+s.lifeH||0))));paintLife();pushLife()}
+    if(s.cust){var antes=customs().map(function(c){return shortName(c.txt)}),novos=s.cust.map(shortName);
+      ls("rxCustom",JSON.stringify(s.cust.map(function(t){return {txt:t}})));
+      antes.forEach(function(k){if(novos.indexOf(k)<0){var ra=getRx();delete ra[k];ls("rx",JSON.stringify(ra));var ee=getEstq();delete ee[k];ls("estq",JSON.stringify(ee))}})}
+    if(s.rx){Object.keys(s.rx).forEach(function(k){var n=s.rx[k];if(!n||(s.cust&&medKeys().indexOf(k)<0))return;var o=rxOf(k),pt={};
+      ["on","qtd","dias","int","first"].forEach(function(f){if(f in n&&n[f]!==o[f])pt[f]=n[f]});
+      if(Object.keys(pt).length)setRx(k,pt,true);
+      if("est" in n){var e=getEstq();if(n.est===""||n.est===null)delete e[k];else e[k]=Math.max(0,+n.est||0);ls("estq",JSON.stringify(e));estCheck(k)}});rxRefresh()}
+    paintEstCfg();paintEst();render();renderNext();
+  }catch(e){}
+}
+function checkCfgApply(){
+  if(MODE!=="lourdinha"||!NATIVE||!Android.getCfg)return;
+  var c;try{c=JSON.parse(Android.getCfg()||"{}")}catch(e){return}
+  if(c.set&&c.sts&&c.sts>(+ls("setAp")||0)){ls("setAp",String(c.sts));applySettings(c.set);syncState(true)}
+}
+function cfgPoll(){if(MODE!=="lourdinha"||!NATIVE)return;try{Android.fetchCfg&&Android.fetchCfg()}catch(e){}setTimeout(checkCfgApply,4000)}
+setInterval(cfgPoll,60000);setTimeout(cfgPoll,3000);
 function syncBuy(){syncState();if(NATIVE&&Android.setBuy)try{Android.setBuy(buyText())}catch(e){}}
 function gpBuyAgain(){
   if(MODE!=="lourdinha"&&NATIVE)return;
@@ -1214,7 +1335,8 @@ function dlabel(d){var n=nowD(),k=Math.round((new Date(n.getFullYear(),n.getMont
 function cEsc(t){return String(t).replace(/</g,"&lt;")}
 function openMap(u){if(NATIVE&&Android.openUrl)Android.openUrl(u);else window.open(u)}
 function cMsg(t){var bt="";t=String(t).replace(/\s*Bateria:\s*(\d+)%\.?/,function(x,n){bt='<span class="bt">🔋 '+n+'%</span>';return ""});return cMsg2(t)+(bt?"<br>"+bt:"")}
-function cMsg2(t){var m=String(t).match(/^(.*?)\s*Local:\s*(.*?)\s*(https:\/\/maps\.google\.com\/\?q=[-0-9.,]+)\s*$/);
+function verLocal(){var n=normNome(cNome());return n==="danilo tassio"||n==="anne amorim"}
+function cMsg2(t){if(!verLocal())return cEsc(String(t).replace(/\s*Local:[\s\S]*$/,""));var m=String(t).match(/^(.*?)\s*Local:\s*(.*?)\s*(https:\/\/maps\.google\.com\/\?q=[-0-9.,]+)\s*$/);
   if(!m)return cEsc(t);return cEsc(m[1])+'<br><a class="map" href="#" onclick="openMap(\''+m[3]+'\');return false">📍 '+(m[2]?cEsc(m[2]):"Ver no mapa")+' · Abrir no mapa</a>'}
 function card(ic,html,cls,tm){return '<div class="cd '+(cls||"")+'"><div class="ic">'+ic+'</div><div class="tx">'+html+'</div>'+(tm?'<div class="tm">'+tm+'</div>':'')+'</div>'}
 function empty(t){return '<div class="empty">'+t+'</div>'}
@@ -1222,7 +1344,7 @@ function callTxt(b){var m=String(b).match(/registrou (\w+) agora \((\d\d:\d\d)\)
 function tabAv(){
   var a=[];try{a=JSON.parse(NATIVE&&Android.getAlerts?Android.getAlerts():"[]")}catch(e){}
   if(!a.length)return empty("🌿 Nenhum aviso por enquanto");
-  var h="",last="";a.forEach(function(x){var d=new Date(x.ts),ds=dstr(d);if(ds!==last){h+='<div class="dh">'+dlabel(d)+'</div>';last=ds}var k=kindOf(x.body);h+=card(KIC[k],cMsg(x.body)+(k==="sintoma"?'<br><button class="callnow" onclick="cuidCall('+x.ts+',\''+callTxt(x.body)+'\')">📞 Ligar agora para a Lourdinha</button>':""),"k-"+k+(k==="sintoma"||k==="remedio"?" bad":""),hhmm(d))});return h}
+  var h="",last="";a.forEach(function(x){var d=new Date(x.ts),ds=dstr(d);if(ds!==last){h+='<div class="dh">'+dlabel(d)+'</div>';last=ds}var k=kindOf(x.body);h+=card(KIC[k],cMsg(x.body)+"","k-"+k+(k==="sintoma"||k==="remedio"?" bad":""),hhmm(d))});return h}
 function alertsList(){var a=[];try{a=JSON.parse(NATIVE&&Android.getAlerts?Android.getAlerts():"[]")}catch(e){}return a}
 function tabAl(){
   var st=remState(),h="",hasSt=!!st.ts||!!(st.out||st.low||st.sint),al=alertsList(),out=(st.out||[]).slice(),low=(st.low||[]).slice(),sint=(st.sint||[]).slice(-1)[0];
@@ -1283,12 +1405,12 @@ function precisaNome(){if(cNome())return false;editNew=false;paintSet();$("cset"
 function dial(){if(NATIVE&&Android.ligar)Android.ligar("81971151424");else alert("Protótipo: ligaria para 81971151424")}
 function cToast(t){var e=document.createElement("div");e.className="toast";e.textContent=t;$("cuid").appendChild(e);setTimeout(function(){e.remove()},2600)}
 var syncT=0;
-var PEG=["Cadê meu chapéu? Eita, muzenga!","Alguém viu a chave?","Espera aí, vou fazer um lanchinho.","Rapaz, ficasse sabendo? Depois te conto.","Muzenga, esqueci de tomar água. Espera aí!","Peraí, vou ali pegar o óculos…","Espera! Preciso tomar um cafezinho ☕","Opa, esqueci onde estacionei o Uno!","Deixa eu ver se a Lourdinha tomou o remédio…","Já volto, vou comer um pão com manteiga!"];
+var PEG=["Cadê meu chapéu? Eita, muzenga!","Alguém viu a chave?","Espera aí, vou fazer um lanchinho.","Rapaz, ficasse sabendo? Depois te conto.","Muzenga, esqueci de tomar água. Espera aí!","Peraí, vou ali pegar o óculos…","Espera! Preciso tomar um cafezinho ☕","Opa, esqueci onde estacionei o Uno!","Deixa eu ver se a Lourdinha tomou o remédio…","Já volto, vou comer um pão com manteiga!","Pera aí, deixa eu ver com Lu! Hô Lu.","Só um minuto, vou pegar um picolé aqui."];
 function syncProgress(done){
   var ov=$("csyncov"),tr=ov.querySelector(".strack"),car=$("scarw"),fill=$("sfill"),pc=$("spc"),bal=$("sbal"),
-  q=PEG.slice().sort(function(){return Math.random()-.5}).slice(0,Math.random()<.5?1:2),
-  pts=(q.length==1?[.25+Math.random()*.5]:[.2+Math.random()*.2,.6+Math.random()*.2]),
-  D=7000,P=2400,t0=Date.now(),lim=0,hold=0,paused=0,prog=0,last=t0;
+  q=PEG.slice().sort(function(){return Math.random()-.5}).slice(0,3),
+  pts=[.12+Math.random()*.12,.42+Math.random()*.12,.72+Math.random()*.12],
+  D=8000,P=2400,t0=Date.now(),lim=0,hold=0,paused=0,prog=0,last=t0;
   ov.style.display="flex";bal.style.display="none";ov.classList.remove("stop");
   (function step(){
     var n=Date.now(),dt=n-last;last=n;
@@ -1319,21 +1441,21 @@ function shapeOf(p){
   var corner=n.some(function(q){return q[0]<.4&&q[1]>.7}),bottom=n.some(function(q){return q[1]>.75&&q[0]>.2&&q[0]<.8});
   if(corner&&l[0]>.6&&l[1]>.65)return "L";
   if(bottom&&l[0]>.6&&l[1]<.45)return "U";return ""}
-function gStart(x,y){if(MODE!=="cuidador"||$("cset").style.display==="flex"||$("csec").style.display==="flex")return;cur=[[x,y]];if(cx)cx.clearRect(0,0,cv.width,cv.height)}
+function gStart(x,y){if((MODE!=="cuidador"&&MODE!=="lourdinha")||$("cset").style.display==="flex"||$("csec").style.display==="flex")return;cur=[[x,y]];if(cx)cx.clearRect(0,0,cv.width,cv.height)}
 function gMove(x,y){if(!cur)return;var q=cur[cur.length-1];cur.push([x,y]);if(cx&&cur.length>3){cx.strokeStyle="rgba(124,58,237,.35)";cx.lineWidth=6;cx.lineCap="round";cx.beginPath();cx.moveTo(q[0],q[1]);cx.lineTo(x,y);cx.stroke()}}
 function gEnd(){if(!cur)return;var sh=shapeOf(cur);cur=null;setTimeout(function(){if(cx)cx.clearRect(0,0,cv.width,cv.height)},250);
   var n=Date.now();if(sh==="L"){seqL=n}else if(sh==="U"&&n-seqL<4000){seqL=0;openSecGate()}}
 function openSecGate(){askPass("1989","Senha das definições secretas",openSec)}
 function normNome(t){return String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s+/g," ").trim()}
 function ehDanilo(){return normNome(cNome())==="danilo tassio"}
-function openSec(){$("st_cui").style.display=ehDanilo()?"":"none";secTab("loc");$("slocal").checked=(function(){try{return !!JSON.parse(NATIVE&&Android.getCfg?Android.getCfg():ls("cfg")||"{}").loc}catch(e){return false}})();$("csec").style.display="flex"}
+function openSec(){if(MODE==="lourdinha"){var a=$("adm");a.style.display="block";a.scrollTop=0;return}var cu=MODE==="cuidador";$("st_loc").style.display=cu?"":"none";$("st_set").style.display=cu?"":"none";$("st_cui").style.display=cu&&ehDanilo()?"":"none";secTab(cu?"loc":"mod");$("slocal").checked=(function(){try{return !!JSON.parse(NATIVE&&Android.getCfg?Android.getCfg():ls("cfg")||"{}").loc}catch(e){return false}})();$("csec").style.display="flex"}
 document.addEventListener("touchstart",function(e){var t=e.touches[0];gStart(t.clientX,t.clientY)},{passive:true});
 document.addEventListener("touchmove",function(e){var t=e.touches[0];gMove(t.clientX,t.clientY)},{passive:true});
 document.addEventListener("touchend",gEnd,{passive:true});document.addEventListener("touchcancel",gEnd,{passive:true});
 document.addEventListener("mousedown",function(e){gStart(e.clientX,e.clientY)});document.addEventListener("mousemove",function(e){if(e.buttons)gMove(e.clientX,e.clientY)});document.addEventListener("mouseup",gEnd);
 $("csecx").onclick=function(){$("csec").style.display="none"};
-function secTab(t){$("sp_loc").style.display=t==="loc"?"block":"none";$("sp_cui").style.display=t==="cui"?"block":"none";$("st_loc").className=t==="loc"?"on":"";$("st_cui").className=t==="cui"?"on":"";if(t==="cui"){if(NATIVE&&Android.sendProfile)Android.sendProfile();setTimeout(function(){if(NATIVE&&Android.fetchProfs)Android.fetchProfs()},1200);paintProfs()}}
-$("st_loc").onclick=function(){secTab("loc")};$("st_cui").onclick=function(){secTab("cui")};
+function secTab(t){["loc","cui","set","mod"].forEach(function(n){$("sp_"+n).style.display=t===n?"block":"none";$("st_"+n).className=t===n?"on":""});if(t==="cui"){if(NATIVE&&Android.sendProfile)Android.sendProfile();setTimeout(function(){if(NATIVE&&Android.fetchProfs)Android.fetchProfs()},1200);paintProfs()}if(t==="set")paintLset()}
+$("st_loc").onclick=function(){secTab("loc")};$("st_mod").onclick=function(){secTab("mod")};$("st_set").onclick=function(){secTab("set")};$("st_cui").onclick=function(){secTab("cui")};
 function ago(ts){if(!ts)return "";var m=Math.round((Date.now()-ts)/60000);return m<1?"agora":m<60?"há "+m+" min":m<1440?"há "+Math.round(m/60)+" h":"há "+Math.round(m/1440)+" d"}
 function paintProfs(){
   var a=[];try{a=JSON.parse(NATIVE&&Android.getProfs?Android.getProfs():"[]")}catch(e){}
@@ -1341,15 +1463,73 @@ function paintProfs(){
   $("plist").innerHTML=a.length?a.map(function(x){
     var loc=x.lat!==undefined&&x.lat!==null?'<div class="ln">📍 '+(x.place?cEsc(x.place):"posição conhecida")+' <small style="color:#94a3b8">('+ago(x.lts)+')</small> · <a class="map" style="margin:0;padding:4px 8px;font-size:13px" href="#" onclick="openMap(\'https://maps.google.com/?q='+x.lat+','+x.lon+'\');return false">Abrir no mapa</a></div>':'<div class="ln">📍 Localização ainda não informada</div>';
     return '<div class="pc"><b>👤 '+cEsc(x.name||"(sem nome)")+(x.id===me?" (você)":"")+'</b><div class="ln">📱 '+cEsc(x.dev||"—")+'</div><div class="ln">🔋 '+(x.bat===null||x.bat===undefined?"—":x.bat+"%")+' <small style="color:#94a3b8">· atualizado '+ago(x.ts)+'</small></div>'+loc+'<button class="lb" onclick="askLocation(\''+x.id+'\')">📍 Consultar localização</button></div>'}).join(""):'<div class="empty" style="padding:20px 0">Nenhum cuidador registrado ainda.</div>'}
+
+// ---- Cuidador: ver e ajustar as configurações da Lourdinha
+function cfgLocal(){try{return JSON.parse(NATIVE&&Android.getCfg?Android.getCfg():ls("cfg")||"{}")}catch(e){return{}}}
+function dmerge(a,b){Object.keys(b).forEach(function(k){if(b[k]&&typeof b[k]==="object"&&!Array.isArray(b[k])){a[k]=dmerge(a[k]&&typeof a[k]==="object"?a[k]:{},b[k])}else a[k]=b[k]});return a}
+function lsetView(){var st=remState(),base=st.set||null;if(!base)return null;var c=cfgLocal(),v=JSON.parse(JSON.stringify(base));
+  if(c.set&&c.sts&&(base.ap||0)<c.sts)dmerge(v,c.set);return v}
+function setPush(patch){
+  var c=cfgLocal();try{if(NATIVE&&Android.fetchCfgNow)c=JSON.parse(Android.fetchCfgNow()||"{}")}catch(e){}
+  var st=remState(),ap=(st.set&&st.set.ap)||0,old=(c.sts&&ap<c.sts)?(c.set||{}):{};
+  c.set=dmerge(old,patch);c.sts=Date.now();var j=JSON.stringify(c);
+  if(j.length>2000){cToast("Alteração grande demais. Salve uma coisa de cada vez.");return}
+  ls("cfg",j);if(NATIVE&&Android.setCfg)Android.setCfg(j);
+  cToast("✔ Enviado. A Lourdinha aplica ao abrir o app (até 1 min com o app aberto)");if($("sp_set").style.display!=="none")paintLset();
+}
+function paintLset(){
+  var v=lsetView(),h="";
+  if(!v){$("lset").innerHTML='<div class="empty">Ainda sem as configurações da Lourdinha.<br><small>'+srvMsg()+' Abra o app no celular dela e toque em 🔄 aqui.</small></div>';return}
+  Object.keys(v.rx||{}).forEach(function(k){if(!v.rx[k]||(v.cust&&medKeys().indexOf(k)<0&&v.cust.map(shortName).indexOf(k)<0&&!POTS.some(function(p){return p.m.some(function(m){return shortName(m)===k})})&&QT.map(shortName).indexOf(k)<0))delete v.rx[k]});
+  function sw(id,lb,on){return '<label class="sw"><span>'+lb+'</span><input type="checkbox" data-s="'+id+'"'+(on?" checked":"")+'></label>'}
+  function inp(id,lb,tp,val,ex){return '<label class="lf2"><span>'+lb+'</span><input type="'+tp+'" data-s="'+id+'" value="'+cEsc(val===null||val===undefined?"":val)+'" '+(ex||"")+'></label>'}
+  var cu=(v.cust||[]).map(shortName),slotOpt=function(sel){return SLOTS.map(function(t){return '<option'+(t===sel?" selected":"")+'>'+t+'</option>'}).join("")};
+  function num(k,f,lb,val,mx){return '<label>'+lb+'<input type="number" min="0"'+(mx?' max="'+mx+'"':"")+' data-r="'+cEsc(k)+'" data-f="'+f+'" value="'+cEsc(val)+'"></label>'}
+  h+='<div class="lg"><b>🔔 Alarme e relógio</b>'+sw("snd","Som do alarme",v.snd)+sw("meals","Despertadores de refeições",v.meals)+'<div class="lnote">Testar alarme, parar música e a fonte da hora só funcionam no celular dela.</div></div>';
+  h+='<div class="lg"><b>🩺 Consulta</b>'+inp("consulta","🩺 Data da consulta","date",v.consulta)+inp("consultaH","⏰ Hora da consulta","time",v.consultaH)+inp("ultima","🕘 Data da última consulta","date",v.ultima)+'</div>';
+  h+='<div class="lg"><b>📝 Receita da última consulta</b><div class="lnote">Desmarque o que NÃO foi receitado: esses remédios somem dos horários. O período conta a partir da última consulta.</div>'+Object.keys(v.rx||{}).map(function(k){var r=v.rx[k];
+    return '<div class="lmed"><label class="sw"><span><b>'+cEsc(k)+'</b></span><input type="checkbox" data-r="'+cEsc(k)+'" data-f="on"'+(r.on?" checked":"")+'></label>'+(r.on?
+      '<div class="lm2">'+num(k,"qtd","Quantidade receitada",r.qtd)+num(k,"dias","Período (dias)",r.dias)+num(k,"int","Intervalo (horas)",r.int,24)+'<label>Primeiro horário<select data-r="'+cEsc(k)+'" data-f="first">'+slotOpt(r.first)+'</select></label></div>':'<div class="lnote">⛔ Desativada</div>')+
+      (cu.indexOf(k)>=0?'<button class="lb2 lrm" data-k="'+cEsc(k)+'">🗑 Remover medicação</button>':'')+'</div>'}).join("")+
+    '<button class="lb2" id="laddb">➕ Adicionar medicação</button><div id="ladd" style="display:none" class="lmed"><div class="lm2"><label>Nome<input type="text" id="ln_n" placeholder="ex.: Paracetamol"></label><label>Dosagem<input type="text" id="ln_d" placeholder="ex.: 750 mg"></label><label>Qtd por dose<input type="text" id="ln_p" placeholder="1 comprimido"></label><label>Para que serve<input type="text" id="ln_q" placeholder="ex.: dor"></label><label>Qtd receitada<input type="number" min="0" id="ln_r"></label><label>Período (dias)<input type="number" min="0" id="ln_t"></label><label>Intervalo (h)<input type="number" min="1" max="24" id="ln_i"></label><label>1º horário<select id="ln_f">'+slotOpt("06:00")+'</select></label></div><button class="lb2" id="lsave">✔ Salvar</button></div></div>';
+  h+='<div class="lg"><b>🍽️ Refeições</b>'+inp("mt0","☀️ Café da manhã","time",v.mt[0])+inp("mt1","🍽️ Almoço","time",v.mt[1])+inp("mt2","🌙 Janta","time",v.mt[2])+'<button class="lb2" id="lmtdef">↺ Restaurar horários padrão (6:15 · 13:00 · 19:00)</button><div class="lnote">Os botões Testar café/almoço/janta só funcionam no celular dela.</div></div>';
+  h+='<div class="lg"><b>📩 Aviso à família por SMS</b>'+sw("smsOn","Aviso por SMS",v.smsOn)+'<div class="lnote">Fixos: (81) 99673-9556 · (81) 98957-4545</div>'+(v.smsX||[]).map(function(n,i){return '<div class="lrow"><span>'+cEsc(n)+'</span><button data-sx="'+i+'">✖</button></div>'}).join("")+'<div class="lrow"><input type="tel" id="lsmsn" placeholder="DDD + número"><button id="lsmsa">+ Adicionar</button></div></div>';
+  h+='<div class="lg"><b>💓 Sinal de vida</b>'+inp("lifeH","Horas sem uso do celular para avisar (0 = desligado)","number",v.lifeH,'min="0" max="72"')+'</div>';
+  h+='<div class="lg"><b>💊 Estoque de remédios (doses)</b>'+Object.keys(v.rx||{}).map(function(k){return '<div class="lf2"><span>'+cEsc(k)+'</span><input type="number" min="0" data-r="'+cEsc(k)+'" data-f="est" value="'+cEsc(v.rx[k].est)+'"></div>'}).join("")+'</div>';
+  h+='<div class="lg"><b>🚶 Alarmes de atividade</b>'+sw("act","Alarmes de atividade",v.act)+inp("act0","🧘 Alongamento","time",v.act0)+inp("act1","🚶 Caminhada leve","time",v.act1)+'</div>';
+  h+='<div class="lg"><b>🩺 Relatório e backup · 📡 Avisos pela internet · 🛠 Outros</b><div class="lnote">Relatório, backup, código de pareamento, trocar voz e limpar registro dependem do aparelho dela e ficam só no celular da Lourdinha.</div></div>';
+  $("lset").innerHTML=h;
+  var Q=function(sel,fn){Array.prototype.forEach.call($("lset").querySelectorAll(sel),fn)},V=function(i){return i.type==="checkbox"?i.checked:i.type==="number"?(i.value===""?"":Math.max(0,parseInt(i.value)||0)):i.value};
+  Q("input[data-s]",function(i){i.onchange=function(){var k=i.dataset.s,p={};
+    if(/^mt\d$/.test(k)){var m=(lsetView().mt||[]).slice();m[+k[2]]=i.value;p.mt=m}else p[k]=V(i);setPush(p)}});
+  Q("[data-r]",function(i){i.onchange=function(){var o={},f=i.dataset.f;
+    if(f==="int"){var n=parseInt(i.value);if(!n||n<1||n>24){paintLset();return}o.int=n}else o[f]=f==="first"?i.value:V(i);
+    var p={rx:{}};p.rx[i.dataset.r]=o;setPush(p)}});
+  Q("button[data-sx]",function(b){b.onclick=function(){var a=(lsetView().smsX||[]).slice();a.splice(+b.dataset.sx,1);setPush({smsX:a})}});
+  Q(".lrm",function(b){b.onclick=function(){
+    if(b.dataset.c!=="1"){b.dataset.c="1";b.textContent="Confirmar remoção?";setTimeout(function(){if(b.isConnected){b.dataset.c="";b.textContent="🗑 Remover medicação"}},3500);return}
+    var k=b.dataset.k,nl=(lsetView().cust||[]).filter(function(t){return shortName(t)!==k}),p={cust:nl,rx:{}};p.rx[k]=null;setPush(p)}});
+  $("laddb").onclick=function(){$("ladd").style.display=$("ladd").style.display==="block"?"none":"block"};
+  $("lsave").onclick=function(){
+    var nome=$("ln_n").value.trim();if(!nome){cToast("Digite o nome da medicação.");return}
+    var dz=$("ln_d").value.trim(),pd=$("ln_p").value.trim()||"1 dose",pq=$("ln_q").value.trim(),txt=nome+(dz?" "+dz:"")+" — "+pd+(pq?" — "+pq:""),k=shortName(txt);
+    var cur=lsetView();if(Object.keys(cur.rx||{}).indexOf(k)>=0){cToast("Já existe uma medicação com esse nome.");return}
+    var it=parseInt($("ln_i").value)||0;if(it<1||it>24){cToast("Informe o intervalo em horas (1 a 24). Ex.: 8.");return}
+    var nl=(cur.cust||[]).concat([txt]),rx={};rx[k]={on:true,qtd:$("ln_r").value===""?"":Math.max(0,parseInt($("ln_r").value)||0),dias:$("ln_t").value===""?"":Math.max(0,parseInt($("ln_t").value)||0),int:it,first:$("ln_f").value};
+    setPush({cust:nl,rx:rx})};
+  $("lmtdef").onclick=function(){setPush({mt:["06:15","13:00","19:00"]})};
+}
 window.onProfs=function(){paintProfs()};
 window.askLocation=function(id){if(NATIVE&&Android.askLoc)Android.askLoc(id);var b=event&&event.target;if(b){b.textContent="⏳ Consultando…";b.disabled=true}[5000,12000].forEach(function(t){setTimeout(function(){if(NATIVE&&Android.fetchProfs)Android.fetchProfs()},t)})};
-$("slocal").onchange=function(){var j=JSON.stringify({loc:$("slocal").checked});ls("cfg",j);if(NATIVE&&Android.setCfg)Android.setCfg(j)};
+$("slocal").onchange=function(){var c=cfgLocal();try{if(NATIVE&&Android.fetchCfgNow)c=JSON.parse(Android.fetchCfgNow()||"{}")}catch(e){}c.loc=$("slocal").checked;var j=JSON.stringify(c);ls("cfg",j);if(NATIVE&&Android.setCfg)Android.setCfg(j)};
 window.__gesto=function(a){var r=shapeOf(a);if(r==="L"){seqL=Date.now()}else if(r==="U"&&Date.now()-seqL<4000){seqL=0;openSecGate()}return r};
 $("mdl").onclick=function(){setModeNow("lourdinha");paintMode()};
 $("mdc").onclick=function(){setModeNow("cuidador");paintMode()};
 $("cgo").onclick=function(){var r=NATIVE&&Android.setPairCode?Android.setPairCode($("cin").value):"erro";if(r==="ok"){editNew=false;paintSet();paintCuid();if(Android.refreshState)Android.refreshState()}else{$("cst").className="st";$("cst").textContent="Código inválido. Confira e tente de novo."}};
 $("ccl").onclick=function(){if(NATIVE&&Android.clearAlerts)Android.clearAlerts();paintCuid();$("cset").style.display="none"};
-function trocarModo(){askPass("1989","Senha para trocar o modo",function(){$("adm").style.display="none";$("cset").style.display="none";$("cmd").style.display="none";setModeNow("");paintMode()})}
+function doTrocar(){$("csec").style.display="none";$("adm").style.display="none";$("cset").style.display="none";$("cmd").style.display="none";setModeNow("");paintMode()}
+function trocarModo(){askPass("1989","Senha para trocar o modo",doTrocar)}
+$("smod").onclick=doTrocar;
 $("cmd").onclick=trocarModo;$("pmode").onclick=trocarModo;
 $("pshare").onclick=function(){var c=NATIVE&&Android.getPairCode?Android.getPairCode():"";if(c&&NATIVE)Android.share("Código para receber os avisos da Lourdinha (cole no app, modo cuidador): "+c)};
 function cuidPoll(){
